@@ -4,15 +4,24 @@ import struct
 import socket
 
 class CommEndpoint(TaskBase):
-    def __init__(self, protocol):
+    def __init__(self, protocols):
         TaskBase.__init__(self)
-        self.protocol = protocol
+        self.protocols = protocols
         self.connections = []
-        self.message_receivers = []
         self.conn_listeners = []
+        self.messages_to_send = []
+        self.received_messages = []
 
-    def register_message_receiver(self, message_receiver):
-        self.message_receivers.add(message_receiver)
+    def get_message(self, msg_id):
+        ret_val = None
+        for message in self.received_messages:
+            if message.get_msg_id() == msg_id:
+                ret_val = message
+                break
+        return ret_val
+
+    def send_message(self, message):
+        self.messages.append(message)
 
     def publish_service(self, port_no):
         conn_listener = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -22,24 +31,26 @@ class CommEndpoint(TaskBase):
         self.conn_listeners.append(conn_listener)
 
     def run(self):
-        messages = []
         for listener in self.conn_listeners:
             try:
                 listener.listen(1)
-                (connection, address) = self.server_socket.accept()
+                (connection, address) = listener.accept()
                 self.connections.append(connection)
+                Log.log("Connected to by " + str(address) + "...")
             except socket.timeout:
                 pass
 
+        self.received_messages = []
         for connection in self.connections:
-            messages.append(self.receive_messages(connection))
+            self.received_messages.append(self.receive_messages(connection))
         
         # Broadcast for now. Should implement a capabilities check
         # in the protocol that states which messages are supported
         # by "the other" side
-        for message in self.messages:
+        for message in self.messages_to_send:
             for connection in self.connections:
                 self.send_message(connection, message)
+        self.messages_to_send = []
 
     def receive_messages(self, connection):
         messages = []
@@ -68,12 +79,16 @@ class CommEndpoint(TaskBase):
         message = None
         header_size = 4
         header = self.receive_data(connection, header_size)
+        Log.log("Received data " + str(header))
         if None != header:
             data_size = bytearray(header[0:header_size])
             data_size = struct.unpack("<B", data_size)[0]
             data = self.receive_data(connection, data_size)
             if None != data:
-                message = self.protocol.decode_message(data)
+                for protocol in self.protocols:
+                    message = self.protocol.decode_message(data)
+                    if None != message:
+                        break
         return message
             
 
