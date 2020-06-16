@@ -1,5 +1,8 @@
 from ...core.runtime.task_base import TaskBase
 from ..log.log import Log
+from .core_messages import CapabilitiesReq
+from .core_messages import CapabilitiesCfm
+from .message_protocol import MessageProtocol
 import struct
 import socket
 
@@ -31,19 +34,11 @@ class CommEndpoint(TaskBase):
         self.conn_listeners.append(conn_listener)
 
     def run(self):
-        for listener in self.conn_listeners:
-            try:
-                listener.listen(1)
-                (connection, address) = listener.accept()
-                self.connections.append(connection)
-                Log.log("Connected to by " + str(address) + "...")
-            except socket.timeout:
-                pass
+        self.accept_connections()
+        self.receive_messages()
+        self.send_messages()
 
-        self.received_messages = []
-        for connection in self.connections:
-            self.received_messages.append(self.receive_messages(connection))
-        
+    def send_messages(self):
         # Broadcast for now. Should implement a capabilities check
         # in the protocol that states which messages are supported
         # by "the other" side
@@ -52,7 +47,23 @@ class CommEndpoint(TaskBase):
                 self.send_message(connection, message)
         self.messages_to_send = []
 
-    def receive_messages(self, connection):
+    def receive_messages(self):
+        self.received_messages = []
+        for connection in self.connections:
+            self.received_messages.append(self.receive_messages_for_conn(connection))
+
+    def accept_connections(self):
+        for listener in self.conn_listeners:
+            try:
+                listener.listen(1)
+                (connection, address) = listener.accept()
+                self.connections.append(connection)
+                Log.log("Connected to by " + str(address) + "...")
+                self.send_message(connection, CapabilitiesReq())
+            except socket.timeout:
+                pass
+
+    def receive_messages_for_conn(self, connection):
         messages = []
         message = self.receive_message(connection)
         while None != message:
@@ -93,7 +104,8 @@ class CommEndpoint(TaskBase):
             
 
     def send_message(self, connection, message):
-        data = message.encode()
+        Log.log("Sending message " + str(message) + "...")
+        data = MessageProtocol.encode_message(message)
         data_size = (len(data)).to_bytes(4, byteorder='big')
         connection.sendall(data_size)
         connection.sendall(data)

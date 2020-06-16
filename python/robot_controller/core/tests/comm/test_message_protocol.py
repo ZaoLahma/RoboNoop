@@ -27,8 +27,8 @@ class TestMessageProtocol(unittest.TestCase):
         data = protocol.encode_message(message)
         received_message = protocol.decode_message(data)
 
-        assert(received_message.get_msg_id() == message.get_msg_id())
-        assert(received_message.val == message.val)
+        self.assertEqual(received_message.get_msg_id(), message.get_msg_id())
+        self.assertEqual(received_message.val, message.val)
 
 if __name__ == '__main__':
     unittest.main()

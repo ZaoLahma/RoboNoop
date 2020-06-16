@@ -6,5 +6,5 @@ class MessageBase:
     def encode(self):
         raise NotImplementedError
 
-    def decode(self):
+    def decode(self, data):
         raise NotImplementedError

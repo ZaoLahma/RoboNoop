@@ -6,7 +6,8 @@ class MessageProtocol:
     def __init__(self, message_classes):
         self.message_classes = message_classes
 
-    def encode_message(self, message):
+    @staticmethod
+    def encode_message(message):
         data = struct.pack('<B', message.get_msg_id())
         payload = message.encode()
 
