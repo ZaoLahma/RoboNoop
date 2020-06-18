@@ -2,6 +2,11 @@ from .message_base import MessageBase
 from ..log.log import Log
 import struct
 
+class AllCapabilities(MessageBase):
+    @staticmethod
+    def get_msg_id():
+        return 65535
+
 class CapabilitiesReq(MessageBase):
     @staticmethod
     def get_msg_id():
@@ -37,3 +42,5 @@ class CapabilitiesCfm(MessageBase):
             self.msg_ids.append(msg_id)
 
         Log.log("CapabilitiesCfm decoded data " + str(self.msg_ids))
+
+ALL_CORE_MESSAGES = [AllCapabilities, CapabilitiesReq, CapabilitiesCfm]

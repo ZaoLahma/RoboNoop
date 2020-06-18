@@ -1,4 +1,6 @@
 from datetime import datetime
+import inspect
+import os
 
 class Log:
     log_file_name = "default_log_name.log"
@@ -7,8 +9,12 @@ class Log:
     @staticmethod
     def log(msg):
         now = datetime.now()
-        with open(Log.log_file_name, "a") as log_file:
-            log_str = str(now) + " - " + msg
-            print(log_str)
-            if Log.log_write_to_file:
+        frame = inspect.stack()[1]
+        file_name = frame[0].f_code.co_filename
+        line_no = frame[0].f_lineno
+        file_name = str(file_name).split(os.path.sep)[-1]
+        log_str = str(now) + " " + file_name + ":" + str(line_no) + " - " + msg
+        print(log_str)
+        if Log.log_write_to_file:
+            with open(Log.log_file_name, "a") as log_file:
                 log_file.write(log_str + '\n')
