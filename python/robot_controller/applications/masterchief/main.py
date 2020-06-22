@@ -4,24 +4,27 @@ from ...core.log.log import Log
 from ...core.comm.comm_endpoint import CommEndpoint
 from ...core.comm.message_protocol import MessageProtocol
 from ...core.comm.core_messages import ALL_CORE_MESSAGES
+from .masterchief import MasterChief
 from time import sleep
 
 class Main:
     @staticmethod
     def run():
-        print("Garrus application starting...")
+        print("MasterChief application starting...")
 
-        Log.log_file_name = "garrus.log"
+        Log.log_file_name = "masterchief.log"
 
         protocol = MessageProtocol(ALL_CORE_MESSAGES)
 
         comm_task = CommEndpoint([protocol])
-        comm_task.publish_service(3031)
+
+        master_chief = MasterChief(comm_task)
 
         tasks = []
         tasks.append(comm_task)
+        tasks.append(master_chief)
 
-        scheduler = Scheduler("Garrus", tasks)
+        scheduler = Scheduler("MasterChief", tasks)
 
         run_in_new_thread = False
         thread = SchedulerThread(scheduler, run_in_new_thread)
