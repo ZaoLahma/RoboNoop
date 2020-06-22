@@ -15,6 +15,7 @@ class CommListenerTask(TaskBase):
             self.comm_interface.connect("localhost", 3030)
             self.connected = True
 
-        msg = self.comm_interface.get_message(AllCapabilities.get_msg_id())
-        if None != msg:
-            Log.log("Received msg " + str(msg.get_msg_id()))
+        msgs = self.comm_interface.get_all_messages()
+        if None != msgs:
+            for msg in msgs:
+                Log.log("Received msg " + str(msg.get_msg_id()))

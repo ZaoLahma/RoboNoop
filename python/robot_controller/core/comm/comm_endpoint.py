@@ -14,12 +14,11 @@ class ConnectionInfo:
     def set_capabilities(self, capabilities):
         self.capabilities = capabilities
 
-
 class CommEndpoint(TaskBase):
     def __init__(self, protocols):
         TaskBase.__init__(self)
         self.protocols = protocols
-        self.connections = []
+        self.connection_infos = []
         self.conn_listeners = []
         self.messages_to_send = []
         self.received_messages = []
@@ -31,6 +30,9 @@ class CommEndpoint(TaskBase):
                 ret_val = message
                 break
         return ret_val
+
+    def get_all_messages(self):
+        return self.received_messages
 
     def send_message(self, message):
         self.messages.append(message)
@@ -48,26 +50,27 @@ class CommEndpoint(TaskBase):
         self.send_messages()
 
     def send_messages(self):
-        # Broadcast for now. Should implement a capabilities check
-        # in the protocol that states which messages are supported
-        # by "the other" side
         for message in self.messages_to_send:
-            for connection in self.connections:
-                self.send_message(connection, message)
+            for connection_info in self.connection_infos:
+                if message.get_msg_id() in connection_info.capabilities:
+                    self.send_message(connection_info.connection, message)
         self.messages_to_send = []
 
     def receive_messages(self):
         self.received_messages = []
-        for connection in self.connections:
-            received_messages = self.receive_messages_for_conn(connection)
+        for connection_info in self.connection_infos:
+            received_messages = self.receive_messages_for_conn(connection_info.connection)
             for message in received_messages:
                 if message.get_msg_id() == CapabilitiesCfm.get_msg_id():
                     Log.log("Received capabilities " + str(message.msg_ids))
+                    for capability in message.msg_ids:
+                        if capability not in connection_info.capabilities:
+                            connection_info.capabilities.append(capability)
                     received_messages.remove(message)
                 elif message.get_msg_id() == CapabilitiesReq.get_msg_id():
                     Log.log("Received capabilities req")
                     capabilities_cfm = CapabilitiesCfm(self.protocols)
-                    self.send_message(connection, capabilities_cfm)
+                    self.send_message(connection_info.connection, capabilities_cfm)
 
             self.received_messages.extend(received_messages)
 
@@ -77,7 +80,8 @@ class CommEndpoint(TaskBase):
                 listener.listen(1)
                 (connection, address) = listener.accept()
                 connection.settimeout(0.01)
-                self.connections.append(connection)
+                connection_info = ConnectionInfo(connection)
+                self.connection_infos.append(connection_info)
                 Log.log("Connected to by " + str(address) + "...")
                 self.send_message(connection, CapabilitiesReq())
             except socket.timeout:
@@ -93,7 +97,9 @@ class CommEndpoint(TaskBase):
             raise
         else:
             Log.log("Connected to application at address {0}".format(host))
-            self.connections.append(connection)
+            connection_info = ConnectionInfo(connection)
+            self.connection_infos.append(connection_info)
+            self.send_message(connection, CapabilitiesReq())
 
     def receive_messages_for_conn(self, connection):
         messages = []
@@ -132,7 +138,6 @@ class CommEndpoint(TaskBase):
                     if None != message:
                         break
         return message
-            
 
     def send_message(self, connection, message):
         Log.log("Sending message " + str(message) + "...")
