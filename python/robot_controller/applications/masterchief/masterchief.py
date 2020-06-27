@@ -13,9 +13,10 @@ class MasterChief(TaskBase):
 
         self.state_def =  [
             State("INIT", self.handle_idle, "CONNECT_KRATOS", "INIT"),
-            State("CONNECT_KRATOS", self.handle_connect_kratos, "KRATOS_CONNECTED", "INIT"),
-            State("KRATOS_CONNECTED", self.handle_idle, "CONNECT_GARRUS", "INIT"),
-            State("CONNECT_GARRUS", self.handle_connect_garrus, "ENABLED", "KRATOS_CONNECTED"),
+            State("CONNECT_KRATOS", self.handle_connect_kratos, "KRATOS_CONNECTED_CONNECT_GARRUS", "KRATOS_NOT_CONNECTED_CONNECT_GARRUS"),
+            State("KRATOS_CONNECTED_CONNECT_GARRUS", self.handle_connect_garrus, "ENABLED", "ENABLED_DEGRADED"),
+            State("KRATOS_NOT_CONNECTED_CONNECT_GARRUS", self.handle_connect_garrus, "ENABLED_DEGRADED", "ENABLED_DEGRADED"),
+            State("ENABLED_DEGRADED", self.handle_enabled_degraded, "NO_STATE", "NO_STATE"),
             State("ENABLED", self.handle_enabled, "NO_STATE", "NO_STATE")
         ]
 
@@ -56,3 +57,6 @@ class MasterChief(TaskBase):
 
     def handle_enabled(self):
         Log.log("Enabled...")
+
+    def handle_enabled_degraded(self):
+        Log.log("Enabled degraded...")
