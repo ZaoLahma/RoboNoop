@@ -9,14 +9,13 @@ from time import sleep
 class Main:
     @staticmethod
     def run():
-        print("Kratos application starting...")
-
         Log.log_file_name = "kratos.log"
+        Log.log("Kratos application starting...")
 
         protocol = MessageProtocol(ALL_CORE_MESSAGES)
 
         comm_task = CommEndpoint([protocol])
-        comm_task.publish_service(3030)
+        comm_task.publish_service(3031)
 
         tasks = []
         tasks.append(comm_task)

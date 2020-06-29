@@ -7,8 +7,9 @@ import struct
 import socket
 
 class ConnectionInfo:
-    def __init__(self, connection):
+    def __init__(self, connection, port_no):
         self.connection = connection
+        self.port_no = port_no
         self.capabilities = []
 
     def set_capabilities(self, capabilities):
@@ -38,11 +39,20 @@ class CommEndpoint(TaskBase):
         self.messages.append(message)
 
     def publish_service(self, port_no):
-        conn_listener = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        conn_listener.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        conn_listener.bind(('', port_no))
-        conn_listener.settimeout(0.01)
-        self.conn_listeners.append(conn_listener)
+        try:
+            conn_listener = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            conn_listener.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+            conn_listener.bind(('', port_no))
+            conn_listener.settimeout(0.01)
+            self.conn_listeners.append(conn_listener)
+        except Exception as e:
+            Log.log("Exception when publishing service " + str(port_no) + ": " + str(e))
+    
+    def is_connected(self, port_no):
+        for connection_info in self.connection_infos:
+            if connection_info.port_no == port_no:
+                return True
+        return False
 
     def run(self):
         self.accept_connections()
@@ -80,7 +90,7 @@ class CommEndpoint(TaskBase):
                 listener.listen(1)
                 (connection, address) = listener.accept()
                 connection.settimeout(0.01)
-                connection_info = ConnectionInfo(connection)
+                connection_info = ConnectionInfo(connection, -1)
                 self.connection_infos.append(connection_info)
                 Log.log("Connected to by " + str(address) + "...")
                 self.send_message(connection, CapabilitiesReq())
@@ -97,7 +107,7 @@ class CommEndpoint(TaskBase):
             raise
         else:
             Log.log("Connected to application at address {0}".format(host))
-            connection_info = ConnectionInfo(connection)
+            connection_info = ConnectionInfo(connection, port_no)
             self.connection_infos.append(connection_info)
             self.send_message(connection, CapabilitiesReq())
 

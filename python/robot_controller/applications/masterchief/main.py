@@ -10,9 +10,9 @@ from time import sleep
 class Main:
     @staticmethod
     def run():
-        print("MasterChief application starting...")
-
         Log.log_file_name = "masterchief.log"
+
+        Log.log("MasterChief application starting...")
 
         protocol = MessageProtocol(ALL_CORE_MESSAGES)
 

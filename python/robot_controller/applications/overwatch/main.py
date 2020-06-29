@@ -23,7 +23,7 @@ class Main:
         tasks.append(comm_task)
         tasks.append(comm_listener_task)
 
-        scheduler = Scheduler("Garrus", tasks)
+        scheduler = Scheduler("Overwatch", tasks)
 
         run_in_new_thread = False
         thread = SchedulerThread(scheduler, run_in_new_thread)

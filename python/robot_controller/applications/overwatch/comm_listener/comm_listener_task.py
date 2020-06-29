@@ -12,8 +12,11 @@ class CommListenerTask(TaskBase):
 
     def run(self):
         if False == self.connected:
-            self.comm_interface.connect("localhost", 3030)
-            self.connected = True
+            try:
+                self.comm_interface.connect("localhost", 3030)
+                self.connected = True
+            except Exception as e:
+                Log.log("Connection failed: " + str(e))
 
         msgs = self.comm_interface.get_all_messages()
         if None != msgs:

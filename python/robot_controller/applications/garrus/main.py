@@ -9,14 +9,14 @@ from time import sleep
 class Main:
     @staticmethod
     def run():
-        print("Garrus application starting...")
-
         Log.log_file_name = "garrus.log"
+
+        Log.log("Garrus application starting...")
 
         protocol = MessageProtocol(ALL_CORE_MESSAGES)
 
         comm_task = CommEndpoint([protocol])
-        comm_task.publish_service(3031)
+        comm_task.publish_service(3032)
 
         tasks = []
         tasks.append(comm_task)
