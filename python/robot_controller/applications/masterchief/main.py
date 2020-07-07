@@ -4,6 +4,7 @@ from ...core.log.log import Log
 from ...core.comm.comm_endpoint import CommEndpoint
 from ...core.comm.message_protocol import MessageProtocol
 from ...core.comm.core_messages import ALL_CORE_MESSAGES
+from ..kratos.motor_control.motor_control_messages import ALL_MOTOR_CONTROL_MESSAGES
 from .masterchief import MasterChief
 from time import sleep
 
@@ -14,7 +15,7 @@ class Main:
 
         Log.log("MasterChief application starting...")
 
-        protocol = MessageProtocol(ALL_CORE_MESSAGES)
+        protocol = MessageProtocol(ALL_CORE_MESSAGES + ALL_MOTOR_CONTROL_MESSAGES)
 
         comm_task = CommEndpoint([protocol])
 

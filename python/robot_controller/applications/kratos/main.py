@@ -4,6 +4,7 @@ from ...core.log.log import Log
 from ...core.comm.comm_endpoint import CommEndpoint
 from ...core.comm.message_protocol import MessageProtocol
 from ...core.comm.core_messages import ALL_CORE_MESSAGES
+from .motor_control.motor_control_messages import ALL_MOTOR_CONTROL_MESSAGES
 from time import sleep
 
 class Main:
@@ -12,7 +13,7 @@ class Main:
         Log.log_file_name = "kratos.log"
         Log.log("Kratos application starting...")
 
-        protocol = MessageProtocol(ALL_CORE_MESSAGES)
+        protocol = MessageProtocol(ALL_CORE_MESSAGES + ALL_MOTOR_CONTROL_MESSAGES)
 
         comm_task = CommEndpoint([protocol])
         comm_task.publish_service(3031)

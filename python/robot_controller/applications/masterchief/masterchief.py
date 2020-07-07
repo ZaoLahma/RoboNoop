@@ -4,6 +4,8 @@ from ...core.runtime.task_base import TaskBase
 from ...core.runtime.process import ProcessManager
 from ..kratos.main import Main as KratosMain
 from ..garrus.main import Main as GarrusMain
+from ..kratos.motor_control.motor_control_messages import RunMotorReq
+from ..kratos.motor_control.motor_control_messages import RunMotorCfm
 
 from ...core.log.log import Log
 from datetime import datetime
@@ -19,7 +21,7 @@ class MasterChief(TaskBase):
         self.state_def =  [
             State("INIT", self.handle_init, "CONNECT_KRATOS", "INIT"),
             State("IDLE", self.handle_idle, "CONNECT_KRATOS", "IDLE"),
-            State("CONNECT_KRATOS", self.handle_connect_kratos, "CONNECT_GARRUS", "START_PROCESSES"),
+            State("CONNECT_KRATOS", self.handle_connect_kratos, "ENABLED", "START_PROCESSES"),
             State("CONNECT_GARRUS", self.handle_connect_garrus, "ENABLED", "START_PROCESSES"),
             State("START_PROCESSES", self.handle_start_processes, "INIT", "DISABLED"),
             State("ENABLED", self.handle_enabled, "NO_STATE", "NO_STATE"),
@@ -85,6 +87,8 @@ class MasterChief(TaskBase):
 
     def handle_enabled(self):
         Log.log("Enabled...")
+        motor_message = RunMotorReq(0, 100)
+        self.comm_if.send_message(motor_message)
 
     def handle_disabled(self):
         Log.log("Disabled...")
