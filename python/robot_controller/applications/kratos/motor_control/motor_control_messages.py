@@ -18,7 +18,7 @@ class RunMotorReq(MessageBase):
     
     def decode(self, data):
         self.motor_id = struct.unpack(">H", data[0:2])[0]
-        self.power = struct.unpack(">H", data[2:])
+        self.power = struct.unpack(">H", data[2:])[0]
         Log.log("motor_id {0}, power {1}".format(self.motor_id, self.power))
 
 class RunMotorCfm(MessageBase):

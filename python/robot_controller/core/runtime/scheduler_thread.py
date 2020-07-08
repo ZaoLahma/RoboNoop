@@ -22,7 +22,7 @@ class SchedulerThread(Thread):
             if self.periodicity - elapsed_ms > 0:
                 sleep((self.periodicity - elapsed_ms) / 1000)
             else:
-                Log.log("Warning scheduler can't keep up, fired " + str(self.periodicity - elapsed_ms) + " late...")
+                Log.log("Warning scheduler can't keep up, fired " + str(elapsed_ms - self.periodicity) + " late...")
     
     def start(self, scheduler_peridicity):
         self.periodicity = scheduler_peridicity

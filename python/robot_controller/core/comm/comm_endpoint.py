@@ -63,35 +63,27 @@ class CommEndpoint(TaskBase):
 
     def send_messages(self):
         for connection_info in self.connection_infos:
-            Log.log("Looking at connection info " + str(connection_info) + " that handles {}".format(connection_info.capabilities))
+            if [] == connection_info.capabilities:
+                self.send_message_to_connection(connection_info.connection, CapabilitiesReq())
             for message in self.messages_to_send:
-                Log.log("Number of connections {}".format(len(self.connection_infos)))
                 if message.get_msg_id() in connection_info.capabilities:
-                    Log.log("Found connection that handles {}".format(message.get_msg_id()))
                     self.send_message_to_connection(connection_info.connection, message)
         self.messages_to_send = []
 
     def receive_messages(self):
         self.received_messages = []
         for connection_info in self.connection_infos:
-            Log.log("Receive messages for connection_info " + str(connection_info))
             received_messages = self.receive_messages_for_conn(connection_info.connection)
             for message in received_messages:
                 if message.get_msg_id() == CapabilitiesCfm.get_msg_id():
-                    Log.log("Received capabilities " + str(message.msg_ids))
                     for capability in message.msg_ids:
                         if capability not in connection_info.capabilities:
-                            Log.log("Appended capability {} to connection ".format(capability) + str(connection_info))
                             connection_info.capabilities.append(capability)
-                            Log.log("Appended to " + str(connection_info))
                 elif message.get_msg_id() == CapabilitiesReq.get_msg_id():
-                    Log.log("Received capabilities req")
                     capabilities_cfm = CapabilitiesCfm(self.protocols)
                     self.send_message_to_connection(connection_info.connection, capabilities_cfm)
 
             self.received_messages.extend(received_messages)
-
-        Log.log("Connection infos after " + str(self.connection_infos))
 
     def accept_connections(self):
         for listener in self.conn_listeners:
@@ -118,7 +110,7 @@ class CommEndpoint(TaskBase):
             Log.log("Connected to application at address {0}".format(host))
             connection_info = ConnectionInfo(connection, port_no)
             self.connection_infos.append(connection_info)
-            self.send_message_to_connection(connection, CapabilitiesReq())
+            self.send_message_to_connection(connection_info.connection, CapabilitiesReq())
 
     def receive_messages_for_conn(self, connection):
         messages = []
@@ -138,19 +130,20 @@ class CommEndpoint(TaskBase):
                     continue
                 data += packet
             except socket.timeout:
-                return None
+                if len(data) > 0:
+                    continue
+                else:
+                    return None
             except ConnectionResetError:
                 return None
             return bytearray(data)
 
     def receive_message(self, connection):
         message = None
-        header_size = 4
-        header = self.receive_data(connection, header_size)
+        header = self.receive_data(connection, 2)
         if None != header:
-            data_size = header[0:header_size]
-            data_size = struct.unpack("<L", data_size)[0]
-            data = self.receive_data(connection, data_size)
+            size = struct.unpack(">H", header[0:2])[0]
+            data = self.receive_data(connection, size)
             if None != data:
                 for protocol in self.protocols:
                     message = protocol.decode_message(data)
@@ -161,8 +154,6 @@ class CommEndpoint(TaskBase):
     def send_message_to_connection(self, connection, message):
         Log.log("Sending message " + str(message) + "...")
         data = MessageProtocol.encode_message(message)
-        Log.log("len data " + str(len(data)))
-        data_size = (len(data)).to_bytes(4, byteorder='big')
-        Log.log("data_size at send " + str(data_size))
+        data_size = struct.pack(">H", len(data))
         connection.sendall(data_size)
         connection.sendall(data)
