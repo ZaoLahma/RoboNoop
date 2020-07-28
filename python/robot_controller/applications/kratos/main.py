@@ -5,6 +5,8 @@ from ...core.comm.comm_endpoint import CommEndpoint
 from ...core.comm.message_protocol import MessageProtocol
 from ...core.comm.core_messages import ALL_CORE_MESSAGES
 from .motor_control.motor_control_messages import ALL_MOTOR_CONTROL_MESSAGES
+from .motor_control.motor_task import MotorTask
+from ..daredevil.sonar_control.sonar_control_messages import ALL_SONAR_MESSAGES
 from time import sleep
 
 class Main:
@@ -13,13 +15,16 @@ class Main:
         Log.log_file_name = "kratos.log"
         Log.log("Kratos application starting...")
 
-        protocol = MessageProtocol(ALL_CORE_MESSAGES + ALL_MOTOR_CONTROL_MESSAGES)
+        protocol = MessageProtocol(ALL_CORE_MESSAGES + ALL_MOTOR_CONTROL_MESSAGES + ALL_SONAR_MESSAGES)
 
         comm_task = CommEndpoint([protocol])
         comm_task.publish_service(3031)
 
+        motor_task = MotorTask(comm_task)
+
         tasks = []
         tasks.append(comm_task)
+        tasks.append(motor_task)
 
         scheduler = Scheduler("Kratos", tasks)
 

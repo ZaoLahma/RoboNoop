@@ -20,10 +20,10 @@ class MasterChief(TaskBase):
         self.comm_if = comm_if
 
         self.state_def =  [
-            State("INIT", self.handle_init, "CONNECT_KRATOS", "INIT"),
-            State("IDLE", self.handle_idle, "CONNECT_KRATOS", "IDLE"),
-            State("CONNECT_KRATOS", self.handle_connect_kratos, "CONNECT_DAREDEVIL", "START_PROCESSES"),
-            State("CONNECT_DAREDEVIL", self.handle_connect_daredevil, "ENABLED", "START_PROCESSES"),
+            State("INIT", self.handle_init, "CONNECT_DAREDEVIL", "INIT"),
+            State("IDLE", self.handle_idle, "CONNECT_DAREDEVIL", "IDLE"),
+            State("CONNECT_DAREDEVIL", self.handle_connect_daredevil, "CONNECT_KRATOS", "START_PROCESSES"),
+            State("CONNECT_KRATOS", self.handle_connect_kratos, "ENABLED", "START_PROCESSES"),
             State("CONNECT_GARRUS", self.handle_connect_garrus, "ENABLED", "START_PROCESSES"),
             State("START_PROCESSES", self.handle_start_processes, "IDLE", "DISABLED"),
             State("ENABLED", self.handle_enabled, "NO_STATE", "NO_STATE"),

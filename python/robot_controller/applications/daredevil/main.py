@@ -18,7 +18,7 @@ class Main:
         comm_task = CommEndpoint([protocol])
         comm_task.publish_service(3033)
 
-        sonar_task = SonarTask()
+        sonar_task = SonarTask(comm_task)
 
         tasks = []
         tasks.append(comm_task)

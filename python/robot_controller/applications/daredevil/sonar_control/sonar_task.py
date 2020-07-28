@@ -6,8 +6,11 @@ try:
 except ImportError:
     from ....core.runtime.gpio_stub import GPIOStub as GPIO
 
+from .sonar_control_messages import SonarDataInd
+
 class SonarTask(TaskBase):
-    def __init__(self):
+    def __init__(self, comm_if):
+        self.comm_if = comm_if
         self.trig_pin = 11
         self.echo_pin = 13
 
@@ -39,4 +42,7 @@ class SonarTask(TaskBase):
 
         distance = round(pulse_duration * 17150, 2)
 
+        sonar_msg = SonarDataInd(distance)
+
+        self.comm_if.send_message(sonar_msg)
 
