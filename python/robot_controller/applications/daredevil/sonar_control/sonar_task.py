@@ -32,6 +32,7 @@ class SonarTask(TaskBase):
                 break
 
         loop_start = time.time()
+        pulse_end = time.time()
         while 1 == GPIO.input(self.echo_pin):
             pulse_end = time.time()
             if (pulse_end - loop_start > 1):
@@ -40,9 +41,11 @@ class SonarTask(TaskBase):
 
         pulse_duration = pulse_end - pulse_start
 
-        distance = round(pulse_duration * 17150, 2)
+        distance = int(round(pulse_duration * 171500, 0))
 
         sonar_msg = SonarDataInd(distance)
+
+        Log.log("Calculated distance: " + str(distance) + "mm")
 
         self.comm_if.send_message(sonar_msg)
 

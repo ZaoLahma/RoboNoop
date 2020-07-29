@@ -3,7 +3,7 @@ from ....core.log.log import Log
 import struct
 
 class SonarDataInd(MessageBase):
-    def __init__(self, distance):
+    def __init__(self, distance=-1):
         self.distance = distance
 
     @staticmethod
@@ -16,6 +16,5 @@ class SonarDataInd(MessageBase):
     
     def decode(self, data):
         self.distance = struct.unpack(">H", data[0:2])[0]
-        Log.log("distance {0}".format(self.distance))
 
 ALL_SONAR_MESSAGES = [SonarDataInd]

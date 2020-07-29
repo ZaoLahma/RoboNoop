@@ -5,8 +5,6 @@ from ...core.runtime.process import ProcessManager
 from ..kratos.main import Main as KratosMain
 from ..daredevil.main import Main as DaredevilMain
 from ..garrus.main import Main as GarrusMain
-from ..kratos.motor_control.motor_control_messages import RunMotorReq
-from ..kratos.motor_control.motor_control_messages import RunMotorCfm
 
 from ...core.log.log import Log
 from datetime import datetime
@@ -100,9 +98,10 @@ class MasterChief(TaskBase):
         self.state_handler.transition()
 
     def handle_enabled(self):
-        Log.log("Enabled...")
-        motor_message = RunMotorReq(0, 100)
-        self.comm_if.send_message(motor_message)
+        if False == self.comm_if.is_connected(3033):
+            Log.log("Lost connection to Daredevil")
+        if False == self.comm_if.is_connected(3031):
+            Log.log("Lost connection to Kratos")
 
     def handle_disabled(self):
         Log.log("Disabled...")
