@@ -29,6 +29,7 @@ class MotorTask(TaskBase):
 
     def run(self):
         func = self.state_handler.get_state_func()
+        Log.log("Run called " + self.state_handler.curr_state.state_name)
         func()
 
     def handle_init(self):
@@ -71,6 +72,7 @@ class MotorTask(TaskBase):
             if 300 > msg.distance:
                 self.motor_controller.backward()
             else:
+                self.motor_controller.stop()
                 self.state_handler.transition()
 
     def handle_check_left(self):
