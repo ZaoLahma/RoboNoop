@@ -52,6 +52,8 @@ class MotorTask(TaskBase):
             if 300 > msg.distance:
                 Log.log("Too close to object - avoid collision")
                 self.state_handler.transition_to("AVOID_COLLISION")
+        else:
+            Log.log("Motor task not receiving sonar data")
 
     def handle_avoid_collision(self):
         Log.log("Avoiding collisions")
