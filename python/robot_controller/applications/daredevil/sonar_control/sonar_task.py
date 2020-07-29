@@ -17,7 +17,7 @@ class SonarTask(TaskBase):
     def run(self):
         pulse_start = time.time()
         pulse_end = time.time()
-        GPIO.setMode(GPIO.BOARD)
+        GPIO.setmode(GPIO.BOARD)
         GPIO.setup(self.trig_pin, GPIO.OUTPUT)
         GPIO.setup(self.echo_pin, GPIO.INPUT)
         GPIO.output(self.trig_pin, GPIO.HIGH)

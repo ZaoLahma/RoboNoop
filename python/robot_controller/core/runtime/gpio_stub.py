@@ -7,7 +7,7 @@ class GPIOStub():
     LOW = 0
     HIGH = 1
     @staticmethod
-    def setMode(mode):
+    def setmode(mode):
         Log.log("New mode: " + str(mode))
 
     @staticmethod

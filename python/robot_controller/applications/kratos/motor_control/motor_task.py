@@ -3,6 +3,8 @@ from ....core.log.log import Log
 from ....core.state.state import State
 from ....core.state.state import StateHandler
 from ...daredevil.sonar_control.sonar_control_messages import SonarDataInd
+from .motor_controller import MotorController
+import time
 
 class MotorTask(TaskBase):
     def __init__(self, comm_if):
@@ -12,11 +14,18 @@ class MotorTask(TaskBase):
             State("INIT", self.handle_init, "CONNECT_DAREDEVIL", "INIT"),
             State("CONNECT_DAREDEVIL", self.handle_connect_daredevil, "ENABLED", "INIT"),
             State("ENABLED", self.handle_enabled, "ENABLED", "INHIBITED"),
-            State("AVOID_COLLISION", self.handle_avoid_collision, "ENABLED", "INHIBITED"),
+            State("AVOID_COLLISION", self.handle_avoid_collision, "CHECK_LEFT", "REVERSE"),
+            State("REVERSE", self.handle_reverse, "CHECK_LEFT", "INHIBITED"),
+            State("CHECK_LEFT", self.handle_check_left, "CHECK_RIGHT", "INHIBITED"),
+            State("CHECK_RIGHT", self.handle_check_right, "SOLVE_COLLISION", "INHIBITED"),
+            State("SOLVE_COLLISION", self.handle_solve_collision, "ENABLED", "INHIBITED"),
             State("INHIBITED", self.handle_inhibited, "ENABLED", "INIT")
         ]
-
         self.state_handler = StateHandler(self.state_def, "INIT")
+
+        self.motor_controller = MotorController()
+
+        self.state_start_time = None
 
     def run(self):
         func = self.state_handler.get_state_func()
@@ -46,6 +55,25 @@ class MotorTask(TaskBase):
 
     def handle_avoid_collision(self):
         Log.log("Avoiding collisions")
+        self.motor_controller.stop()
+        msg = self.comm_if.get_message(SonarDataInd.get_msg_id())
+        if None != msg:
+            if 299 < msg.distance:
+                self.state_handler.transition()
+            else:
+                self.state_handler.transition(fail=True)
+
+    def handle_reverse(self):
+        msg = self.comm_if.get_message(SonarDataInd.get_msg_id())
+        if None != msg:
+            if 300 > msg.distance:
+                self.motor_controller.backward()
+            else:
+                self.state_handler.transition()
+
+    def handle_check_left(self):
+        if None == self.state_start_time:
+            self.state_start_time = time.time()
         msg = self.comm_if.get_message(SonarDataInd.get_msg_id())
         if None != msg:
             Log.log("Collision - Distance: " + str(msg.distance))
