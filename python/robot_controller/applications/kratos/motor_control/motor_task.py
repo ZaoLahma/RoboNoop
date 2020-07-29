@@ -80,5 +80,17 @@ class MotorTask(TaskBase):
             if 300 < msg.distance:
                 self.state_handler.transition()
 
+    def handle_check_right(self):
+        if None == self.state_start_time:
+            self.state_start_time = time.time()
+        msg = self.comm_if.get_message(SonarDataInd.get_msg_id())
+        if None != msg:
+            Log.log("Collision - Distance: " + str(msg.distance))
+            if 300 < msg.distance:
+                self.state_handler.transition()
+
+    def handle_solve_collision(self):
+        self.state_handler.transition()
+
     def handle_inhibited(self):
         Log.log("Inhibited")

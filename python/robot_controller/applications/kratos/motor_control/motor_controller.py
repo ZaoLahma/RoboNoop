@@ -11,10 +11,10 @@ class MotorController:
         self.left_eng_bckwd = 31
 
         GPIO.setmode(GPIO.BOARD)
-        GPIO.setup(self.right_eng_frwd, GPIO.OUTPUT)
-        GPIO.setup(self.right_eng_bckwd, GPIO.OUTPUT)
-        GPIO.setup(self.left_eng_frwd, GPIO.OUTPUT)
-        GPIO.setup(self.left_eng_bckwd, GPIO.OUTPUT)
+        GPIO.setup(self.right_eng_frwd, GPIO.OUT)
+        GPIO.setup(self.right_eng_bckwd, GPIO.OUT)
+        GPIO.setup(self.left_eng_frwd, GPIO.OUT)
+        GPIO.setup(self.left_eng_bckwd, GPIO.OUT)
 
         self.stop()
 

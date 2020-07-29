@@ -2,8 +2,8 @@ from ..log.log import Log
 
 class GPIOStub():
     BOARD = 0
-    OUTPUT = 1
-    INPUT = 2
+    OUT = 1
+    IN = 2
     LOW = 0
     HIGH = 1
     @staticmethod
