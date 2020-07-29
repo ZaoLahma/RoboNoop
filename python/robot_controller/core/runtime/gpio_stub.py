@@ -22,3 +22,7 @@ class GPIOStub():
     def input(pin):
         val = 0
         return val
+
+    @staticmethod
+    def cleanup():
+        Log.log("Cleanup")
