@@ -30,6 +30,7 @@ class MotorTask(TaskBase):
         self.state_start_time = None
         self.state_end_time = None
         self.state_time_to_run = None
+        self.state_cooldown_time = 0.2 #seconds
 
     def run(self):
         func = self.state_handler.get_state_func()
@@ -88,8 +89,11 @@ class MotorTask(TaskBase):
             Log.log("Collision - Distance: " + str(msg.distance))
             if 300 < msg.distance:
                 self.motor_controller.stop()
-                self.state_end_time = time.time()
-                self.state_handler.transition()
+                if None == self.state_end_time:
+                    self.state_end_time = time.time()
+                if time.time() - self.state_end_time >= self.state_cooldown_time:
+                    self.state_end_time = None
+                    self.state_handler.transition()
 
     def handle_reset_left(self):
         if None == self.state_time_to_run:
@@ -114,8 +118,11 @@ class MotorTask(TaskBase):
             Log.log("Collision - Distance: " + str(msg.distance))
             if 300 < msg.distance:
                 self.motor_controller.stop()
-                self.state_end_time = time.time()
-                self.state_handler.transition()
+                if None == self.state_end_time:
+                    self.state_end_time = time.time()
+                if time.time() - self.state_end_time >= self.state_cooldown_time:
+                    self.state_end_time = None
+                    self.state_handler.transition()
 
     def handle_reset_right(self):
         if None == self.state_time_to_run:
