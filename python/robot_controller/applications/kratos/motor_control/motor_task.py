@@ -86,18 +86,19 @@ class MotorTask(TaskBase):
         self.motor_controller.turn_left()
         msg = self.comm_if.get_message(SonarDataInd.get_msg_id())
         if None != msg:
-            Log.log("Collision - Distance: " + str(msg.distance))
+            Log.log("Check left - Distance: " + str(msg.distance))
             if 300 < msg.distance:
                 self.motor_controller.stop()
                 if None == self.state_end_time:
                     self.state_end_time = time.time()
                 if time.time() - self.state_end_time >= self.state_cooldown_time:
                     self.state_handler.transition()
+                else:
+                    Log.log("Cooldown check left")
 
     def handle_reset_left(self):
         if None == self.state_time_to_run:
             self.state_time_to_run = self.state_end_time - self.state_start_time
-            self.state_end_time = None
             Log.log("Reset left time to run: " + str(self.state_time_to_run))
             self.state_start_time = time.time()
 
@@ -107,6 +108,7 @@ class MotorTask(TaskBase):
             self.motor_controller.stop()
             self.state_start_time = None
             self.state_time_to_run = None
+            self.state_end_time = None
             self.state_handler.transition()
 
     def handle_check_right(self):
@@ -115,18 +117,19 @@ class MotorTask(TaskBase):
         self.motor_controller.turn_right()
         msg = self.comm_if.get_message(SonarDataInd.get_msg_id())
         if None != msg:
-            Log.log("Collision - Distance: " + str(msg.distance))
+            Log.log("Check right - Distance: " + str(msg.distance))
             if 300 < msg.distance:
                 self.motor_controller.stop()
                 if None == self.state_end_time:
                     self.state_end_time = time.time()
                 if time.time() - self.state_end_time >= self.state_cooldown_time:
                     self.state_handler.transition()
+                else:
+                    Log.log("Cooldown check right")
 
     def handle_reset_right(self):
         if None == self.state_time_to_run:
             self.state_time_to_run = self.state_end_time - self.state_start_time
-            self.state_end_time = None
             Log.log("Reset right time to run: " + str(self.state_time_to_run))
             self.state_start_time = time.time()
 
@@ -136,6 +139,7 @@ class MotorTask(TaskBase):
             self.motor_controller.stop()
             self.state_start_time = None
             self.state_time_to_run = None
+            self.state_end_time = None
             self.state_handler.transition()
 
     def handle_solve_collision(self):
