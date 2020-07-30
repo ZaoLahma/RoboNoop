@@ -67,8 +67,8 @@ class MotorTask(TaskBase):
         msg = self.comm_if.get_message(SonarDataInd.get_msg_id())
         if None != msg:
             Log.log("Motor task receiving sonar data")
-            #Zig every 3 seconds
-            max_time_to_pan = 3
+            #Zig every 1.5 seconds
+            max_time_to_pan = 1.5
             if time.time() - self.state_start_time >= max_time_to_pan:
                 self.motor_controller.stop()
                 self.state_start_time = None
