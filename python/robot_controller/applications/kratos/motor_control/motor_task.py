@@ -89,7 +89,7 @@ class MotorTask(TaskBase):
         else:
             self.pan_direction = "LEFT"
             self.motor_controller.turn_right()
-        pan_time = 0.2
+        pan_time = 0.7
         if time.time() - self.state_start_time > pan_time:
             self.state_start_time = None
             self.motor_controller.forward()
