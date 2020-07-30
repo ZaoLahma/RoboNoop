@@ -102,6 +102,7 @@ class MotorTask(TaskBase):
         if time.time() - self.state_start_time >= self.state_time_to_run:
             self.motor_controller.stop()
             self.state_start_time = None
+            self.state_time_to_run = None
             self.state_handler.transition()
 
     def handle_check_right(self):
@@ -127,6 +128,7 @@ class MotorTask(TaskBase):
         if time.time() - self.state_start_time >= self.state_time_to_run:
             self.motor_controller.stop()
             self.state_start_time = None
+            self.state_time_to_run = None
             self.state_handler.transition()
 
     def handle_solve_collision(self):
