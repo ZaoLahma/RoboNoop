@@ -35,6 +35,9 @@ class MotorTask(TaskBase):
         self.state_post_cooldown = None
         self.state_cooldown_start_time = None
 
+        self.state_check_left_distance = None
+        self.state_check_right_distance = None
+
     def run(self):
         func = self.state_handler.get_state_func()
         Log.log("Run called " + self.state_handler.curr_state.state_name)
@@ -93,6 +96,7 @@ class MotorTask(TaskBase):
             if 300 < msg.distance:
                 self.motor_controller.stop()
                 self.state_end_time = time.time()
+                self.state_check_left_distance = msg.distance
                 self.state_post_cooldown = "RESET_LEFT"
                 self.state_handler.transition()
 
@@ -122,6 +126,7 @@ class MotorTask(TaskBase):
             if 300 < msg.distance:
                 self.motor_controller.stop()
                 self.state_end_time = time.time()
+                self.state_check_right_distance = msg.distance
                 self.state_post_cooldown = "RESET_RIGHT"
                 self.state_handler.transition()
 
@@ -142,8 +147,18 @@ class MotorTask(TaskBase):
             self.state_handler.transition()
 
     def handle_solve_collision(self):
-        self.state_handler.transition()
-        #implement: Check distances that left and right turns reported and move to target furthest/closest?
+        if self.state_check_left_distance > self.state_check_right_distance:
+            self.motor_controller.turn_left()
+        else:
+            self.motor_controller.turn_right()
+        msg = self.comm_if.get_message(SonarDataInd.get_msg_id())
+
+        if None != msg:
+            if msg.distance >= 300:
+                #Ugly hack until exploration is implemented
+                self.motor_controller.forward()
+                self.state_handler.transition()
+
 
     def handle_cooldown(self):
         if None == self.state_cooldown_start_time:
