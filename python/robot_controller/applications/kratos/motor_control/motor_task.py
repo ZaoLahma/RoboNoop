@@ -92,6 +92,7 @@ class MotorTask(TaskBase):
             Log.log("Check left - Distance: " + str(msg.distance))
             if 300 < msg.distance:
                 self.motor_controller.stop()
+                self.state_end_time = time.time()
                 self.state_post_cooldown = "RESET_LEFT"
                 self.state_handler.transition()
 
@@ -120,6 +121,7 @@ class MotorTask(TaskBase):
             Log.log("Check right - Distance: " + str(msg.distance))
             if 300 < msg.distance:
                 self.motor_controller.stop()
+                self.state_end_time = time.time()
                 self.state_post_cooldown = "RESET_RIGHT"
                 self.state_handler.transition()
 
