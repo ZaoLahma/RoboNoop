@@ -94,6 +94,7 @@ class MotorTask(TaskBase):
     def handle_reset_left(self):
         if None == self.state_time_to_run:
             self.state_time_to_run = self.state_end_time - self.state_start_time
+            Log.log("Reset left time to run: " + str(self.state_time_to_run))
             self.state_start_time = time.time()
 
         self.motor_controller.turn_right()
@@ -118,6 +119,7 @@ class MotorTask(TaskBase):
     def handle_reset_right(self):
         if None == self.state_time_to_run:
             self.state_time_to_run = self.state_end_time - self.state_start_time
+            Log.log("Reset right time to run: " + str(self.state_time_to_run))
             self.state_start_time = time.time()
 
         self.motor_controller.turn_left()

@@ -36,7 +36,6 @@ class CommEndpoint(TaskBase):
         return self.received_messages
 
     def send_message(self, message):
-        Log.log("send_message called " + str(message))
         self.messages_to_send.append(message)
 
     def publish_service(self, port_no):
