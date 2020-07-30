@@ -98,7 +98,7 @@ class MotorTask(TaskBase):
 
         self.motor_controller.turn_right()
 
-        if time.time() - self.state_start_time() >= self.state_time_to_run:
+        if time.time() - self.state_start_time >= self.state_time_to_run:
             self.motor_controller.stop()
             self.state_start_time = None
             self.state_handler.transition()
@@ -122,7 +122,7 @@ class MotorTask(TaskBase):
 
         self.motor_controller.turn_left()
 
-        if time.time() - self.state_start_time() >= self.state_time_to_run:
+        if time.time() - self.state_start_time >= self.state_time_to_run:
             self.motor_controller.stop()
             self.state_start_time = None
             self.state_handler.transition()
