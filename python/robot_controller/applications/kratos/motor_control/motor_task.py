@@ -84,13 +84,15 @@ class MotorTask(TaskBase):
         if None == self.state_start_time:
             self.state_start_time = time.time()
         if self.pan_direction == "LEFT":
-            self.pan_direction = "RIGHT"
             self.motor_controller.turn_left()
         else:
-            self.pan_direction = "LEFT"
             self.motor_controller.turn_right()
-        pan_time = 0.7
+        pan_time = 0.2
         if time.time() - self.state_start_time > pan_time:
+            if self.pan_direction == "LEFT":
+                self.pan_direction = "RIGHT"
+            else:
+                self.pan_direction = "LEFT"
             self.state_start_time = None
             self.motor_controller.forward()
             self.state_handler.transition_to("ENABLED")
