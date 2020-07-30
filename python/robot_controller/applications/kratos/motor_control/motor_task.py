@@ -31,7 +31,7 @@ class MotorTask(TaskBase):
         self.state_start_time = None
         self.state_end_time = None
         self.state_time_to_run = None
-        self.state_cooldown_time = 0.2
+        self.state_cooldown_time = 1
         self.state_post_cooldown = None
         self.state_cooldown_start_time = None
 
