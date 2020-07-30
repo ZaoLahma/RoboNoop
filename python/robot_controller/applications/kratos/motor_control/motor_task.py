@@ -61,7 +61,7 @@ class MotorTask(TaskBase):
         self.motor_controller.stop()
         msg = self.comm_if.get_message(SonarDataInd.get_msg_id())
         if None != msg:
-            if 299 < msg.distance:
+            if 199 < msg.distance:
                 self.state_handler.transition()
             else:
                 self.state_handler.transition(fail=True)
@@ -69,7 +69,7 @@ class MotorTask(TaskBase):
     def handle_reverse(self):
         msg = self.comm_if.get_message(SonarDataInd.get_msg_id())
         if None != msg:
-            if 300 > msg.distance:
+            if 200 > msg.distance:
                 self.motor_controller.backward()
             else:
                 self.motor_controller.stop()
