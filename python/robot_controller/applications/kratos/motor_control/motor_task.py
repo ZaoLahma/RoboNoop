@@ -16,11 +16,12 @@ class MotorTask(TaskBase):
             State("ENABLED", self.handle_enabled, "ENABLED", "INHIBITED"),
             State("AVOID_COLLISION", self.handle_avoid_collision, "CHECK_LEFT", "REVERSE"),
             State("REVERSE", self.handle_reverse, "CHECK_LEFT", "INHIBITED"),
-            State("CHECK_LEFT", self.handle_check_left, "RESET_LEFT", "INHIBITED"),
-            State("RESET_LEFT", self.handle_reset_left, "CHECK_RIGHT", "INHIBITED"),
-            State("CHECK_RIGHT", self.handle_check_right, "RESET_RIGHT", "INHIBITED"),
-            State("RESET_RIGHT", self.handle_reset_right, "SOLVE_COLLISION", "INHIBITED"),
+            State("CHECK_LEFT", self.handle_check_left, "COOLDOWN", "INHIBITED"),
+            State("RESET_LEFT", self.handle_reset_left, "COOLDOWN", "INHIBITED"),
+            State("CHECK_RIGHT", self.handle_check_right, "COOLDOWN", "INHIBITED"),
+            State("RESET_RIGHT", self.handle_reset_right, "COOLDOWN", "INHIBITED"),
             State("SOLVE_COLLISION", self.handle_solve_collision, "ENABLED", "INHIBITED"),
+            State("COOLDOWN", self.handle_cooldown, "STATE_DEFINED", "INHIBITED"),
             State("INHIBITED", self.handle_inhibited, "ENABLED", "INIT")
         ]
         self.state_handler = StateHandler(self.state_def, "INIT")
@@ -30,7 +31,8 @@ class MotorTask(TaskBase):
         self.state_start_time = None
         self.state_end_time = None
         self.state_time_to_run = None
-        self.state_cooldown_time = 0.2 #seconds
+        self.state_cooldown_time = 0.2
+        self.state_post_cooldown = None
 
     def run(self):
         func = self.state_handler.get_state_func()
@@ -89,12 +91,8 @@ class MotorTask(TaskBase):
             Log.log("Check left - Distance: " + str(msg.distance))
             if 300 < msg.distance:
                 self.motor_controller.stop()
-                if None == self.state_end_time:
-                    self.state_end_time = time.time()
-                if time.time() - self.state_end_time >= self.state_cooldown_time:
-                    self.state_handler.transition()
-                else:
-                    Log.log("Cooldown check left")
+                self.state_post_cooldown = "RESET_LEFT"
+                self.state_handler.transition()
 
     def handle_reset_left(self):
         if None == self.state_time_to_run:
@@ -109,6 +107,7 @@ class MotorTask(TaskBase):
             self.state_start_time = None
             self.state_time_to_run = None
             self.state_end_time = None
+            self.state_post_cooldown = "CHECK_RIGHT"
             self.state_handler.transition()
 
     def handle_check_right(self):
@@ -120,12 +119,8 @@ class MotorTask(TaskBase):
             Log.log("Check right - Distance: " + str(msg.distance))
             if 300 < msg.distance:
                 self.motor_controller.stop()
-                if None == self.state_end_time:
-                    self.state_end_time = time.time()
-                if time.time() - self.state_end_time >= self.state_cooldown_time:
-                    self.state_handler.transition()
-                else:
-                    Log.log("Cooldown check right")
+                self.state_post_cooldown = "RESET_RIGHT"
+                self.state_handler.transition()
 
     def handle_reset_right(self):
         if None == self.state_time_to_run:
@@ -140,11 +135,20 @@ class MotorTask(TaskBase):
             self.state_start_time = None
             self.state_time_to_run = None
             self.state_end_time = None
+            self.state_post_cooldown = "SOLVE_COLLISION"
             self.state_handler.transition()
 
     def handle_solve_collision(self):
         self.state_handler.transition()
         #implement: Check distances that left and right turns reported and move to target furthest/closest?
+
+    def handle_cooldown(self):
+        if None == self.state_cooldown_start_time:
+            self.state_cooldown_start_time = time.time()
+
+        if time.time() - self.state_cooldown_start_time >= self.state_cooldown_time:
+            self.state_cooldown_start_time = None
+            self.state_handler.transition_to(self.state_post_cooldown)
 
     def handle_inhibited(self):
         Log.log("Inhibited")
