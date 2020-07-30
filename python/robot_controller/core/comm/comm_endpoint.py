@@ -151,7 +151,6 @@ class CommEndpoint(TaskBase):
         return message
 
     def send_message_to_connection(self, connection, message):
-        Log.log("Sending message " + str(message) + "...")
         data = MessageProtocol.encode_message(message)
         data_size = struct.pack(">H", len(data))
         connection.sendall(data_size)
