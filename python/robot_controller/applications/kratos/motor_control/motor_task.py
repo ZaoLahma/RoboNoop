@@ -6,6 +6,7 @@ from ...daredevil.sonar_control.sonar_control_messages import SonarDataInd
 from .motor_controller import MotorController
 import time
 
+# This desperately needs a magnetometer to be more sane in its decision making
 class MotorTask(TaskBase):
     def __init__(self, comm_if):
         self.comm_if = comm_if
@@ -147,14 +148,21 @@ class MotorTask(TaskBase):
             self.state_handler.transition()
 
     def handle_solve_collision(self):
+        if None == self.state_start_time:
+            self.state_start_time = time.time()
         if self.state_check_left_distance > self.state_check_right_distance:
+            Log.log("Solve left")
             self.motor_controller.turn_left()
         else:
+            Log.log("Solve right")
             self.motor_controller.turn_right()
         msg = self.comm_if.get_message(SonarDataInd.get_msg_id())
 
         if None != msg:
-            if msg.distance >= 300:
+            #Turn for at least half a second since we don't really know how we've been turning
+            min_time = 0.5
+            if msg.distance >= 300 and time.time() - self.state_start_time >= min_time:
+                self.state_start_time = None
                 #Ugly hack until exploration is implemented
                 self.motor_controller.forward()
                 self.state_handler.transition()
