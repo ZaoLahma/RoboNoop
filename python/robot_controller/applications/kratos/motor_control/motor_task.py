@@ -40,6 +40,8 @@ class MotorTask(TaskBase):
         self.state_check_left_distance = None
         self.state_check_right_distance = None
 
+        self.pan_direction = "LEFT"
+
     def run(self):
         func = self.state_handler.get_state_func()
         Log.log("Run called " + self.state_handler.curr_state.state_name)
