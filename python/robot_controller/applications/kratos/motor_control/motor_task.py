@@ -16,8 +16,10 @@ class MotorTask(TaskBase):
             State("ENABLED", self.handle_enabled, "ENABLED", "INHIBITED"),
             State("AVOID_COLLISION", self.handle_avoid_collision, "CHECK_LEFT", "REVERSE"),
             State("REVERSE", self.handle_reverse, "CHECK_LEFT", "INHIBITED"),
-            State("CHECK_LEFT", self.handle_check_left, "CHECK_RIGHT", "INHIBITED"),
-            State("CHECK_RIGHT", self.handle_check_right, "SOLVE_COLLISION", "INHIBITED"),
+            State("CHECK_LEFT", self.handle_check_left, "RESET_LEFT", "INHIBITED"),
+            State("RESET_LEFT", self.handle_reset_left, "CHECK_RIGHT", "INHIBITED"),
+            State("CHECK_RIGHT", self.handle_check_right, "RESET_RIGHT", "INHIBITED"),
+            State("RESET_RIGHT", self.handle_reset_right, "SOLVE_COLLISION", "INHIBITED"),
             State("SOLVE_COLLISION", self.handle_solve_collision, "ENABLED", "INHIBITED"),
             State("INHIBITED", self.handle_inhibited, "ENABLED", "INIT")
         ]
@@ -26,6 +28,8 @@ class MotorTask(TaskBase):
         self.motor_controller = MotorController()
 
         self.state_start_time = None
+        self.state_end_time = None
+        self.state_time_to_run = None
 
     def run(self):
         func = self.state_handler.get_state_func()
@@ -84,7 +88,20 @@ class MotorTask(TaskBase):
             Log.log("Collision - Distance: " + str(msg.distance))
             if 300 < msg.distance:
                 self.motor_controller.stop()
+                self.state_end_time = time.time()
                 self.state_handler.transition()
+
+    def handle_reset_left(self):
+        if None == self.state_time_to_run:
+            self.state_time_to_run = self.state_end_time - self.state_start_time
+            self.state_start_time = time.time()
+
+        self.motor_controller.turn_right()
+
+        if time.time() - self.state_start_time() >= self.state_time_to_run:
+            self.motor_controller.stop()
+            self.state_start_time = None
+            self.state_handler.transition()
 
     def handle_check_right(self):
         if None == self.state_start_time:
@@ -95,10 +112,24 @@ class MotorTask(TaskBase):
             Log.log("Collision - Distance: " + str(msg.distance))
             if 300 < msg.distance:
                 self.motor_controller.stop()
+                self.state_end_time = time.time()
                 self.state_handler.transition()
+
+    def handle_reset_right(self):
+        if None == self.state_time_to_run:
+            self.state_time_to_run = self.state_end_time - self.state_start_time
+            self.state_start_time = time.time()
+
+        self.motor_controller.turn_left()
+
+        if time.time() - self.state_start_time() >= self.state_time_to_run:
+            self.motor_controller.stop()
+            self.state_start_time = None
+            self.state_handler.transition()
 
     def handle_solve_collision(self):
         self.state_handler.transition()
+        #implement: Check distances that left and right turns reported and move to target furthest/closest?
 
     def handle_inhibited(self):
         Log.log("Inhibited")
