@@ -15,6 +15,7 @@ class MotorTask(TaskBase):
             State("INIT", self.handle_init, "CONNECT_DAREDEVIL", "INIT"),
             State("CONNECT_DAREDEVIL", self.handle_connect_daredevil, "ENABLED", "INIT"),
             State("ENABLED", self.handle_enabled, "ENABLED", "INHIBITED"),
+            State("PAN", self.handle_pan, "ENABLED", "INHIBITED"),
             State("AVOID_COLLISION", self.handle_avoid_collision, "CHECK_LEFT", "REVERSE"),
             State("REVERSE", self.handle_reverse, "CHECK_LEFT", "INHIBITED"),
             State("CHECK_LEFT", self.handle_check_left, "COOLDOWN", "INHIBITED"),
@@ -59,14 +60,38 @@ class MotorTask(TaskBase):
             self.state_handler.transition()
 
     def handle_enabled(self):
+        if None == self.state_start_time:
+            self.state_start_time = time.time()
         msg = self.comm_if.get_message(SonarDataInd.get_msg_id())
         if None != msg:
             Log.log("Motor task receiving sonar data")
+            #Zig every 3 seconds
+            max_time_to_pan = 3
+            if time.time() - self.state_start_time >= max_time_to_pan:
+                self.motor_controller.stop()
+                self.state_start_time = None
+                self.state_handler.transition_to("PAN")
             if 300 > msg.distance:
                 Log.log("Too close to object - avoid collision")
+                self.state_start_time = None
                 self.state_handler.transition_to("AVOID_COLLISION")
         else:
             Log.log("Motor task not receiving sonar data")
+
+    def handle_pan(self):
+        if None == self.state_start_time:
+            self.state_start_time = time.time()
+        if self.pan_direction == "LEFT":
+            self.pan_direction = "RIGHT"
+            self.motor_controller.turn_left()
+        else:
+            self.pan_direction = "LEFT"
+            self.motor_controller.turn_right()
+        pan_time = 0.2
+        if time.time() - self.state_start_time > pan_time:
+            self.state_start_time = None
+            self.motor_controller.forward()
+            self.state_handler.transition_to("ENABLED")
 
     def handle_avoid_collision(self):
         Log.log("Avoiding collisions")
@@ -159,8 +184,8 @@ class MotorTask(TaskBase):
         msg = self.comm_if.get_message(SonarDataInd.get_msg_id())
 
         if None != msg:
-            #Turn for at least half a second since we don't really know how we've been turning
-            min_time = 0.5
+            #Turn for at least a fifth of a second since we don't really know how we've been turning
+            min_time = 0.2
             if msg.distance >= 300 and time.time() - self.state_start_time >= min_time:
                 self.state_start_time = None
                 #Ugly hack until exploration is implemented
