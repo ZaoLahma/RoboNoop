@@ -1,10 +1,6 @@
 from ...core.runtime.scheduler import Scheduler
 from ...core.runtime.scheduler_thread import SchedulerThread
 from ...core.log.log import Log
-try:
-    import RPi.GPIO as GPIO
-except ImportError:
-    from ...core.runtime.gpio_stub import GPIOStub as GPIO
 from ...core.comm.comm_endpoint import CommEndpoint
 from ...core.comm.message_protocol import MessageProtocol
 from ...core.comm.core_messages import ALL_CORE_MESSAGES
@@ -18,8 +14,6 @@ class Main:
         Log.log_file_name = "masterchief.log"
 
         Log.log("MasterChief application starting...")
-
-        GPIO.cleanup()
 
         protocol = MessageProtocol(ALL_CORE_MESSAGES + ALL_MOTOR_CONTROL_MESSAGES)
 

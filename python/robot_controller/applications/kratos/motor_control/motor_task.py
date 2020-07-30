@@ -78,19 +78,23 @@ class MotorTask(TaskBase):
     def handle_check_left(self):
         if None == self.state_start_time:
             self.state_start_time = time.time()
+        self.motor_controller.turn_left()
         msg = self.comm_if.get_message(SonarDataInd.get_msg_id())
         if None != msg:
             Log.log("Collision - Distance: " + str(msg.distance))
             if 300 < msg.distance:
+                self.motor_controller.stop()
                 self.state_handler.transition()
 
     def handle_check_right(self):
         if None == self.state_start_time:
             self.state_start_time = time.time()
+        self.motor_controller.turn_right()
         msg = self.comm_if.get_message(SonarDataInd.get_msg_id())
         if None != msg:
             Log.log("Collision - Distance: " + str(msg.distance))
             if 300 < msg.distance:
+                self.motor_controller.stop()
                 self.state_handler.transition()
 
     def handle_solve_collision(self):
