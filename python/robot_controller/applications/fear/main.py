@@ -5,6 +5,7 @@ from ...core.comm.comm_endpoint import CommEndpoint
 from ...core.comm.message_protocol import MessageProtocol
 from ...core.comm.core_messages import ALL_CORE_MESSAGES
 from ..daredevil.sonar_control.sonar_control_messages import ALL_SONAR_MESSAGES
+from .fear_control.fear_task import FearTask
 from time import sleep
 
 class Main:
@@ -18,8 +19,11 @@ class Main:
         comm_task = CommEndpoint([protocol])
         comm_task.publish_service(3034)
 
+        fear_task = FearTask(comm_task)
+
         tasks = []
         tasks.append(comm_task)
+        tasks.append(fear_task)
 
         scheduler = Scheduler("Fear", tasks)
 
