@@ -2,6 +2,23 @@ from ....core.comm.message_base import MessageBase
 from ....core.log.log import Log
 import struct
 
+class ReleaseCtrlInd(MessageBase):
+    def __init__(self, sub_system=1000):
+        self.sub_system = sub_system
+
+    @staticmethod
+    def get_msg_id():
+        return 100
+
+    def encode(self):
+        data = struct.pack(">H", self.sub_system)
+        return data
+    
+    def decode(self, data):
+        self.sub_system = struct.unpack(">H", data[0:])[0]
+        Log.log("sub_system {2}".format(self.sub_system))
+ 
+
 class MoveInd(MessageBase):
     STOP     = 0
     FORWARD  = 1
@@ -15,7 +32,7 @@ class MoveInd(MessageBase):
 
     @staticmethod
     def get_msg_id():
-        return 100
+        return 101
 
     def encode(self):
         data = struct.pack(">H", self.direction)

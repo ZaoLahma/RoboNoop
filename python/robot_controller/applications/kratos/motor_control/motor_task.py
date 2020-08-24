@@ -4,6 +4,7 @@ from ....core.state.state import State
 from ....core.state.state import StateHandler
 from .motor_controller import MotorController
 from .motor_control_messages import MoveInd
+from .motor_control_messages import ReleaseCtrlInd
 import time
 
 class MotorTask(TaskBase):
@@ -18,7 +19,7 @@ class MotorTask(TaskBase):
 
         self.motor_controller = MotorController()
 
-        self.curr_sub_system = 0xffffffff
+        self.ctrl_sub_system = 0xffffffff
 
     def run(self):
         func = self.state_handler.get_state_func()
@@ -31,18 +32,22 @@ class MotorTask(TaskBase):
     def handle_enabled(self):
         msg = self.comm_if.get_message(MoveInd.get_msg_id())
         if None != msg:
-            Log.log("Motor task received message {0}".format(msg.get_msg_id()))
-            if MoveInd.get_msg_id() == msg.get_msg_id():
-                if msg.sub_system <= self.curr_sub_system:
-                    self.curr_sub_system = msg.sub_system
-                    if MoveInd.STOP == msg.direction:
-                        self.motor_controller.stop()
-                        self.curr_sub_system = 0xffffffff
-                    elif MoveInd.FORWARD == msg.direction:
-                        self.motor_controller.forward()
-                    elif MoveInd.LEFT == msg.direction:
-                        self.motor_controller.turn_left()
-                    elif MoveInd.RIGHT == msg.direction:
-                        self.motor_controller.turn_right()
-                    elif MoveInd.BACKWARD == msg.direction:
-                        self.motor_controller.backward()
+            Log.log("Motor task received MoveInd")
+            if msg.sub_system <= self.ctrl_sub_system:
+                self.curr_sub_system = msg.sub_system
+                if MoveInd.STOP == msg.direction:
+                    self.motor_controller.stop()
+                elif MoveInd.FORWARD == msg.direction:
+                    self.motor_controller.forward()
+                elif MoveInd.LEFT == msg.direction:
+                    self.motor_controller.turn_left()
+                elif MoveInd.RIGHT == msg.direction:
+                    self.motor_controller.turn_right()
+                elif MoveInd.BACKWARD == msg.direction:
+                    self.motor_controller.backward()
+        msg = self.comm_if.get_message(ReleaseCtrlInd.get_msg_id())
+        if None != msg:
+            Log.log("Motor task received ReleaseCtrlInd")
+            if msg.sub_system == self.ctrl_sub_system:
+                self.ctrl_sub_system = 0xffffffff
+                self.motor_controller.stop()

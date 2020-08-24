@@ -3,6 +3,7 @@ from ....core.log.log import Log
 from ....core.state.state import State
 from ....core.state.state import StateHandler
 from ...kratos.motor_control.motor_control_messages import MoveInd
+from ...kratos.motor_control.motor_control_messages import ReleaseCtrlInd
 from ...daredevil.sonar_control.sonar_control_messages import SonarDataInd
 import time
 
@@ -62,8 +63,8 @@ class FearTask(TaskBase):
         if None != msg:
             Log.log("Fear task receiving sonar data in ESCAPING")
             if msg.distance > 400:
-                move_ind = MoveInd(MoveInd.STOP, 100, 0)
-                self.comm_if.send_message(move_ind)
+                release_ctrl_ind = ReleaseCtrlInd(0)
+                self.comm_if.send_message(release_ctrl_ind)
                 self.state_handler.transition()
             else:
                 move_ind = MoveInd(MoveInd.BACKWARD, 100, 0)
