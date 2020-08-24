@@ -5,6 +5,7 @@ from ...core.runtime.process import ProcessManager
 from ..kratos.main import Main as KratosMain
 from ..daredevil.main import Main as DaredevilMain
 from ..garrus.main import Main as GarrusMain
+from ..fear.main import Main as FearMain
 
 from ...core.log.log import Log
 from datetime import datetime
@@ -20,7 +21,8 @@ class MasterChief(TaskBase):
         self.state_def =  [
             State("INIT", self.handle_init, "CONNECT_DAREDEVIL", "INIT"),
             State("IDLE", self.handle_idle, "CONNECT_DAREDEVIL", "IDLE"),
-            State("CONNECT_DAREDEVIL", self.handle_connect_daredevil, "CONNECT_KRATOS", "START_PROCESSES"),
+            State("CONNECT_DAREDEVIL", self.handle_connect_daredevil, "CONNECT_FEAR", "START_PROCESSES"),
+            State("CONNECT_FEAR", self.handle_connect_fear, "CONNECT_KRATOS", "START_PROCESSES"),
             State("CONNECT_KRATOS", self.handle_connect_kratos, "ENABLED", "START_PROCESSES"),
             State("CONNECT_GARRUS", self.handle_connect_garrus, "ENABLED", "START_PROCESSES"),
             State("START_PROCESSES", self.handle_start_processes, "IDLE", "DISABLED"),
@@ -72,6 +74,18 @@ class MasterChief(TaskBase):
             except Exception as e:
                 Log.log("Exception when connecting to daredevil: " + str(e))
                 self.processes_to_start.append(("DaredevilProcess", DaredevilMain.run))
+                self.state_handler.transition(fail=True)
+        else:
+            self.state_handler.transition()
+
+    def handle_connect_fear(self):
+        if False == self.comm_if.is_connected(3034):
+            try:
+                self.comm_if.connect("localhost", 3034)
+                self.state_handler.transition()
+            except Exception as e:
+                Log.log("Exception when connecting to fear: " + str(e))
+                self.processes_to_start.append(("FearProcess", FearMain.run))
                 self.state_handler.transition(fail=True)
         else:
             self.state_handler.transition()
