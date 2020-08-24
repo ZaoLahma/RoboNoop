@@ -46,4 +46,4 @@ class MoveInd(MessageBase):
         self.sub_system = struct.unpack(">H", data[4:])[0]
         Log.log("direction {0}, power {1}, sub_system {2}".format(self.direction, self.power, self.sub_system))
 
-ALL_MOTOR_CONTROL_MESSAGES = [MoveInd]
+ALL_MOTOR_CONTROL_MESSAGES = [ReleaseCtrlInd, MoveInd]
