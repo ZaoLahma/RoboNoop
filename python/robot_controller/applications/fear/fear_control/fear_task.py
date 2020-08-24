@@ -66,7 +66,3 @@ class FearTask(TaskBase):
                 release_ctrl_ind = ReleaseCtrlInd(0)
                 self.comm_if.send_message(release_ctrl_ind)
                 self.state_handler.transition()
-            else:
-                move_ind = MoveInd(MoveInd.BACKWARD, 100, 0)
-                self.comm_if.send_message(move_ind)
-                self.state_handler.transition()
