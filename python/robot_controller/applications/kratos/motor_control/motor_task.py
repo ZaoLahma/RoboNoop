@@ -34,7 +34,7 @@ class MotorTask(TaskBase):
         if None != msg:
             Log.log("Motor task received MoveInd")
             if msg.sub_system <= self.ctrl_sub_system:
-                self.curr_sub_system = msg.sub_system
+                self.ctrl_sub_system = msg.sub_system
                 if MoveInd.STOP == msg.direction:
                     self.motor_controller.stop()
                 elif MoveInd.FORWARD == msg.direction:
