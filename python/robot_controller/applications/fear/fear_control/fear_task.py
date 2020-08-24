@@ -43,6 +43,7 @@ class FearTask(TaskBase):
             if msg.distance < 300:
                 move_ind = MoveInd(MoveInd.BACKWARD, 100, 0)
                 self.comm_if.send_message(move_ind)
+                self.state_handler.transition()
 
     def handle_escaping(self):
         msg = self.comm_if.get_message(SonarDataInd.get_msg_id())
@@ -51,3 +52,4 @@ class FearTask(TaskBase):
             if msg.distance > 400:
                 move_ind = MoveInd(MoveInd.STOP, 100, 0)
                 self.comm_if.send_message(move_ind)
+                self.state_handler.transition()
