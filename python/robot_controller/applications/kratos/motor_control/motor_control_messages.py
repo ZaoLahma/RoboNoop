@@ -16,7 +16,7 @@ class ReleaseCtrlInd(MessageBase):
     
     def decode(self, data):
         self.sub_system = struct.unpack(">H", data[0:])[0]
-        Log.log("sub_system {2}".format(self.sub_system))
+        Log.log("sub_system {0}".format(self.sub_system))
  
 
 class MoveInd(MessageBase):
