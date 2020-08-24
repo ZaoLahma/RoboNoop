@@ -6,7 +6,6 @@ from .motor_controller import MotorController
 from .motor_control_messages import MoveInd
 import time
 
-# This desperately needs a magnetometer to be more sane in its decision making
 class MotorTask(TaskBase):
     def __init__(self, comm_if):
         self.comm_if = comm_if

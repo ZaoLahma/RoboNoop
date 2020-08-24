@@ -12,7 +12,8 @@ class FearTask(TaskBase):
 
         self.state_def =  [
             State("INIT", self.handle_init, "CONNECT_DAREDEVIL", "INIT"),
-            State("CONNECT_DAREDEVIL", self.handle_connect_daredevil, "ENABLED", "INIT"),
+            State("CONNECT_DAREDEVIL", self.handle_connect_daredevil, "CONNECT_KRATOS", "INIT"),
+            State("CONNECT_KRATOS", self.handle_connect_kratos, "INIT", "ENABLED"),
             State("ENABLED", self.handle_enabled, "ESCAPING", "INHIBITED"),
             State("ESCAPING", self.handle_escaping, "ENABLED", "INHIBITED")
         ]
@@ -32,6 +33,17 @@ class FearTask(TaskBase):
                 self.state_handler.transition()
             except Exception as e:
                 Log.log("Exception when connecting to daredevil: " + str(e))
+                self.state_handler.transition(fail=True)
+        else:
+            self.state_handler.transition()
+    
+    def handle_connect_kratos(self):
+        if False == self.comm_if.is_connected(3031):
+            try:
+                self.comm_if.connect("localhost", 3031)
+                self.state_handler.transition()
+            except Exception as e:
+                Log.log("Exception when connecting to kratos: " + str(e))
                 self.state_handler.transition(fail=True)
         else:
             self.state_handler.transition()
