@@ -13,7 +13,7 @@ class FearTask(TaskBase):
         self.state_def =  [
             State("INIT", self.handle_init, "CONNECT_DAREDEVIL", "INIT"),
             State("CONNECT_DAREDEVIL", self.handle_connect_daredevil, "CONNECT_KRATOS", "INIT"),
-            State("CONNECT_KRATOS", self.handle_connect_kratos, "INIT", "ENABLED"),
+            State("CONNECT_KRATOS", self.handle_connect_kratos, "ENABLED", "INIT"),
             State("ENABLED", self.handle_enabled, "ESCAPING", "INHIBITED"),
             State("ESCAPING", self.handle_escaping, "ENABLED", "INHIBITED")
         ]
@@ -63,5 +63,9 @@ class FearTask(TaskBase):
             Log.log("Fear task receiving sonar data in ESCAPING")
             if msg.distance > 400:
                 move_ind = MoveInd(MoveInd.STOP, 100, 0)
+                self.comm_if.send_message(move_ind)
+                self.state_handler.transition()
+            else:
+                move_ind = MoveInd(MoveInd.BACKWARD, 100, 0)
                 self.comm_if.send_message(move_ind)
                 self.state_handler.transition()

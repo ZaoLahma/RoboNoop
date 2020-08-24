@@ -12,7 +12,7 @@ class Main:
     @staticmethod
     def run():
         Log.log_file_name = "masterchief.log"
-
+        Log.log_application_name = "masterchief"
         Log.log("MasterChief application starting...")
 
         protocol = MessageProtocol(ALL_CORE_MESSAGES + ALL_MOTOR_CONTROL_MESSAGES)

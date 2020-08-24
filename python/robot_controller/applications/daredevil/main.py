@@ -11,6 +11,7 @@ class Main:
     @staticmethod
     def run():
         Log.log_file_name = "daredevil.log"
+        Log.log_application_name = "daredevil"
         Log.log("Daredevil application starting...")
 
         protocol = MessageProtocol(ALL_CORE_MESSAGES)

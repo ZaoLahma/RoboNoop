@@ -12,6 +12,7 @@ class Main:
     @staticmethod
     def run():
         Log.log_file_name = "kratos.log"
+        Log.log_application_name = "kratos"
         Log.log("Kratos application starting...")
 
         protocol = MessageProtocol(ALL_CORE_MESSAGES + ALL_MOTOR_CONTROL_MESSAGES)

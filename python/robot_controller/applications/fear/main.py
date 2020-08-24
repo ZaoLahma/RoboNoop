@@ -12,6 +12,7 @@ class Main:
     @staticmethod
     def run():
         Log.log_file_name = "fear.log"
+        Log.log_application_name = "fear"
         Log.log("Fear application starting...")
 
         protocol = MessageProtocol(ALL_CORE_MESSAGES + ALL_SONAR_MESSAGES)
