@@ -1,7 +1,5 @@
 from ...core.runtime.task_base import TaskBase
 from ..log.log import Log
-from .core_messages import CapabilitiesReq
-from .core_messages import CapabilitiesCfm
 from .message_protocol import MessageProtocol
 import struct
 import socket
@@ -77,7 +75,6 @@ class CommEndpoint(TaskBase):
                 connection_info = ConnectionInfo(connection, -1)
                 self.connection_infos.append(connection_info)
                 Log.log("Connected to by " + str(address) + "...")
-                self.send_message_to_connection(connection, CapabilitiesReq())
             except socket.timeout:
                 pass
 
