@@ -10,10 +10,6 @@ class ConnectionInfo:
     def __init__(self, connection, port_no):
         self.connection = connection
         self.port_no = port_no
-        self.capabilities = []
-
-    def set_capabilities(self, capabilities):
-        self.capabilities = capabilities
 
 class CommEndpoint(TaskBase):
     def __init__(self, protocols):
@@ -62,26 +58,14 @@ class CommEndpoint(TaskBase):
 
     def send_messages(self):
         for connection_info in self.connection_infos:
-            if [] == connection_info.capabilities:
-                self.send_message_to_connection(connection_info.connection, CapabilitiesReq())
             for message in self.messages_to_send:
-                if message.get_msg_id() in connection_info.capabilities:
-                    self.send_message_to_connection(connection_info.connection, message)
+                self.send_message_to_connection(connection_info.connection, message)
         self.messages_to_send = []
 
     def receive_messages(self):
         self.received_messages = []
         for connection_info in self.connection_infos:
             received_messages = self.receive_messages_for_conn(connection_info.connection)
-            for message in received_messages:
-                if message.get_msg_id() == CapabilitiesCfm.get_msg_id():
-                    for capability in message.msg_ids:
-                        if capability not in connection_info.capabilities:
-                            connection_info.capabilities.append(capability)
-                elif message.get_msg_id() == CapabilitiesReq.get_msg_id():
-                    capabilities_cfm = CapabilitiesCfm(self.protocols)
-                    self.send_message_to_connection(connection_info.connection, capabilities_cfm)
-
             self.received_messages.extend(received_messages)
 
     def accept_connections(self):
