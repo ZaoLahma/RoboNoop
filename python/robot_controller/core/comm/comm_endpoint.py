@@ -57,14 +57,18 @@ class CommEndpoint(TaskBase):
     def send_messages(self):
         for connection_info in self.connection_infos:
             for message in self.messages_to_send:
-                self.send_message_to_connection(connection_info.connection, message)
-        self.messages_to_send = []
+                if False == self.send_message_to_connection(connection_info.connection, message):
+                    self.connection_infos.remove(connection_info)
 
     def receive_messages(self):
         self.received_messages = []
         for connection_info in self.connection_infos:
             received_messages = self.receive_messages_for_conn(connection_info.connection)
-            self.received_messages.extend(received_messages)
+            if None != received_messages:
+                if False == received_messages:
+                    self.connection_infos.remove(connection_info)
+                else:
+                    self.received_messages.extend(received_messages)
 
     def accept_connections(self):
         for listener in self.conn_listeners:
@@ -95,6 +99,8 @@ class CommEndpoint(TaskBase):
         messages = []
         message = self.receive_message(connection)
         while None != message:
+            if False == message:
+                return False
             messages.append(message)
             message = self.receive_message(connection)
         
@@ -106,7 +112,7 @@ class CommEndpoint(TaskBase):
             try:
                 packet = connection.recv(num_bytes - len(data))
                 if not packet:
-                    continue
+                    return False
                 data += packet
             except socket.timeout:
                 if len(data) > 0:
@@ -121,9 +127,13 @@ class CommEndpoint(TaskBase):
         message = None
         header = self.receive_data(connection, 2)
         if None != header:
+            if False == header:
+                return False
             size = struct.unpack(">H", header[0:2])[0]
             data = self.receive_data(connection, size)
             if None != data:
+                if False == data:
+                    return False
                 for protocol in self.protocols:
                     message = protocol.decode_message(data)
                     if None != message:
@@ -133,5 +143,9 @@ class CommEndpoint(TaskBase):
     def send_message_to_connection(self, connection, message):
         data = MessageProtocol.encode_message(message)
         data_size = struct.pack(">H", len(data))
-        connection.sendall(data_size)
-        connection.sendall(data)
+        try:
+            connection.sendall(data_size)
+            connection.sendall(data)
+            return True
+        except Exception:
+            return False
