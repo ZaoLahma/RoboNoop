@@ -4,6 +4,7 @@ from ...core.log.log import Log
 from ...core.comm.comm_endpoint import CommEndpoint
 from ...core.comm.message_protocol import MessageProtocol
 from ...core.comm.core_messages import ALL_CORE_MESSAGES
+from ..daredevil.sonar_control.sonar_control_messages import ALL_SONAR_MESSAGES
 from .comm_listener.comm_listener_task import CommListenerTask
 from time import sleep
 from .gui.gui_main import GuiMain
@@ -15,7 +16,7 @@ class Main:
 
         Log.log_file_name = "overwatch.log"
 
-        protocol = MessageProtocol(ALL_CORE_MESSAGES)
+        protocol = MessageProtocol(ALL_CORE_MESSAGES + ALL_SONAR_MESSAGES)
 
         comm_task = CommEndpoint([protocol])
         comm_listener_task = CommListenerTask(comm_task)
