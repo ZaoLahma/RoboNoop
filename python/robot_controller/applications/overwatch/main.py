@@ -6,6 +6,7 @@ from ...core.comm.message_protocol import MessageProtocol
 from ...core.comm.core_messages import ALL_CORE_MESSAGES
 from .comm_listener.comm_listener_task import CommListenerTask
 from time import sleep
+from .gui.gui_main import GuiMain
 
 class Main:
     @staticmethod
@@ -25,7 +26,11 @@ class Main:
 
         scheduler = Scheduler("Overwatch", tasks)
 
-        run_in_new_thread = False
+        run_in_new_thread = True
         thread = SchedulerThread(scheduler, run_in_new_thread)
         scheduler_periodicity_ms = 50
         thread.start(scheduler_periodicity_ms)
+
+        gui = GuiMain((800, 600), thread, comm_task)
+
+        gui.run()

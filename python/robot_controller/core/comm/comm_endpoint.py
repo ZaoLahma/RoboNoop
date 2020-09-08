@@ -90,7 +90,6 @@ class CommEndpoint(TaskBase):
             Log.log("Connected to application at address {0}".format(host))
             connection_info = ConnectionInfo(connection, port_no)
             self.connection_infos.append(connection_info)
-            self.send_message_to_connection(connection_info.connection, CapabilitiesReq())
 
     def receive_messages_for_conn(self, connection):
         messages = []

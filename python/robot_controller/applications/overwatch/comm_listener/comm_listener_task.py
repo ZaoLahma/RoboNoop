@@ -1,9 +1,6 @@
 from ....core.runtime.task_base import TaskBase
 from ....core.log.log import Log
 from ....core.comm.message_protocol import MessageProtocol
-from ....core.comm.core_messages import AllCapabilities
-from ....core.comm.core_messages import CapabilitiesReq
-from ....core.comm.core_messages import CapabilitiesCfm
 
 class CommListenerTask(TaskBase):
     def __init__(self, comm_interface):
