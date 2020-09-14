@@ -27,20 +27,20 @@ class CommListenerTask(TaskBase):
         func()
 
     def handle_masterchief(self):
-        fail = True != CommUtils.connect(self.comm_if, "localhost", 3030, "masterchief")
+        fail = True != CommUtils.connect(self.comm_if, "masterchief")
         Log.log("fail: " + str(fail))
         self.state_handler.transition(fail)
 
     def handle_connect_daredevil(self):
-        fail = True != CommUtils.connect(self.comm_if, "localhost", 3033, "daredevil")
+        fail = True != CommUtils.connect(self.comm_if, "daredevil")
         self.state_handler.transition(fail)
 
     def handle_connect_fear(self):
-        fail = True != CommUtils.connect(self.comm_if, "localhost", 3034, "fear")
+        fail = True != CommUtils.connect(self.comm_if, "fear")
         self.state_handler.transition(fail)
     
     def handle_connect_kratos(self):
-        fail = True != CommUtils.connect(self.comm_if, "localhost", 3031, "kratos")
+        fail = True != CommUtils.connect(self.comm_if, "kratos")
         self.state_handler.transition(fail)
 
     def handle_enabled(self):

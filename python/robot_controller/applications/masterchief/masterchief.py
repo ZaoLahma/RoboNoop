@@ -2,6 +2,7 @@ from ...core.state.state import State
 from ...core.state.state import StateHandler
 from ...core.runtime.task_base import TaskBase
 from ...core.runtime.process import ProcessManager
+from ...core.config.config import Config
 from ..kratos.main import Main as KratosMain
 from ..daredevil.main import Main as DaredevilMain
 from ..garrus.main import Main as GarrusMain

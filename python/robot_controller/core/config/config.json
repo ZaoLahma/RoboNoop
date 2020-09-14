@@ -1,0 +1,38 @@
+{
+    "application" :
+    {
+        "comm":
+        {
+            "daredevil" : 
+            {
+                "address" : "localhost",
+                "port-no" : 3300
+            },
+            "fear" :
+            {
+                "address" : "localhost",
+                "port-no" : 3301
+            },
+            "garrus" : 
+            {
+                "address" : "localhost",
+                "port-no" : 3302
+            },
+            "hwal" : 
+            {
+                "address" : "localhost",
+                "port-no" : 3303
+            },
+            "kratos" : 
+            {
+                "address" : "localhost",
+                "port-no" : 3304
+            },
+            "masterchief" : 
+            {
+                "address" : "localhost",
+                "port-no" : 3305
+            }
+        }
+    }
+}

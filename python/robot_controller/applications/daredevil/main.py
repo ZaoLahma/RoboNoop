@@ -4,6 +4,7 @@ from ...core.log.log import Log
 from ...core.comm.comm_endpoint import CommEndpoint
 from ...core.comm.message_protocol import MessageProtocol
 from ...core.comm.core_messages import ALL_CORE_MESSAGES
+from ...core.config.config import Config
 from .sonar_control.sonar_task import SonarTask
 from time import sleep
 
@@ -17,7 +18,9 @@ class Main:
         protocol = MessageProtocol(ALL_CORE_MESSAGES)
 
         comm_task = CommEndpoint([protocol])
-        comm_task.publish_service(3033)
+        app_config = Config.get_config_val("application")
+        port_no = app_config["comm"]["daredevil"]["port-no"]
+        comm_task.publish_service(port_no)
 
         sonar_task = SonarTask(comm_task)
 
