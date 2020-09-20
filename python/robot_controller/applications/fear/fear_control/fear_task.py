@@ -2,6 +2,7 @@ from ....core.runtime.task_base import TaskBase
 from ....core.log.log import Log
 from ....core.state.state import State
 from ....core.state.state import StateHandler
+from ....core.comm.comm_utils import CommUtils
 from ...kratos.motor_control.motor_control_messages import MoveInd
 from ...kratos.motor_control.motor_control_messages import ReleaseCtrlInd
 from ...daredevil.sonar_control.sonar_control_messages import SonarDataInd
@@ -28,26 +29,12 @@ class FearTask(TaskBase):
         self.state_handler.transition()
 
     def handle_connect_daredevil(self):
-        if False == self.comm_if.is_connected(3033):
-            try:
-                self.comm_if.connect("localhost", 3033)
-                self.state_handler.transition()
-            except Exception as e:
-                Log.log("Exception when connecting to daredevil: " + str(e))
-                self.state_handler.transition(fail=True)
-        else:
-            self.state_handler.transition()
+        fail = True != CommUtils.connect(self.comm_if, "daredevil")
+        self.state_handler.transition(fail)
     
     def handle_connect_kratos(self):
-        if False == self.comm_if.is_connected(3031):
-            try:
-                self.comm_if.connect("localhost", 3031)
-                self.state_handler.transition()
-            except Exception as e:
-                Log.log("Exception when connecting to kratos: " + str(e))
-                self.state_handler.transition(fail=True)
-        else:
-            self.state_handler.transition()
+        fail = True != CommUtils.connect(self.comm_if, "kratos")
+        self.state_handler.transition(fail)
 
     def handle_enabled(self):
         msg = self.comm_if.get_message(SonarDataInd.get_msg_id())

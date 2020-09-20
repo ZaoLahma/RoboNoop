@@ -44,6 +44,20 @@ class MoveInd(MessageBase):
         self.direction = struct.unpack(">H", data[0:2])[0]
         self.power = struct.unpack(">H", data[2:4])[0]
         self.sub_system = struct.unpack(">H", data[4:])[0]
-        Log.log("direction {0}, power {1}, sub_system {2}".format(self.direction, self.power, self.sub_system))
+        Log.log("direction {0}, power {1}, sub_system {2}".format(self.get_direction_string(self.direction), self.power, self.sub_system))
+
+    def get_direction_string(self, direction):
+        if MoveInd.STOP == direction:
+            return "STOP"
+        elif MoveInd.FORWARD == direction:
+            return "FORWARD"
+        elif MoveInd.LEFT == direction:
+            return "LEFT"
+        elif MoveInd.RIGHT == direction:
+            return "RIGHT"
+        elif MoveInd.BACKWARD == direction:
+            return "BACKWARD"
+        else:
+            return "UNKNOWN"
 
 ALL_MOTOR_CONTROL_MESSAGES = [ReleaseCtrlInd, MoveInd]

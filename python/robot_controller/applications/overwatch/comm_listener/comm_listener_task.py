@@ -28,7 +28,6 @@ class CommListenerTask(TaskBase):
 
     def handle_masterchief(self):
         fail = True != CommUtils.connect(self.comm_if, "masterchief")
-        Log.log("fail: " + str(fail))
         self.state_handler.transition(fail)
 
     def handle_connect_daredevil(self):

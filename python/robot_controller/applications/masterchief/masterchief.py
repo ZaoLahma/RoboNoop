@@ -3,6 +3,7 @@ from ...core.state.state import StateHandler
 from ...core.runtime.task_base import TaskBase
 from ...core.runtime.process import ProcessManager
 from ...core.config.config import Config
+from ...core.comm.comm_utils import CommUtils
 from ..kratos.main import Main as KratosMain
 from ..daredevil.main import Main as DaredevilMain
 from ..garrus.main import Main as GarrusMain
@@ -56,56 +57,33 @@ class MasterChief(TaskBase):
             self.state_handler.transition()
 
     def handle_connect_kratos(self):
-        if False == self.comm_if.is_connected(3031):
-            try:
-                self.comm_if.connect("localhost", 3031)
-                self.state_handler.transition()
-            except Exception as e:
-                Log.log("Exception when connecting to kratos: " + str(e))
-                self.processes_to_start.append(("KratosProcess", KratosMain.run))
-                self.state_handler.transition(fail=True)
-        else:
-            self.state_handler.transition()
+        fail = True != CommUtils.connect(self.comm_if, "kratos")
+        if True == fail:
+            self.processes_to_start.append(("KratosProcess", KratosMain.run))
+        self.state_handler.transition(fail)
 
     def handle_connect_daredevil(self):
-        if False == self.comm_if.is_connected(3033):
-            try:
-                self.comm_if.connect("localhost", 3033)
-                self.state_handler.transition()
-            except Exception as e:
-                Log.log("Exception when connecting to daredevil: " + str(e))
-                self.processes_to_start.append(("DaredevilProcess", DaredevilMain.run))
-                self.state_handler.transition(fail=True)
-        else:
-            self.state_handler.transition()
+        fail = True != CommUtils.connect(self.comm_if, "daredevil")
+        if True == fail:
+            self.processes_to_start.append(("DaredevilProcess", DaredevilMain.run))
+        self.state_handler.transition(fail)
 
     def handle_connect_fear(self):
-        if False == self.comm_if.is_connected(3034):
-            try:
-                self.comm_if.connect("localhost", 3034)
-                self.state_handler.transition()
-            except Exception as e:
-                Log.log("Exception when connecting to fear: " + str(e))
-                self.processes_to_start.append(("FearProcess", FearMain.run))
-                self.state_handler.transition(fail=True)
-        else:
-            self.state_handler.transition()
+        fail = True != CommUtils.connect(self.comm_if, "fear")
+        if True == fail:
+            self.processes_to_start.append(("FearProcess", FearMain.run))
+        self.state_handler.transition(fail)
 
     def handle_connect_garrus(self):
-        if False == self.comm_if.is_connected(3032):
-            try:
-                self.comm_if.connect("localhost", 3032)
-                self.state_handler.transition()
-            except Exception as e:
-                Log.log("Exception when connecting to garrus: " + str(e))
-                self.processes_to_start.append(("GarrusProcess", GarrusMain.run))
-                self.state_handler.transition(fail=True)
-        else:
-            self.state_handler.transition()
+        fail = True != CommUtils.connect(self.comm_if, "garrus")
+        if True == fail:
+            self.processes_to_start.append(("GarrusProcess", GarrusMain.run))
+        self.state_handler.transition(fail)
 
     def handle_start_processes(self):
         for process in self.processes_to_start:
             try:
+                Log.log("Starting process: " + process[0])
                 self.process_manager.start_process(process[0], process[1])
             except Exception as e:
                 Log.log("Exception when starting " + process[0] + ": " + str(e))
@@ -113,10 +91,7 @@ class MasterChief(TaskBase):
         self.state_handler.transition()
 
     def handle_enabled(self):
-        if False == self.comm_if.is_connected(3033):
-            Log.log("Lost connection to Daredevil")
-        if False == self.comm_if.is_connected(3031):
-            Log.log("Lost connection to Kratos")
+        Log.log("ENABLED")
 
     def handle_disabled(self):
         Log.log("Disabled...")
