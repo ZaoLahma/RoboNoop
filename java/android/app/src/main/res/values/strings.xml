@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">RobotInterface</string>
+    <string-array name="base_attrs">
+        <item>connection_status</item>
+    </string-array>
+    <string-array name="base_attrs_types">
+        <item>String</item>
+    </string-array>
+    <string-array name="base_attrs_values">
+        <item>Disconnected</item>
+    </string-array>
+</resources>
