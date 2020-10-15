@@ -11,8 +11,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.github.zaolahma.robotinterface.R;
+import com.github.zaolahma.robotinterface.core.comm.NetworkThread;
 
 public class NetworkWorkspace extends WorkspaceBase implements View.OnClickListener {
+    NetworkThread mNetworkThread;
+
     @Override
     public String getWorkspaceName() {
         return "Network";
@@ -28,7 +31,17 @@ public class NetworkWorkspace extends WorkspaceBase implements View.OnClickListe
     }
 
     @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (null != mNetworkThread) {
+            mNetworkThread.exit();
+        }
+    }
+
+    @Override
     public void onClick(View v) {
         System.out.println("Connect!");
+        mNetworkThread = new NetworkThread("192.168.0.44", 3300, null);
+        mNetworkThread.start();
     }
 }
