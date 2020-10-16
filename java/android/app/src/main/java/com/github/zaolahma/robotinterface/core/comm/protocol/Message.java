@@ -5,4 +5,6 @@ package com.github.zaolahma.robotinterface.core.comm.protocol;
  * msg_id 1 byte
  */
 public interface Message {
+    byte[] encode();
+    void decode(byte[] toDecode);
 }

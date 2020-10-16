@@ -12,6 +12,15 @@ import androidx.annotation.Nullable;
 
 import com.github.zaolahma.robotinterface.R;
 import com.github.zaolahma.robotinterface.core.comm.NetworkThread;
+import com.github.zaolahma.robotinterface.core.comm.protocol.Message;
+import com.github.zaolahma.robotinterface.core.comm.protocol.MessageProtocol;
+import com.github.zaolahma.robotinterface.core.comm.protocol.Protocol;
+import com.github.zaolahma.robotinterface.core.comm.protocol.SonarDataMessage;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class NetworkWorkspace extends WorkspaceBase implements View.OnClickListener {
     NetworkThread mNetworkThread;
@@ -41,7 +50,12 @@ public class NetworkWorkspace extends WorkspaceBase implements View.OnClickListe
     @Override
     public void onClick(View v) {
         System.out.println("Connect!");
-        mNetworkThread = new NetworkThread("192.168.0.44", 3300, null);
+        Map<Integer, Class> classDefinitions = new HashMap<Integer, Class>();
+        classDefinitions.put(SonarDataMessage.MESSAGE_ID, SonarDataMessage.class);
+        MessageProtocol messageProtocol = new MessageProtocol(classDefinitions);
+        List<Protocol> protocolList = new ArrayList<Protocol>();
+        protocolList.add(messageProtocol);
+        mNetworkThread = new NetworkThread("192.168.0.44", 3300, protocolList);
         mNetworkThread.start();
     }
 }
