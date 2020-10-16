@@ -21,6 +21,7 @@ public class WorkspaceManager extends FragmentPagerAdapter {
 
     private List<WorkspaceBase> mWorkspaces;
     private final Context mContext;
+    private int mCurrentTab;
 
     public WorkspaceManager(Context context, FragmentManager fm) {
         super(fm);
@@ -40,6 +41,7 @@ public class WorkspaceManager extends FragmentPagerAdapter {
     @Nullable
     @Override
     public CharSequence getPageTitle(int position) {
+        mCurrentTab = position;
         WorkspaceBase ws = mWorkspaces.get(position);
         return ws.getWorkspaceName();
     }
@@ -47,5 +49,11 @@ public class WorkspaceManager extends FragmentPagerAdapter {
     @Override
     public int getCount() {
         return mWorkspaces.size();
+    }
+
+    public void onPageSelected(int position) {
+        mWorkspaces.get(mCurrentTab).deactivate();
+        mCurrentTab = position;
+        mWorkspaces.get(position).activate();
     }
 }

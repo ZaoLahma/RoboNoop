@@ -13,7 +13,7 @@ public class MessageProtocol implements Protocol {
     @Override
     public Message decode(byte[] data) {
         int msgId = data[0];
-        msgId = (msgId < 1) ? 256 + msgId : msgId;
+        msgId = (msgId >= 1) ? msgId : 0x100 + msgId;
 
         Message message = null;
 

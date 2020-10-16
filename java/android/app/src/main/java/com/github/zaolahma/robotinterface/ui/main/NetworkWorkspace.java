@@ -1,6 +1,9 @@
 package com.github.zaolahma.robotinterface.ui.main;
 
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,7 +15,6 @@ import androidx.annotation.Nullable;
 
 import com.github.zaolahma.robotinterface.R;
 import com.github.zaolahma.robotinterface.core.comm.NetworkThread;
-import com.github.zaolahma.robotinterface.core.comm.protocol.Message;
 import com.github.zaolahma.robotinterface.core.comm.protocol.MessageProtocol;
 import com.github.zaolahma.robotinterface.core.comm.protocol.Protocol;
 import com.github.zaolahma.robotinterface.core.comm.protocol.SonarDataMessage;
@@ -55,7 +57,7 @@ public class NetworkWorkspace extends WorkspaceBase implements View.OnClickListe
         MessageProtocol messageProtocol = new MessageProtocol(classDefinitions);
         List<Protocol> protocolList = new ArrayList<Protocol>();
         protocolList.add(messageProtocol);
-        mNetworkThread = new NetworkThread("192.168.0.44", 3300, protocolList);
+        mNetworkThread = new NetworkThread(getContext(), "192.168.0.44", 3300, protocolList);
         mNetworkThread.start();
     }
 }

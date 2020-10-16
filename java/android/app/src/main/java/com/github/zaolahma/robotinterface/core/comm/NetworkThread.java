@@ -1,9 +1,15 @@
 package com.github.zaolahma.robotinterface.core.comm;
 
+import android.content.Context;
+import android.os.Handler;
+import android.os.Looper;
 import android.provider.ContactsContract;
+
+import androidx.annotation.NonNull;
 
 import com.github.zaolahma.robotinterface.core.comm.protocol.Message;
 import com.github.zaolahma.robotinterface.core.comm.protocol.Protocol;
+import com.github.zaolahma.robotinterface.ui.main.AppContext;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -20,11 +26,13 @@ public class NetworkThread extends Thread {
     private final String mAddress;
     private final int mPort;
     private final List<Protocol> mProtocols;
+    private final Context mContext;
     private boolean mRunning;
     Socket mSocket;
     DataOutputStream mDataOutputStream;
 
-    public NetworkThread(String address, int port, List<Protocol> protocols) {
+    public NetworkThread(Context context, String address, int port, List<Protocol> protocols) {
+        mContext = context;
         mRunning = true;
         mAddress = address;
         mPort = port;
@@ -38,6 +46,7 @@ public class NetworkThread extends Thread {
     @Override
     public void run() {
         mRunning = true;
+        Handler mainThreadHandler = new Handler(Looper.getMainLooper());
         DataInputStream inputStream = null;
         try {
             mSocket = new Socket(mAddress, mPort);
@@ -50,7 +59,17 @@ public class NetworkThread extends Thread {
             mRunning = false;
         }
 
-        System.out.println("Connected ok");
+        if (mRunning) {
+            System.out.println("Connected ok");
+            mainThreadHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    System.out.println("Connected status set");
+                    AppContext.getApi(mContext).setString(
+                            "connection_status", "connected");
+                }
+            });
+        }
 
         while (mRunning) {
             System.out.println("In running");
@@ -81,6 +100,7 @@ public class NetworkThread extends Thread {
 
                     if (!mRunning || 0 > currReceived) {
                         endTransmission = true;
+                        mRunning = false;
                     }
                     if (bytesReceived == dataSize) {
                         dataComplete = true;

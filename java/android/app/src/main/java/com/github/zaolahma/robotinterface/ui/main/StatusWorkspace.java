@@ -13,6 +13,7 @@ import androidx.annotation.Nullable;
 import com.github.zaolahma.robotinterface.R;
 
 public class StatusWorkspace extends WorkspaceBase {
+    TextView mConnStatusTextView;
     @Override
     public String getWorkspaceName() {
         return "Status";
@@ -22,8 +23,15 @@ public class StatusWorkspace extends WorkspaceBase {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.status_workspace, container, false);
-        final TextView connectionStatusTextView = root.findViewById(R.id.connection_status);
-        connectionStatusTextView.setText(AppContext.getApi(getContext()).getString("connection_status"));
+        mConnStatusTextView = root.findViewById(R.id.connection_status);
+        mConnStatusTextView.setText(AppContext.getApi(getContext()).getString("connection_status"));
         return root;
+    }
+    @Override
+    public void activate() {
+        super.onResume();
+        System.out.println("onResume called");
+        mConnStatusTextView.setText(
+                AppContext.getApi(getContext()).getString("connection_status"));
     }
 }

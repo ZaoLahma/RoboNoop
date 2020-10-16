@@ -17,12 +17,27 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        WorkspaceManager workspaceManager = new WorkspaceManager(this, getSupportFragmentManager());
+        final WorkspaceManager workspaceManager = new WorkspaceManager(this, getSupportFragmentManager());
         workspaceManager.addWorkspace(new StatusWorkspace());
         workspaceManager.addWorkspace(new NetworkWorkspace());
         ViewPager viewPager = findViewById(R.id.view_pager);
         viewPager.setAdapter(workspaceManager);
         TabLayout tabs = findViewById(R.id.tabs);
         tabs.setupWithViewPager(viewPager);
+        tabs.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                workspaceManager.onPageSelected(tab.getPosition());
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+            }
+        });
     }
 }
