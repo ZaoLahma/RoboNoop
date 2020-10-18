@@ -40,12 +40,20 @@ public class RemoteControlWorkspace extends WorkspaceBase implements View.OnClic
         if (null != mSensorDataThread) {
             mSensorDataThread.start();
         }
+
+        if (null != mNetworkThread) {
+            mNetworkThread.exit();
+        }
     }
 
     @Override
     public void deactivate() {
         if (null != mSensorDataThread) {
             mSensorDataThread.exit();
+        }
+
+        if (null != mNetworkThread) {
+            mNetworkThread.exit();
         }
     }
 

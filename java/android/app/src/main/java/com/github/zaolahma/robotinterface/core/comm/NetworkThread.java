@@ -143,25 +143,54 @@ public class NetworkThread extends Thread {
     }
 
     public void sendMessage(Message message) {
-        byte messageId = (byte) message.getMessageId();
-
         byte[] toSend = MessageProtocol.encode(message);
 
         final int dataSize = toSend.length;
         int bytesSent = 0;
         boolean endTransmission = (null == mDataOutputStream);
+
+        if (endTransmission) {
+            System.out.println("mDataOutputStream: " + mDataOutputStream);
+        }
+
+        /*
+        Send header
+         */
+        if (!endTransmission) {
+            byte[] header = new byte[2];
+            ByteBuffer headerBuf = ByteBuffer.wrap(header);
+            headerBuf.putShort((short) dataSize);
+            try {
+                mDataOutputStream.write(header, 0,header.length);
+                mDataOutputStream.flush();
+            } catch (IOException e) {
+                e.printStackTrace();
+                endTransmission = true;
+                mRunning = false;
+                this.interrupt();
+            }
+        }
+
+        /*
+        Send payload
+         */
         while (!endTransmission) {
+            System.out.println("Attempting to send " + dataSize + " bytes");
             try {
                 int bytesLeft = dataSize - bytesSent;
                 int chunkSize = (4096 > bytesLeft) ? bytesLeft : 4096;
                 mDataOutputStream.write(toSend, bytesSent, chunkSize);
+                mDataOutputStream.flush();
                 bytesSent += chunkSize;
 
                 if (bytesSent == dataSize) {
                     endTransmission = true;
+                    System.out.println("Finished sending message");
                 }
             } catch (IOException e) {
                 endTransmission = true;
+                mRunning = false;
+                this.interrupt();
                 e.printStackTrace();
             }
         }
