@@ -9,6 +9,7 @@ import java.util.List;
 public class NetworkContext {
     private static NetworkContext S_INSTANCE = null;
     private List<MessageListener> mMessageListeners;
+    private Message mMessageToSend;
 
     private NetworkContext() {
         mMessageListeners = new ArrayList<MessageListener>();
@@ -21,7 +22,11 @@ public class NetworkContext {
         return S_INSTANCE;
     }
 
-    public void postMessage(Message message) {
+    public void sendMessage(Message message) {
+        mMessageToSend = message;
+    }
+
+    public void receiveMessage(Message message) {
         for (MessageListener listener : mMessageListeners) {
             listener.handleMessage(message);
         }

@@ -31,4 +31,19 @@ public class MessageProtocol implements Protocol {
         }
         return message;
     }
+
+    public static byte[] encode(Message message) {
+        byte[] encodedMessage = message.encode();
+
+        int messageSize = (null != encodedMessage) ? 1 + encodedMessage.length: 1;
+
+        byte[] encodedData = new byte[messageSize];
+        encodedData[0] = (byte)message.getMessageId();
+
+        for (int i = 1; i < encodedData.length; ++i) {
+            encodedData[i] = encodedMessage[i - 1];
+        }
+
+        return encodedData;
+    }
 }

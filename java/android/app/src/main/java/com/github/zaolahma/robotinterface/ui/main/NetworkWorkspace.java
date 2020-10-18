@@ -57,7 +57,7 @@ public class NetworkWorkspace extends WorkspaceBase implements View.OnClickListe
         MessageProtocol messageProtocol = new MessageProtocol(classDefinitions);
         List<Protocol> protocolList = new ArrayList<Protocol>();
         protocolList.add(messageProtocol);
-        mNetworkThread = new NetworkThread(getContext(), "192.168.0.44", 3300, protocolList);
+        mNetworkThread = new NetworkThread(getContext(), "192.168.0.37", 3300, protocolList);
         mNetworkThread.start();
     }
 }

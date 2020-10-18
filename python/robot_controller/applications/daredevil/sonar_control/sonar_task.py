@@ -45,7 +45,7 @@ class SonarTask(TaskBase):
 
         sonar_msg = SonarDataInd(distance)
 
-        Log.log("Calculated distance: " + str(distance) + "mm")
+        #Log.log("Calculated distance: " + str(distance) + "mm")
 
         self.comm_if.send_message(sonar_msg)
 

@@ -24,8 +24,8 @@ import com.github.zaolahma.robotinterface.core.comm.protocol.Message;
 import com.github.zaolahma.robotinterface.core.comm.protocol.SonarDataMessage;
 
 public class SonarWorkspace extends WorkspaceBase implements MessageListener {
-    private static final double S_MAX_DISTANCE = 5000; //mm, 5m
     private static final int S_ROBOT_SIZE = 50;
+    private static final double S_MAX_DISTANCE = 5000; //mm
     private static final int S_RADAR_SPOT_SIZE = 20;
     private double mCurrDistance = S_MAX_DISTANCE;
     private DrawableView mDrawableView;
@@ -81,7 +81,7 @@ public class SonarWorkspace extends WorkspaceBase implements MessageListener {
             paint.setColor(Color.rgb(0, 255, 0));
             double distanceFactor = mCurrDistance / S_MAX_DISTANCE;
             System.out.println("distanceFactor: " + distanceFactor);
-            double relativeDistance = canvas.getHeight() - canvas.getHeight() * distanceFactor - S_ROBOT_SIZE - S_RADAR_SPOT_SIZE;
+            double relativeDistance = (canvas.getHeight()- S_ROBOT_SIZE) - (canvas.getHeight() - S_ROBOT_SIZE) * distanceFactor;
             System.out.println("relativeDistance: " + relativeDistance);
             canvas.drawCircle(canvas.getWidth() / 2, (int) (relativeDistance + 0.5), S_RADAR_SPOT_SIZE, paint);
         }

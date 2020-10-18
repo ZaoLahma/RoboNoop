@@ -1,14 +1,11 @@
 package com.github.zaolahma.robotinterface.core.comm;
 
 import android.content.Context;
-import android.net.Network;
 import android.os.Handler;
 import android.os.Looper;
-import android.provider.ContactsContract;
-
-import androidx.annotation.NonNull;
 
 import com.github.zaolahma.robotinterface.core.comm.protocol.Message;
+import com.github.zaolahma.robotinterface.core.comm.protocol.MessageProtocol;
 import com.github.zaolahma.robotinterface.core.comm.protocol.Protocol;
 import com.github.zaolahma.robotinterface.ui.main.AppContext;
 
@@ -20,7 +17,6 @@ import java.io.IOException;
 import java.net.Socket;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.util.AbstractSequentialList;
 import java.util.List;
 
 public class NetworkThread extends Thread {
@@ -103,6 +99,7 @@ public class NetworkThread extends Thread {
                         endTransmission = true;
                         mRunning = false;
                     }
+
                     if (bytesReceived == dataSize) {
                         dataComplete = true;
                         endTransmission = true;
@@ -127,7 +124,7 @@ public class NetworkThread extends Thread {
                     mainThreadHandler.post(new Runnable() {
                         @Override
                         public void run() {
-                            NetworkContext.getApi().postMessage(toPost);
+                            NetworkContext.getApi().receiveMessage(toPost);
                         }
                     });
                 }
@@ -143,5 +140,30 @@ public class NetworkThread extends Thread {
 
     public boolean isRunning() {
         return mRunning;
+    }
+
+    public void sendMessage(Message message) {
+        byte messageId = (byte) message.getMessageId();
+
+        byte[] toSend = MessageProtocol.encode(message);
+
+        final int dataSize = toSend.length;
+        int bytesSent = 0;
+        boolean endTransmission = (null == mDataOutputStream);
+        while (!endTransmission) {
+            try {
+                int bytesLeft = dataSize - bytesSent;
+                int chunkSize = (4096 > bytesLeft) ? bytesLeft : 4096;
+                mDataOutputStream.write(toSend, bytesSent, chunkSize);
+                bytesSent += chunkSize;
+
+                if (bytesSent == dataSize) {
+                    endTransmission = true;
+                }
+            } catch (IOException e) {
+                endTransmission = true;
+                e.printStackTrace();
+            }
+        }
     }
 }
