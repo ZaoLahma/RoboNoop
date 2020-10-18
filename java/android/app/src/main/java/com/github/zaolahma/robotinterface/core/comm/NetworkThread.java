@@ -1,6 +1,7 @@
 package com.github.zaolahma.robotinterface.core.comm;
 
 import android.content.Context;
+import android.net.Network;
 import android.os.Handler;
 import android.os.Looper;
 import android.provider.ContactsContract;
@@ -121,7 +122,14 @@ public class NetworkThread extends Thread {
                     }
                 }
                 if (null != message) {
+                    final Message toPost = message;
                     System.out.println("Message decoded: " + message.toString());
+                    mainThreadHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            NetworkContext.getApi().postMessage(toPost);
+                        }
+                    });
                 }
             }
         }

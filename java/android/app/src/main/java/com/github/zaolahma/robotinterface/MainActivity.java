@@ -3,6 +3,7 @@ package com.github.zaolahma.robotinterface;
 import android.os.Bundle;
 
 import com.github.zaolahma.robotinterface.ui.main.NetworkWorkspace;
+import com.github.zaolahma.robotinterface.ui.main.SonarWorkspace;
 import com.github.zaolahma.robotinterface.ui.main.StatusWorkspace;
 import com.google.android.material.tabs.TabLayout;
 
@@ -20,6 +21,7 @@ public class MainActivity extends AppCompatActivity {
         final WorkspaceManager workspaceManager = new WorkspaceManager(this, getSupportFragmentManager());
         workspaceManager.addWorkspace(new StatusWorkspace());
         workspaceManager.addWorkspace(new NetworkWorkspace());
+        workspaceManager.addWorkspace(new SonarWorkspace());
         ViewPager viewPager = findViewById(R.id.view_pager);
         viewPager.setAdapter(workspaceManager);
         TabLayout tabs = findViewById(R.id.tabs);

@@ -29,8 +29,7 @@ public class StatusWorkspace extends WorkspaceBase {
     }
     @Override
     public void activate() {
-        super.onResume();
-        System.out.println("onResume called");
+        System.out.println("activate called");
         mConnStatusTextView.setText(
                 AppContext.getApi(getContext()).getString("connection_status"));
     }

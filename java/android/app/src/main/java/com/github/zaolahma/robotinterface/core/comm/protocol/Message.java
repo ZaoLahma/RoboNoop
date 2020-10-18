@@ -7,4 +7,5 @@ package com.github.zaolahma.robotinterface.core.comm.protocol;
 public interface Message {
     byte[] encode();
     void decode(byte[] toDecode);
+    int getMessageId();
 }

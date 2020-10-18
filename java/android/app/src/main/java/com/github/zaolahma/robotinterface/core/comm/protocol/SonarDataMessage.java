@@ -27,9 +27,14 @@ public class SonarDataMessage implements Message {
         return mDistance;
     }
 
+    @Override
+    public int getMessageId() {
+        return MESSAGE_ID;
+    }
+
     @NonNull
     @Override
     public String toString() {
-        return "mDistance: " + mDistance;
+        return "SonarDataMessage, distance: " + mDistance;
     }
 }
