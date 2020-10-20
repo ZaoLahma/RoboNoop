@@ -69,7 +69,7 @@ public class RemoteControlWorkspace extends WorkspaceBase implements View.OnClic
     @Override
     public void onClick(View v) {
         List<Protocol> protocolList = new ArrayList<Protocol>();
-        mNetworkThread = new NetworkThread(getContext(), "192.168.0.37", 3304, protocolList);
+        mNetworkThread = new NetworkThread(getContext(), "192.168.0.44", 3304, protocolList);
         mNetworkThread.start();
 
         mSensorDataThread = new SensorDataThread(mSensorManager);
@@ -123,9 +123,13 @@ public class RemoteControlWorkspace extends WorkspaceBase implements View.OnClic
                     }
                 }
 
-                UnlockInd unlockMessage = new UnlockInd();
-                mNetworkThread.sendMessage(unlockMessage);
-                mNetworkThread.sendMessage(message);
+                if (mNetworkThread.isRunning()) {
+                    UnlockInd unlockMessage = new UnlockInd();
+                    mNetworkThread.sendMessage(unlockMessage);
+                    mNetworkThread.sendMessage(message);
+                } else {
+                    this.exit();
+                }
 
                 long toSleep = S_MILLIS_IN_SECOND / S_TARGET_FPS;
                 try {

@@ -13,7 +13,7 @@ class MotorTask(TaskBase):
         self.comm_if = comm_if
 
         self.state_def =  [
-            State("INIT", self.handle_init, "ENABLED", "INIT"),
+            State("INIT", self.handle_init, "INHIBITED", "INIT"),
             State("ENABLED", self.handle_enabled, "ENABLED", "INHIBITED"),
             State("INHIBITED", self.handle_inhibited, "ENABLED", "INHIBITED")
         ]

@@ -12,11 +12,13 @@ class GPIOStub():
 
     @staticmethod
     def setup(pin, mode):
-        Log.log("Pin " + str(pin) + " set to " + str(mode))
+        #Log.log("Pin " + str(pin) + " set to " + str(mode))
+        return None
 
     @staticmethod
     def output(pin, val):
-        Log.log("Pin " + str(pin) + " outputting " + str(val))
+        #Log.log("Pin " + str(pin) + " outputting " + str(val))
+        return None
 
     @staticmethod
     def input(pin):

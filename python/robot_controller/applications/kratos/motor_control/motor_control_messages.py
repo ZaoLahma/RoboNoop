@@ -71,4 +71,4 @@ class MoveInd(MessageBase):
         else:
             return "UNKNOWN"
 
-ALL_MOTOR_CONTROL_MESSAGES = [ReleaseCtrlInd, MoveInd]
+ALL_MOTOR_CONTROL_MESSAGES = [UnlockInd, ReleaseCtrlInd, MoveInd]
