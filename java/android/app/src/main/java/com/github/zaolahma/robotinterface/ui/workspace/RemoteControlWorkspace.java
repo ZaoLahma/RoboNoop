@@ -1,4 +1,4 @@
-package com.github.zaolahma.robotinterface.ui.main;
+package com.github.zaolahma.robotinterface.ui.workspace;
 
 import android.hardware.SensorManager;
 import android.os.Bundle;
@@ -17,6 +17,7 @@ import com.github.zaolahma.robotinterface.core.comm.protocol.MoveInd;
 import com.github.zaolahma.robotinterface.core.comm.protocol.Protocol;
 import com.github.zaolahma.robotinterface.core.comm.protocol.UnlockInd;
 import com.github.zaolahma.robotinterface.ui.control.GyroControl;
+import com.github.zaolahma.robotinterface.ui.workspace.core.WorkspaceBase;
 
 import java.util.ArrayList;
 import java.util.List;

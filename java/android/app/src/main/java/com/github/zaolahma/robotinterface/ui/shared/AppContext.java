@@ -1,11 +1,9 @@
-package com.github.zaolahma.robotinterface.ui.main;
+package com.github.zaolahma.robotinterface.ui.shared;
 
 import android.content.Context;
 import android.os.Bundle;
 
 import com.github.zaolahma.robotinterface.R;
-
-import org.w3c.dom.Attr;
 
 public class AppContext {
     private static AppContext S_INSTANCE = null;

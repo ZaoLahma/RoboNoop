@@ -1,14 +1,10 @@
-package com.github.zaolahma.robotinterface.ui.main;
+package com.github.zaolahma.robotinterface.ui.workspace;
 
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
-import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -18,6 +14,7 @@ import com.github.zaolahma.robotinterface.core.comm.NetworkThread;
 import com.github.zaolahma.robotinterface.core.comm.protocol.MessageProtocol;
 import com.github.zaolahma.robotinterface.core.comm.protocol.Protocol;
 import com.github.zaolahma.robotinterface.core.comm.protocol.SonarDataMessage;
+import com.github.zaolahma.robotinterface.ui.workspace.core.WorkspaceBase;
 
 import java.util.ArrayList;
 import java.util.HashMap;

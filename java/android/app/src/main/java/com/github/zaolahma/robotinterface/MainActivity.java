@@ -5,16 +5,16 @@ import android.content.pm.ActivityInfo;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 
-import com.github.zaolahma.robotinterface.ui.main.NetworkWorkspace;
-import com.github.zaolahma.robotinterface.ui.main.RemoteControlWorkspace;
-import com.github.zaolahma.robotinterface.ui.main.SonarWorkspace;
-import com.github.zaolahma.robotinterface.ui.main.StatusWorkspace;
+import com.github.zaolahma.robotinterface.ui.workspace.NetworkWorkspace;
+import com.github.zaolahma.robotinterface.ui.workspace.RemoteControlWorkspace;
+import com.github.zaolahma.robotinterface.ui.workspace.SonarWorkspace;
+import com.github.zaolahma.robotinterface.ui.workspace.StatusWorkspace;
 import com.google.android.material.tabs.TabLayout;
 
 import androidx.viewpager.widget.ViewPager;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.github.zaolahma.robotinterface.ui.main.WorkspaceManager;
+import com.github.zaolahma.robotinterface.ui.workspace.core.WorkspaceManager;
 
 public class MainActivity extends AppCompatActivity {
 

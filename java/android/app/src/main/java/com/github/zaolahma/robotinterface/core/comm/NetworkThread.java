@@ -7,7 +7,7 @@ import android.os.Looper;
 import com.github.zaolahma.robotinterface.core.comm.protocol.Message;
 import com.github.zaolahma.robotinterface.core.comm.protocol.MessageProtocol;
 import com.github.zaolahma.robotinterface.core.comm.protocol.Protocol;
-import com.github.zaolahma.robotinterface.ui.main.AppContext;
+import com.github.zaolahma.robotinterface.ui.shared.AppContext;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;

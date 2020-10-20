@@ -1,6 +1,5 @@
-package com.github.zaolahma.robotinterface.ui.main;
+package com.github.zaolahma.robotinterface.ui.workspace;
 
-import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,6 +10,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.github.zaolahma.robotinterface.R;
+import com.github.zaolahma.robotinterface.ui.shared.AppContext;
+import com.github.zaolahma.robotinterface.ui.workspace.core.WorkspaceBase;
 
 public class StatusWorkspace extends WorkspaceBase {
     TextView mConnStatusTextView;

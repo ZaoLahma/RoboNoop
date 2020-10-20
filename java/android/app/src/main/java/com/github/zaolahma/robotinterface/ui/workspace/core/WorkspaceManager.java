@@ -1,14 +1,11 @@
-package com.github.zaolahma.robotinterface.ui.main;
+package com.github.zaolahma.robotinterface.ui.workspace.core;
 
 import android.content.Context;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
-
-import com.github.zaolahma.robotinterface.R;
 
 import java.util.ArrayList;
 import java.util.List;

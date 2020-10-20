@@ -1,4 +1,4 @@
-package com.github.zaolahma.robotinterface.ui.main;
+package com.github.zaolahma.robotinterface.ui.workspace.core;
 
 import androidx.fragment.app.Fragment;
 

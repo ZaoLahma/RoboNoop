@@ -1,15 +1,11 @@
-package com.github.zaolahma.robotinterface.ui.main;
+package com.github.zaolahma.robotinterface.ui.workspace;
 
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.net.Network;
 import android.os.Bundle;
 import android.view.LayoutInflater;
-import android.view.Surface;
-import android.view.SurfaceHolder;
-import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -22,6 +18,7 @@ import com.github.zaolahma.robotinterface.core.comm.MessageListener;
 import com.github.zaolahma.robotinterface.core.comm.NetworkContext;
 import com.github.zaolahma.robotinterface.core.comm.protocol.Message;
 import com.github.zaolahma.robotinterface.core.comm.protocol.SonarDataMessage;
+import com.github.zaolahma.robotinterface.ui.workspace.core.WorkspaceBase;
 
 public class SonarWorkspace extends WorkspaceBase implements MessageListener {
     private static final int S_ROBOT_SIZE = 50;
