@@ -6,7 +6,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
 public class SonarDataMessage implements Message {
-    public static final int MESSAGE_ID = 200;
+    public static final int MESSAGE_ID = 20;
 
     private int mDistance;
 

@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class MoveInd implements Message {
-    public static final int S_MESSAGE_ID = 102;
+    public static final int S_MESSAGE_ID = 12;
 
     public static final Map<String, Short> S_DIRECTION;
     static {

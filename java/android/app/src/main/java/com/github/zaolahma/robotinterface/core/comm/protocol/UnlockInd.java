@@ -1,7 +1,7 @@
 package com.github.zaolahma.robotinterface.core.comm.protocol;
 
 public class UnlockInd implements Message {
-    public static final int S_MESSAGE_ID = 100;
+    public static final int S_MESSAGE_ID = 10;
 
     @Override
     public byte[] encode() {
