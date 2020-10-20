@@ -30,8 +30,9 @@ class DataTransfer(MessageBase):
         self.data = {}
 
     def add_data(self, data_type, data):
-        dtype = self.data[data_type]
-        if None == dtype:
+        try:
+            dtype = self.data[data_type]
+        except KeyError:
             self.data[data_type] = []
             dtype = self.data[data_type]
         dtype.append(data)

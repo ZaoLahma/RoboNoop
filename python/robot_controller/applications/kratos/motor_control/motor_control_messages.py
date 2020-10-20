@@ -5,7 +5,7 @@ import struct
 class UnlockInd(MessageBase):
     @staticmethod
     def get_msg_id():
-        return 100
+        return 10
 
     def encode(self):
         return None
@@ -19,7 +19,7 @@ class ReleaseCtrlInd(MessageBase):
 
     @staticmethod
     def get_msg_id():
-        return 101
+        return 11
 
     def encode(self):
         data = struct.pack(">H", self.sub_system)
@@ -43,7 +43,7 @@ class MoveInd(MessageBase):
 
     @staticmethod
     def get_msg_id():
-        return 102
+        return 12
 
     def encode(self):
         data = struct.pack(">H", self.direction)

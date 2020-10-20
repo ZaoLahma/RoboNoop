@@ -5,6 +5,7 @@ from ...core.comm.comm_endpoint import CommEndpoint
 from ...core.comm.message_protocol import MessageProtocol
 from ...core.comm.core_messages import ALL_CORE_MESSAGES
 from ...core.config.config import Config
+from .sysinfo.sysinfo_task import SysinfoTask
 from time import sleep
 
 class Main:
@@ -21,8 +22,11 @@ class Main:
         port_no = app_config["comm"]["hwal"]["port-no"]
         comm_task.publish_service(port_no)
 
+        sysinfo_task = SysinfoTask(comm_task)
+
         tasks = []
         tasks.append(comm_task)
+        tasks.append(sysinfo_task)
 
         scheduler = Scheduler("HWAL", tasks)
 

@@ -6,10 +6,10 @@ class SysinfoTask(TaskBase):
     def __init__(self, comm_if):
         self.comm_if = comm_if
         self.hw_info = self.get_hw_info()
+        Log.log("hw_info: " + str(self.hw_info))
 
 
     def run(self):
-        Log.log("Run called for sysinfo_task")
         data_transfer = DataTransfer()
         data_transfer.add_data("hw-type", self.hw_info)
         
@@ -19,10 +19,8 @@ class SysinfoTask(TaskBase):
         try:
             f = open('/sys/firmware/devicetree/base/model', 'r')
             for line in f:
-                if line[0:8]=='Revision':
-                    length=len(line)
-                    hw_info = line[11:length-1]
-                    break
+                hw_info = line
+                break
             f.close()
         except:
             hw_info = "stubbed"

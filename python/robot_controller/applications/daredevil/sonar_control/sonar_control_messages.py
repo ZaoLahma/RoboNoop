@@ -8,7 +8,7 @@ class SonarDataInd(MessageBase):
 
     @staticmethod
     def get_msg_id():
-        return 200
+        return 20
 
     def encode(self):
         data = struct.pack(">H", self.distance)
