@@ -25,6 +25,7 @@ public class NetworkThread extends Thread {
     private final List<Protocol> mProtocols;
     private final Context mContext;
     private boolean mRunning;
+    private boolean mStarted = false;
     Socket mSocket;
     DataOutputStream mDataOutputStream;
 
@@ -69,6 +70,7 @@ public class NetworkThread extends Thread {
         }
 
         while (mRunning) {
+            mStarted = true;
             System.out.println("In running");
             byte[] header = new byte[2];
             byte[] data = null;
@@ -130,6 +132,7 @@ public class NetworkThread extends Thread {
                 }
             }
         }
+        mStarted = true;
     }
 
     public void exit() {
@@ -194,5 +197,9 @@ public class NetworkThread extends Thread {
                 e.printStackTrace();
             }
         }
+    }
+
+    public boolean isStarted() {
+        return mStarted;
     }
 }

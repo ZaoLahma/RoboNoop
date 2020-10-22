@@ -55,4 +55,10 @@ class CommListenerTask(TaskBase):
         messages = self.comm_aggregate_if.get_all_messages()
         for message in messages:
             Log.log("Message: " + str(message))
+            self.comm_if.send_message(message)
+        messages = self.comm_if.get_all_messages()
+        for message in messages:
+            Log.log("Message: " + str(message))
+            self.comm_aggregate_if.send_message(message)
         self.comm_aggregate_if.invalidate_messages()
+        self.comm_if.invalidate_messages()

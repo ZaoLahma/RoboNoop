@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">RobotInterface</string>
+    <string name="connect_button_title">Connect</string>
+    <string name="robot_ip_address">Robot ip address</string>
     <string-array name="base_attrs">
         <item>connection_status</item>
     </string-array>

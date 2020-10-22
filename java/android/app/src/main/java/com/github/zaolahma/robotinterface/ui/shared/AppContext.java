@@ -4,12 +4,15 @@ import android.content.Context;
 import android.os.Bundle;
 
 import com.github.zaolahma.robotinterface.R;
+import com.github.zaolahma.robotinterface.core.comm.NetworkThread;
 
 public class AppContext {
     private static AppContext S_INSTANCE = null;
 
     private Bundle mBundle;
     private Context mContext;
+
+    private NetworkThread mNwThread;
 
     private AppContext(Context context) {
         mContext = context;
@@ -33,6 +36,10 @@ public class AppContext {
         }
 
         return S_INSTANCE;
+    }
+
+    public void setNwThread(NetworkThread nwThread) {
+        mNwThread = nwThread;
     }
 
     public void setBoolean(String attrName, boolean value) {

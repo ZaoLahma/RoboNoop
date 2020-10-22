@@ -5,7 +5,6 @@ import android.content.pm.ActivityInfo;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 
-import com.github.zaolahma.robotinterface.ui.workspace.NetworkWorkspace;
 import com.github.zaolahma.robotinterface.ui.workspace.RemoteControlWorkspace;
 import com.github.zaolahma.robotinterface.ui.workspace.SonarWorkspace;
 import com.github.zaolahma.robotinterface.ui.workspace.StatusWorkspace;
@@ -30,7 +29,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         final WorkspaceManager workspaceManager = new WorkspaceManager(this, getSupportFragmentManager());
         workspaceManager.addWorkspace(new StatusWorkspace());
-        workspaceManager.addWorkspace(new NetworkWorkspace());
         workspaceManager.addWorkspace(new SonarWorkspace());
         workspaceManager.addWorkspace(new RemoteControlWorkspace((SensorManager) getSystemService(Context.SENSOR_SERVICE)));
         ViewPager viewPager = findViewById(R.id.view_pager);
