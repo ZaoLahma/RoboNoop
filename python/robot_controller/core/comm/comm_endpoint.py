@@ -29,6 +29,9 @@ class CommEndpoint(TaskBase):
     def get_all_messages(self):
         return self.received_messages
 
+    def invalidate_messages(self):
+        self.received_messages = []
+
     def send_message(self, message):
         self.messages_to_send.append(message)
 
@@ -59,6 +62,7 @@ class CommEndpoint(TaskBase):
             for message in self.messages_to_send:
                 if False == self.send_message_to_connection(connection_info.connection, message):
                     self.connection_infos.remove(connection_info)
+        self.messages_to_send = []
 
     def receive_messages(self):
         self.received_messages = []

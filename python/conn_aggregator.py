@@ -1,4 +1,4 @@
-from robot_controller.applications.overwatch.main import Main
+from robot_controller.applications.conn_aggregator.main import Main
 from robot_controller.core.config.config import Config
 import sys
 import getopt

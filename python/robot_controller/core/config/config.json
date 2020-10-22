@@ -32,6 +32,11 @@
             {
                 "address" : "localhost",
                 "port-no" : 3305
+            },
+            "message_proxy" :
+            {
+                "address" : "localhost",
+                "port-no" : 3306
             }
         }
     }

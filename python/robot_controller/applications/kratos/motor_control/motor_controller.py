@@ -34,12 +34,12 @@ class MotorController:
         GPIO.output(self.right_eng_bckwd, GPIO.HIGH)
         GPIO.output(self.left_eng_bckwd, GPIO.HIGH)
 
-    def turn_left(self):
+    def turn_right(self):
         self.stop()
         GPIO.output(self.left_eng_bckwd, GPIO.HIGH)
         GPIO.output(self.right_eng_frwd, GPIO.HIGH)
 
-    def turn_right(self):
+    def turn_left(self):
         self.stop()
         GPIO.output(self.right_eng_bckwd, GPIO.HIGH)
         GPIO.output(self.left_eng_frwd, GPIO.HIGH)
