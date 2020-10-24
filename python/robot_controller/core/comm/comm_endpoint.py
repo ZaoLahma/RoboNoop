@@ -62,6 +62,7 @@ class CommEndpoint(TaskBase):
             for message in self.messages_to_send:
                 if False == self.send_message_to_connection(connection_info.connection, message):
                     self.connection_infos.remove(connection_info)
+                    break
         self.messages_to_send = []
 
     def receive_messages(self):

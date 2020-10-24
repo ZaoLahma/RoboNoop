@@ -140,7 +140,7 @@ public class NetworkThread extends Thread {
         return mRunning;
     }
 
-    public void sendMessage(Message message) {
+    public void sendMessage(Message message) throws IOException {
         byte[] toSend = MessageProtocol.encode(message);
 
         final int dataSize = toSend.length;
@@ -166,6 +166,7 @@ public class NetworkThread extends Thread {
                 endTransmission = true;
                 mRunning = false;
                 this.interrupt();
+                throw e;
             }
         }
 

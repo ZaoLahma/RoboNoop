@@ -44,7 +44,9 @@ class MasterChief(TaskBase):
         state_func()
 
     def handle_init(self):
-        self.comm_if.publish_service(3030)
+        app_config = Config.get_config_val("application")
+        port_no = app_config["comm"]["masterchief"]["port-no"]
+        self.comm_if.publish_service(port_no)
         self.state_handler.transition()
 
     def handle_idle(self):

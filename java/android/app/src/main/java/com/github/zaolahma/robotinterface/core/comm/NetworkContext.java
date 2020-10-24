@@ -2,6 +2,7 @@ package com.github.zaolahma.robotinterface.core.comm;
 
 import com.github.zaolahma.robotinterface.core.comm.protocol.Message;
 
+import java.io.IOException;
 import java.util.AbstractSequentialList;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,8 +31,8 @@ public class NetworkContext {
         mNetworkThread = networkThread;
     }
 
-    public void sendMessage(Message message) {
-        mMessageToSend = message;
+    public void sendMessage(Message message) throws IOException {
+        mNetworkThread.sendMessage(message);
     }
 
     public void receiveMessage(Message message) {

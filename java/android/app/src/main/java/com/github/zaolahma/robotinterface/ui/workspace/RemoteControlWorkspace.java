@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.github.zaolahma.robotinterface.R;
+import com.github.zaolahma.robotinterface.core.comm.NetworkContext;
 import com.github.zaolahma.robotinterface.core.comm.NetworkThread;
 import com.github.zaolahma.robotinterface.core.comm.protocol.Message;
 import com.github.zaolahma.robotinterface.core.comm.protocol.MoveInd;
@@ -19,12 +20,12 @@ import com.github.zaolahma.robotinterface.core.comm.protocol.UnlockInd;
 import com.github.zaolahma.robotinterface.ui.control.GyroControl;
 import com.github.zaolahma.robotinterface.ui.workspace.core.WorkspaceBase;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class RemoteControlWorkspace extends WorkspaceBase implements View.OnClickListener {
     private final SensorManager mSensorManager;
-    private NetworkThread mNetworkThread;
     private SensorDataThread mSensorDataThread;
 
     public RemoteControlWorkspace(SensorManager sensorManager) {
@@ -38,13 +39,7 @@ public class RemoteControlWorkspace extends WorkspaceBase implements View.OnClic
 
     @Override
     public void activate() {
-        if (null != mSensorDataThread) {
-            mSensorDataThread.start();
-        }
 
-        if (null != mNetworkThread) {
-            mNetworkThread.exit();
-        }
     }
 
     @Override
@@ -52,10 +47,7 @@ public class RemoteControlWorkspace extends WorkspaceBase implements View.OnClic
         if (null != mSensorDataThread) {
             mSensorDataThread.exit();
         }
-
-        if (null != mNetworkThread) {
-            mNetworkThread.exit();
-        }
+        mSensorDataThread = null;
     }
 
     @Nullable
@@ -70,8 +62,6 @@ public class RemoteControlWorkspace extends WorkspaceBase implements View.OnClic
     @Override
     public void onClick(View v) {
         List<Protocol> protocolList = new ArrayList<Protocol>();
-        mNetworkThread = new NetworkThread(getContext(), "192.168.0.44", 3304, protocolList);
-        mNetworkThread.start();
 
         mSensorDataThread = new SensorDataThread(mSensorManager);
         mSensorDataThread.start();
@@ -124,19 +114,22 @@ public class RemoteControlWorkspace extends WorkspaceBase implements View.OnClic
                     }
                 }
 
-                if (mNetworkThread.isRunning()) {
-                    UnlockInd unlockMessage = new UnlockInd();
-                    mNetworkThread.sendMessage(unlockMessage);
-                    mNetworkThread.sendMessage(message);
-                } else {
-                    this.exit();
+                UnlockInd unlockMessage = new UnlockInd();
+                try {
+                    NetworkContext.getApi().sendMessage(unlockMessage);
+                    NetworkContext.getApi().sendMessage(message);
+                } catch (IOException e) {
+                    mRunning = false;
+                    this.interrupt();
                 }
 
-                long toSleep = S_MILLIS_IN_SECOND / S_TARGET_FPS;
-                try {
-                    Thread.sleep(toSleep);
-                } catch (InterruptedException e) {
-                    mRunning = false;
+                if (mRunning) {
+                    long toSleep = S_MILLIS_IN_SECOND / S_TARGET_FPS;
+                    try {
+                        Thread.sleep(toSleep);
+                    } catch (InterruptedException e) {
+                        mRunning = false;
+                    }
                 }
             }
         }
