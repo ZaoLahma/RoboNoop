@@ -3,6 +3,12 @@ from ..config.config import Config
 
 class CommUtils:
     @staticmethod
+    def publish_service(comm_if, app_name):
+        app_config = Config.get_config_val("application")
+        port_no = app_config["comm"][app_name]["port-no"]
+        comm_if.publish_service(port_no)
+
+    @staticmethod
     def connect(comm_if, app_name):
         app_config = Config.get_config_val("application")
         port_no = app_config["comm"][app_name]["port-no"]
@@ -18,3 +24,9 @@ class CommUtils:
         else:
             ret_val = True
         return ret_val
+
+    @staticmethod
+    def is_connected(comm_if, app_name):
+        app_config = Config.get_config_val("application")
+        port_no = app_config["comm"][app_name]["port-no"]
+        return comm_if.is_connected(port_no)

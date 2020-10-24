@@ -18,7 +18,7 @@ class CommListenerTask(TaskBase):
             State("CONNECT_DAREDEVIL", self.handle_connect_daredevil, "CONNECT_FEAR", "CONNECT_START"),
             State("CONNECT_FEAR", self.handle_connect_fear, "CONNECT_KRATOS", "CONNECT_START"),
             State("CONNECT_KRATOS", self.handle_connect_kratos, "ENABLED", "CONNECT_START"),
-            State("ENABLED", self.handle_enabled, "INHIBITED", "CONNECT_START")
+            State("ENABLED", self.handle_enabled, "ENABLED", "CONNECT_START")
         ]
         self.state_handler = StateHandler(self.state_def, "INIT")
 
@@ -62,3 +62,12 @@ class CommListenerTask(TaskBase):
             self.comm_aggregate_if.send_message(message)
         self.comm_aggregate_if.invalidate_messages()
         self.comm_if.invalidate_messages()
+
+        #Check if still connected
+        connected = CommUtils.is_connected(self.comm_aggregate_if, "masterchief")
+        connected = connected and CommUtils.is_connected(self.comm_aggregate_if, "daredevil")
+        connected = connected and CommUtils.is_connected(self.comm_aggregate_if, "fear")
+        connected = connected and CommUtils.is_connected(self.comm_aggregate_if, "kratos")
+
+        fail = False == connected
+        self.state_handler.transition(fail)
