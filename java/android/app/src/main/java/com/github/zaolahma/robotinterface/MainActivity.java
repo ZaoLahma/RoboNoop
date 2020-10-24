@@ -5,6 +5,7 @@ import android.content.pm.ActivityInfo;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 
+import com.github.zaolahma.robotinterface.core.comm.NetworkContext;
 import com.github.zaolahma.robotinterface.ui.workspace.RemoteControlWorkspace;
 import com.github.zaolahma.robotinterface.ui.workspace.SonarWorkspace;
 import com.github.zaolahma.robotinterface.ui.workspace.StatusWorkspace;
@@ -51,5 +52,11 @@ public class MainActivity extends AppCompatActivity {
             public void onTabReselected(TabLayout.Tab tab) {
             }
         });
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        NetworkContext.getApi().disconnect();
     }
 }

@@ -12,8 +12,6 @@ public class AppContext {
     private Bundle mBundle;
     private Context mContext;
 
-    private NetworkThread mNwThread;
-
     private AppContext(Context context) {
         mContext = context;
         mBundle = new Bundle();
@@ -36,10 +34,6 @@ public class AppContext {
         }
 
         return S_INSTANCE;
-    }
-
-    public void setNwThread(NetworkThread nwThread) {
-        mNwThread = nwThread;
     }
 
     public void setBoolean(String attrName, boolean value) {

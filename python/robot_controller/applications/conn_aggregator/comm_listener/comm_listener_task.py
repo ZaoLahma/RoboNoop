@@ -54,11 +54,11 @@ class CommListenerTask(TaskBase):
     def handle_enabled(self):
         messages = self.comm_aggregate_if.get_all_messages()
         for message in messages:
-            Log.log("Message: " + str(message))
+            Log.log("Routing from many, message: " + str(message))
             self.comm_if.send_message(message)
         messages = self.comm_if.get_all_messages()
         for message in messages:
-            Log.log("Message: " + str(message))
+            Log.log("Routing to many, message: " + str(message))
             self.comm_aggregate_if.send_message(message)
         self.comm_aggregate_if.invalidate_messages()
         self.comm_if.invalidate_messages()

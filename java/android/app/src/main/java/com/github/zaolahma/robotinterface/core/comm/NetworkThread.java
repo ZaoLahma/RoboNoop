@@ -76,17 +76,14 @@ public class NetworkThread extends Thread {
             byte[] data = null;
             boolean dataComplete = false;
             try {
-                System.out.println("Waiting for message header");
                 int receivedHeaderSize = inputStream.read(header, 0, 2);
                 int dataSize = 0;
                 if (2 == receivedHeaderSize) {
-                    System.out.println("header: " + header.toString());
                     ByteBuffer headerData = ByteBuffer.wrap(header);
                     headerData.order(ByteOrder.BIG_ENDIAN);
                     short tmp = headerData.getShort();
                     dataSize = tmp >= 0 ? tmp : 0x10000 + tmp;
                     data = new byte[dataSize];
-                    System.out.println("Received message size: " + dataSize);
                 }
 
                 int bytesReceived = 0;
@@ -105,7 +102,6 @@ public class NetworkThread extends Thread {
                     if (bytesReceived == dataSize) {
                         dataComplete = true;
                         endTransmission = true;
-                        System.out.println("Data complete");
                     }
                 }
             } catch (IOException e) {
@@ -122,7 +118,6 @@ public class NetworkThread extends Thread {
                 }
                 if (null != message) {
                     final Message toPost = message;
-                    System.out.println("Message decoded: " + message.toString());
                     mainThreadHandler.post(new Runnable() {
                         @Override
                         public void run() {
@@ -178,7 +173,6 @@ public class NetworkThread extends Thread {
         Send payload
          */
         while (!endTransmission) {
-            System.out.println("Attempting to send " + dataSize + " bytes");
             try {
                 int bytesLeft = dataSize - bytesSent;
                 int chunkSize = (4096 > bytesLeft) ? bytesLeft : 4096;
@@ -188,7 +182,6 @@ public class NetworkThread extends Thread {
 
                 if (bytesSent == dataSize) {
                     endTransmission = true;
-                    System.out.println("Finished sending message");
                 }
             } catch (IOException e) {
                 endTransmission = true;

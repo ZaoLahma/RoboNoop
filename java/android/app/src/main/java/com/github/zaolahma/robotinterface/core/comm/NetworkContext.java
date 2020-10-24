@@ -8,6 +8,7 @@ import java.util.List;
 
 public class NetworkContext {
     private static NetworkContext S_INSTANCE = null;
+    private NetworkThread mNetworkThread;
     private List<MessageListener> mMessageListeners;
     private Message mMessageToSend;
 
@@ -22,6 +23,13 @@ public class NetworkContext {
         return S_INSTANCE;
     }
 
+    public void setNetworkThread(NetworkThread networkThread) {
+        if (null != mNetworkThread) {
+            mNetworkThread.exit();
+        }
+        mNetworkThread = networkThread;
+    }
+
     public void sendMessage(Message message) {
         mMessageToSend = message;
     }
@@ -34,5 +42,9 @@ public class NetworkContext {
 
     public void addMessageListener(MessageListener messageListener) {
         mMessageListeners.add(messageListener);
+    }
+
+    public void disconnect() {
+        mNetworkThread.exit();
     }
 }

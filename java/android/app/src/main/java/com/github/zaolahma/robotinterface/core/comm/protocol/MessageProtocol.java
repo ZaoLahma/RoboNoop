@@ -1,6 +1,5 @@
 package com.github.zaolahma.robotinterface.core.comm.protocol;
 
-import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.Map;
 
@@ -17,8 +16,6 @@ public class MessageProtocol implements Protocol {
         msgId = (msgId >= 1) ? msgId : 0x100 + msgId;
 
         Message message = null;
-
-        System.out.println("msgId: " + msgId);
 
         try {
             if (mMessageDefinitions.containsKey(msgId)) {

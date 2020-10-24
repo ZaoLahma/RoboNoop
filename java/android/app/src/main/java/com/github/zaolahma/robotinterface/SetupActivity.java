@@ -4,10 +4,12 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
+import com.github.zaolahma.robotinterface.core.comm.NetworkContext;
 import com.github.zaolahma.robotinterface.core.comm.NetworkThread;
 import com.github.zaolahma.robotinterface.core.comm.protocol.MessageProtocol;
 import com.github.zaolahma.robotinterface.core.comm.protocol.Protocol;
@@ -39,6 +41,8 @@ public class SetupActivity extends AppCompatActivity implements View.OnClickList
         mConnectButton = (Button) findViewById(R.id.connect_button);
 
         mConnectButton.setOnClickListener(this);
+
+        System.out.println("On create called");
     }
 
     @Override
@@ -61,7 +65,7 @@ public class SetupActivity extends AppCompatActivity implements View.OnClickList
             //Do nothing
         }
         if (nwThread.isRunning()) {
-            AppContext.getApi(getApplicationContext()).setNwThread(nwThread);
+            NetworkContext.getApi().setNetworkThread(nwThread);
 
             Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
