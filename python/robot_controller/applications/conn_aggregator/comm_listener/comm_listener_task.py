@@ -27,9 +27,7 @@ class CommListenerTask(TaskBase):
         func()
 
     def handle_init(self):
-        app_config = Config.get_config_val("application")
-        port_no = app_config["comm"]["message_proxy"]["port-no"]
-        self.comm_if.publish_service(port_no)
+        CommUtils.publish_service(self.comm_if, "conn_aggregator")
         self.state_handler.transition()
 
     def handle_connect_start(self):

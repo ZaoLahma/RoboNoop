@@ -33,7 +33,7 @@
                 "address" : "localhost",
                 "port-no" : 3305
             },
-            "message_proxy" :
+            "conn_aggregator" :
             {
                 "address" : "localhost",
                 "port-no" : 3306

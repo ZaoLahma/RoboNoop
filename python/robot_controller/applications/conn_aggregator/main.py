@@ -31,5 +31,5 @@ class Main:
 
         run_in_new_thread = False
         thread = SchedulerThread(scheduler, run_in_new_thread)
-        scheduler_periodicity_ms = 50
+        scheduler_periodicity_ms = 100
         thread.start(scheduler_periodicity_ms)

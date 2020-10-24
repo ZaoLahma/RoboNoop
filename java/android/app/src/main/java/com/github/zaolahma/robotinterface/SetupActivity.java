@@ -61,6 +61,8 @@ public class SetupActivity extends AppCompatActivity implements View.OnClickList
                         S_CONN_AGGREGATOR_PORT_NO,
                         protocolList);
         nwThread.start();
+
+        NetworkContext.getApi().setNetworkThread(nwThread);
     }
 
     @Override
