@@ -1,5 +1,7 @@
 package com.github.zaolahma.robotinterface.core.comm;
 
+import android.net.Network;
+
 import com.github.zaolahma.robotinterface.core.comm.protocol.Message;
 
 import java.io.IOException;
@@ -11,10 +13,11 @@ public class NetworkContext {
     private static NetworkContext S_INSTANCE = null;
     private NetworkThread mNetworkThread;
     private List<MessageListener> mMessageListeners;
-    private Message mMessageToSend;
+    private List<NetworkStateListener> mNetworkStateListeners;
 
     private NetworkContext() {
         mMessageListeners = new ArrayList<MessageListener>();
+        mNetworkStateListeners = new ArrayList<NetworkStateListener>();
     }
 
     public static NetworkContext getApi() {
@@ -22,6 +25,18 @@ public class NetworkContext {
             S_INSTANCE = new NetworkContext();
         }
         return S_INSTANCE;
+    }
+
+    public void registerNetworkStateListener(NetworkStateListener listener) {
+        if (!mNetworkStateListeners.contains(listener)) {
+            mNetworkStateListeners.add(listener);
+        }
+    }
+
+    public void onConnect() {
+        for (NetworkStateListener listener : mNetworkStateListeners) {
+            listener.onConnected();
+        }
     }
 
     public void setNetworkThread(NetworkThread networkThread) {
@@ -46,6 +61,12 @@ public class NetworkContext {
     }
 
     public void disconnect() {
-        mNetworkThread.exit();
+        if (null != mNetworkThread) {
+            mNetworkThread.exit();
+        }
+
+        for (NetworkStateListener listener : mNetworkStateListeners) {
+            listener.onDisconnected();
+        }
     }
 }

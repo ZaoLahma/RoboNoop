@@ -5,11 +5,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.hardware.SensorManager;
+import android.net.Network;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
 import com.github.zaolahma.robotinterface.core.comm.NetworkContext;
+import com.github.zaolahma.robotinterface.core.comm.NetworkStateListener;
 import com.github.zaolahma.robotinterface.core.comm.NetworkThread;
 import com.github.zaolahma.robotinterface.core.comm.protocol.MessageProtocol;
 import com.github.zaolahma.robotinterface.core.comm.protocol.Protocol;
@@ -22,7 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class SetupActivity extends AppCompatActivity implements View.OnClickListener {
+public class SetupActivity extends AppCompatActivity implements View.OnClickListener, NetworkStateListener {
     private static final int S_CONN_AGGREGATOR_PORT_NO = 3306;
     private TextInputEditText mRobotAddress;
     private Button mConnectButton;
@@ -42,7 +44,7 @@ public class SetupActivity extends AppCompatActivity implements View.OnClickList
 
         mConnectButton.setOnClickListener(this);
 
-        System.out.println("On create called");
+        NetworkContext.getApi().registerNetworkStateListener(this);
     }
 
     @Override
@@ -59,18 +61,16 @@ public class SetupActivity extends AppCompatActivity implements View.OnClickList
                         S_CONN_AGGREGATOR_PORT_NO,
                         protocolList);
         nwThread.start();
+    }
 
-        while (!nwThread.isStarted())
-        {
-            //Do nothing
-        }
-        if (nwThread.isRunning()) {
-            NetworkContext.getApi().setNetworkThread(nwThread);
+    @Override
+    public void onConnected() {
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
+    }
 
-            Intent intent = new Intent(this, MainActivity.class);
-            startActivity(intent);
-        } else {
-            System.out.println("Failed to connect!");
-        }
+    @Override
+    public void onDisconnected() {
+
     }
 }

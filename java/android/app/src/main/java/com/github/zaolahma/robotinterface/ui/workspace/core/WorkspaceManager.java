@@ -51,6 +51,6 @@ public class WorkspaceManager extends FragmentPagerAdapter {
     public void onPageSelected(int position) {
         mWorkspaces.get(mCurrentTab).deactivate();
         mCurrentTab = position;
-        mWorkspaces.get(position).activate();
+        mWorkspaces.get(mCurrentTab).activate();
     }
 }

@@ -6,6 +6,7 @@ import android.hardware.SensorManager;
 import android.os.Bundle;
 
 import com.github.zaolahma.robotinterface.core.comm.NetworkContext;
+import com.github.zaolahma.robotinterface.core.comm.NetworkStateListener;
 import com.github.zaolahma.robotinterface.ui.workspace.RemoteControlWorkspace;
 import com.github.zaolahma.robotinterface.ui.workspace.SonarWorkspace;
 import com.github.zaolahma.robotinterface.ui.workspace.StatusWorkspace;
@@ -16,7 +17,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.github.zaolahma.robotinterface.ui.workspace.core.WorkspaceManager;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements NetworkStateListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,11 +53,23 @@ public class MainActivity extends AppCompatActivity {
             public void onTabReselected(TabLayout.Tab tab) {
             }
         });
+
+        NetworkContext.getApi().registerNetworkStateListener(this);
     }
 
     @Override
     protected void onStop() {
         super.onStop();
         NetworkContext.getApi().disconnect();
+    }
+
+    @Override
+    public void onConnected() {
+
+    }
+
+    @Override
+    public void onDisconnected() {
+        finish();
     }
 }

@@ -38,11 +38,6 @@ public class RemoteControlWorkspace extends WorkspaceBase implements View.OnClic
     }
 
     @Override
-    public void activate() {
-
-    }
-
-    @Override
     public void deactivate() {
         if (null != mSensorDataThread) {
             mSensorDataThread.exit();
@@ -61,14 +56,12 @@ public class RemoteControlWorkspace extends WorkspaceBase implements View.OnClic
 
     @Override
     public void onClick(View v) {
-        List<Protocol> protocolList = new ArrayList<Protocol>();
-
         mSensorDataThread = new SensorDataThread(mSensorManager);
         mSensorDataThread.start();
     }
 
     private class SensorDataThread extends Thread {
-        private static final int S_TARGET_FPS = 10;
+        private static final int S_TARGET_FPS = 4;
         private static final int S_MILLIS_IN_SECOND = 1000;
         private static final short S_SUBSYSTEM = 1;
         private static final short S_POWER = 100;

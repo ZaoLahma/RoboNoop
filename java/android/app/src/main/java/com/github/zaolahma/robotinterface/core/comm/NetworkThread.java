@@ -7,7 +7,6 @@ import android.os.Looper;
 import com.github.zaolahma.robotinterface.core.comm.protocol.Message;
 import com.github.zaolahma.robotinterface.core.comm.protocol.MessageProtocol;
 import com.github.zaolahma.robotinterface.core.comm.protocol.Protocol;
-import com.github.zaolahma.robotinterface.ui.shared.AppContext;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -25,7 +24,6 @@ public class NetworkThread extends Thread {
     private final List<Protocol> mProtocols;
     private final Context mContext;
     private boolean mRunning;
-    private boolean mStarted = false;
     Socket mSocket;
     DataOutputStream mDataOutputStream;
 
@@ -62,16 +60,13 @@ public class NetworkThread extends Thread {
             mainThreadHandler.post(new Runnable() {
                 @Override
                 public void run() {
-                    System.out.println("Connected status set");
-                    AppContext.getApi(mContext).setString(
-                            "connection_status", "connected");
+                    NetworkContext.getApi().onConnect();
                 }
             });
         }
 
         while (mRunning) {
-            mStarted = true;
-            System.out.println("In running");
+            System.out.println("Running still");
             byte[] header = new byte[2];
             byte[] data = null;
             boolean dataComplete = false;
@@ -84,6 +79,8 @@ public class NetworkThread extends Thread {
                     short tmp = headerData.getShort();
                     dataSize = tmp >= 0 ? tmp : 0x10000 + tmp;
                     data = new byte[dataSize];
+                } else if (0 > receivedHeaderSize) {
+                    mRunning = false;
                 }
 
                 int bytesReceived = 0;
@@ -127,7 +124,12 @@ public class NetworkThread extends Thread {
                 }
             }
         }
-        mStarted = true;
+        mainThreadHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                NetworkContext.getApi().disconnect();
+            }
+        });
     }
 
     public void exit() {
@@ -191,9 +193,5 @@ public class NetworkThread extends Thread {
                 e.printStackTrace();
             }
         }
-    }
-
-    public boolean isStarted() {
-        return mStarted;
     }
 }
