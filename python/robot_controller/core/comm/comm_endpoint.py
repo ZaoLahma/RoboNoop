@@ -139,7 +139,11 @@ class CommEndpoint(TaskBase):
                 if True == USE_PSUTIL:
                     Log.log(str(psutil.virtual_memory().available))
                 return None
-            return bytearray(data)
+            try:
+                return bytearray(data)
+            except:
+                Log.log("Failed to encode data")
+                return None
 
     def receive_message(self, connection):
         message = None
