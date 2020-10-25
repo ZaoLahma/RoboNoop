@@ -117,22 +117,15 @@ class CommEndpoint(TaskBase):
         return messages
 
     def receive_data(self, connection, num_bytes):
-        try:
-            data = [None] * num_bytes
-        except MemoryError:
-            Log.log("num_bytes: " + str(num_bytes))
-            return None
-        data_index = 0
-        while (data_index < num_bytes):
+        data = []
+        while (len(data) < num_bytes):
             try:
-                packet = connection.recv(num_bytes - data_index)
+                packet = connection.recv(num_bytes - len(data))
                 if not packet:
                     return False
-                for byte in packet:
-                    data[data_index] = byte
-                    data_index = data_index + 1
+                data += packet
             except socket.timeout:
-                if data_index > 0:
+                if len(data) > 0:
                     continue
                 else:
                     return None
@@ -143,11 +136,7 @@ class CommEndpoint(TaskBase):
                 if True == USE_PSUTIL:
                     Log.log(str(psutil.virtual_memory().available))
                 return None
-            try:
-                return bytearray(data)
-            except:
-                Log.log("Failed to encode data")
-                return None
+            return bytearray(data)
 
     def receive_message(self, connection):
         message = None
