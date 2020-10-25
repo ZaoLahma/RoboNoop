@@ -1,4 +1,5 @@
 from robot_controller.applications.garrus.main import Main
+from robot_controller.core.config.config import Config
 import sys
 import getopt
 

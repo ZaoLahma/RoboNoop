@@ -4,11 +4,13 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.graphics.Color;
 import android.hardware.SensorManager;
 import android.net.Network;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.github.zaolahma.robotinterface.core.comm.NetworkContext;
 import com.github.zaolahma.robotinterface.core.comm.NetworkStateListener;
@@ -28,6 +30,7 @@ public class SetupActivity extends AppCompatActivity implements View.OnClickList
     private static final int S_CONN_AGGREGATOR_PORT_NO = 3306;
     private TextInputEditText mRobotAddress;
     private Button mConnectButton;
+    private TextView mConnectionStatus;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +44,7 @@ public class SetupActivity extends AppCompatActivity implements View.OnClickList
 
         mRobotAddress = (TextInputEditText) findViewById(R.id.robot_address);
         mConnectButton = (Button) findViewById(R.id.connect_button);
+        mConnectionStatus = (TextView) findViewById(R.id.setup_connection_status);
 
         mConnectButton.setOnClickListener(this);
 
@@ -67,12 +71,16 @@ public class SetupActivity extends AppCompatActivity implements View.OnClickList
 
     @Override
     public void onConnected() {
+        mConnectionStatus.setTextColor(Color.GREEN);
+        mConnectionStatus.setText("Connected");
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
     }
 
     @Override
     public void onDisconnected() {
-
+        mConnectionStatus.setTextColor(Color.RED);
+        final String robotAddress = mRobotAddress.getText().toString();
+        mConnectionStatus.setText("Connection to " + robotAddress + " failed");
     }
 }

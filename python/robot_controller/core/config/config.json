@@ -38,6 +38,14 @@
                 "address" : "localhost",
                 "port-no" : 3306
             }
+        },
+        "vision":
+        {
+            "garrus":
+            {
+                "image_x_res" : 640,
+                "image_y_res" : 480
+            }
         }
     }
 }
