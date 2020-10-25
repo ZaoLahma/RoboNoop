@@ -59,5 +59,3 @@ class MotorTask(TaskBase):
         if None != msg:
             Log.log("Unlocking robot, motion allowed")
             self.state_handler.transition()
-        else:
-            Log.log("Inhibited")

@@ -45,9 +45,13 @@ class DataTransfer(MessageBase):
         return 2
         
     def encode(self):
+        #Log.log("data: " + str(json.dumps(self.data).encode("utf-8")))
         return json.dumps(self.data).encode("utf-8")
 
     def decode(self, data):
-        json.loads(data.decode("utf-8"))
+        try:
+            self.data = json.loads(data.decode("utf-8"))
+        except:
+            Log.log("Failed to decode JSON blob")
 
 ALL_CORE_MESSAGES = [HeartbeatReq, HeartbeatCfm, DataTransfer]

@@ -2,6 +2,7 @@ from ....core.runtime.task_base import TaskBase
 from ....core.log.log import Log
 from ....core.comm.core_messages import DataTransfer
 from ....core.config.config import Config
+from ....core.comm.comm_utils import CommUtils
 from io import BytesIO
 from base64 import b64encode
 
@@ -21,9 +22,11 @@ class ImageControlTask(TaskBase):
 
         self.camera.resolution = (resolution_x, resolution_y)
 
+        CommUtils.publish_service(self.comm_if, "garrus")
+
 
     def run(self):
-        Log.log("Run")
+        Log.log("======= Run ======")
         image = BytesIO()
         self.camera.capture(image, "rgb", use_video_port=True)
         image = bytearray(image.getvalue())

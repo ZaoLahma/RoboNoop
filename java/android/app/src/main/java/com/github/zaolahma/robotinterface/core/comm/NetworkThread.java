@@ -67,18 +67,18 @@ public class NetworkThread extends Thread {
 
         while (mRunning) {
             System.out.println("Running still");
-            byte[] header = new byte[2];
+            byte[] header = new byte[4];
             byte[] data = null;
             boolean dataComplete = false;
             try {
-                int receivedHeaderSize = inputStream.read(header, 0, 2);
+                int receivedHeaderSize = inputStream.read(header, 0, 4);
                 int dataSize = 0;
-                if (2 == receivedHeaderSize) {
+                if (4 == receivedHeaderSize) {
                     ByteBuffer headerData = ByteBuffer.wrap(header);
                     headerData.order(ByteOrder.BIG_ENDIAN);
-                    short tmp = headerData.getShort();
-                    dataSize = tmp >= 0 ? tmp : 0x10000 + tmp;
+                    dataSize = headerData.getInt();
                     data = new byte[dataSize];
+                    System.out.println("dataSize: " + dataSize);
                 } else if (0 > receivedHeaderSize) {
                     mRunning = false;
                 }
@@ -157,9 +157,10 @@ public class NetworkThread extends Thread {
         Send header
          */
         if (!endTransmission) {
-            byte[] header = new byte[2];
+            byte[] header = new byte[4];
             ByteBuffer headerBuf = ByteBuffer.wrap(header);
-            headerBuf.putShort((short) dataSize);
+            headerBuf.order(ByteOrder.BIG_ENDIAN);
+            headerBuf.putInt(dataSize);
             try {
                 mDataOutputStream.write(header, 0,header.length);
                 mDataOutputStream.flush();

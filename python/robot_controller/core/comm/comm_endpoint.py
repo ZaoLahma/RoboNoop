@@ -130,11 +130,11 @@ class CommEndpoint(TaskBase):
 
     def receive_message(self, connection):
         message = None
-        header = self.receive_data(connection, 2)
+        header = self.receive_data(connection, 4)
         if None != header:
             if False == header:
                 return False
-            size = struct.unpack(">H", header[0:2])[0]
+            size = struct.unpack(">i", header[0:4])[0]
             data = self.receive_data(connection, size)
             if None != data:
                 if False == data:
@@ -147,7 +147,7 @@ class CommEndpoint(TaskBase):
 
     def send_message_to_connection(self, connection, message):
         data = MessageProtocol.encode_message(message)
-        data_size = struct.pack(">H", len(data))
+        data_size = struct.pack(">i", len(data))
         try:
             connection.sendall(data_size)
             connection.sendall(data)

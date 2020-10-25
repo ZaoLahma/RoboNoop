@@ -14,7 +14,8 @@ class CommListenerTask(TaskBase):
         self.state_def =  [
             State("INIT", self.handle_init, "CONNECT_START", "INIT"),
             State("CONNECT_START", self.handle_connect_start, "CONNECT_MASTERCHIEF", "CONNECT_START"),
-            State("CONNECT_MASTERCHIEF", self.handle_masterchief, "CONNECT_DAREDEVIL", "CONNECT_START"),
+            State("CONNECT_MASTERCHIEF", self.handle_masterchief, "CONNECT_GARRUS", "CONNECT_START"),
+            State("CONNECT_GARRUS", self.handle_connect_garrus, "CONNECT_DAREDEVIL", "CONNECT_START"),
             State("CONNECT_DAREDEVIL", self.handle_connect_daredevil, "CONNECT_FEAR", "CONNECT_START"),
             State("CONNECT_FEAR", self.handle_connect_fear, "CONNECT_KRATOS", "CONNECT_START"),
             State("CONNECT_KRATOS", self.handle_connect_kratos, "ENABLED", "CONNECT_START"),
@@ -36,6 +37,10 @@ class CommListenerTask(TaskBase):
     def handle_masterchief(self):
         fail = True != CommUtils.connect(self.comm_aggregate_if, "masterchief")
         self.state_handler.transition(fail)
+
+    def handle_connect_garrus(self):
+        fail = True != CommUtils.connect(self.comm_aggregate_if, "garrus")
+        self.state_handler.transition(fail)   
 
     def handle_connect_daredevil(self):
         fail = True != CommUtils.connect(self.comm_aggregate_if, "daredevil")

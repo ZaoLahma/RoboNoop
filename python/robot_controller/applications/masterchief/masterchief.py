@@ -25,7 +25,7 @@ class MasterChief(TaskBase):
             State("IDLE", self.handle_idle, "CONNECT_DAREDEVIL", "IDLE"),
             State("CONNECT_DAREDEVIL", self.handle_connect_daredevil, "CONNECT_FEAR", "START_PROCESSES"),
             State("CONNECT_FEAR", self.handle_connect_fear, "CONNECT_KRATOS", "START_PROCESSES"),
-            State("CONNECT_KRATOS", self.handle_connect_kratos, "ENABLED", "START_PROCESSES"),
+            State("CONNECT_KRATOS", self.handle_connect_kratos, "CONNECT_GARRUS", "START_PROCESSES"),
             State("CONNECT_GARRUS", self.handle_connect_garrus, "ENABLED", "START_PROCESSES"),
             State("START_PROCESSES", self.handle_start_processes, "IDLE", "DISABLED"),
             State("ENABLED", self.handle_enabled, "NO_STATE", "NO_STATE"),
@@ -93,7 +93,7 @@ class MasterChief(TaskBase):
         self.state_handler.transition()
 
     def handle_enabled(self):
-        Log.log("ENABLED")
+        return None
 
     def handle_disabled(self):
         Log.log("Disabled...")

@@ -10,6 +10,7 @@ import com.github.zaolahma.robotinterface.core.comm.NetworkStateListener;
 import com.github.zaolahma.robotinterface.ui.workspace.RemoteControlWorkspace;
 import com.github.zaolahma.robotinterface.ui.workspace.SonarWorkspace;
 import com.github.zaolahma.robotinterface.ui.workspace.StatusWorkspace;
+import com.github.zaolahma.robotinterface.ui.workspace.VisionWorkspace;
 import com.google.android.material.tabs.TabLayout;
 
 import androidx.viewpager.widget.ViewPager;
@@ -31,6 +32,7 @@ public class MainActivity extends AppCompatActivity implements NetworkStateListe
         setContentView(R.layout.activity_main);
         final WorkspaceManager workspaceManager = new WorkspaceManager(this, getSupportFragmentManager());
         workspaceManager.addWorkspace(new StatusWorkspace());
+        workspaceManager.addWorkspace(new VisionWorkspace());
         workspaceManager.addWorkspace(new SonarWorkspace());
         workspaceManager.addWorkspace(new RemoteControlWorkspace((SensorManager) getSystemService(Context.SENSOR_SERVICE)));
         ViewPager viewPager = findViewById(R.id.view_pager);
