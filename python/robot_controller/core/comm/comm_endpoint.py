@@ -134,7 +134,7 @@ class CommEndpoint(TaskBase):
             except MemoryError:
                 Log.log("Out of memory, skipping message")
                 if True == USE_PSUTIL:
-                    Log.log(psutil.virtual_memory().available)
+                    Log.log(str(psutil.virtual_memory().available))
                 return None
             return bytearray(data)
 
