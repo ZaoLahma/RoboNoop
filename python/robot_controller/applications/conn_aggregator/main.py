@@ -12,9 +12,9 @@ from time import sleep
 class Main:
     @staticmethod
     def run():
-        print("Connection aggregator application starting...")
-
         Log.log_file_name = "message_proxy.log"
+        Log.log_application_name = "conn_aggregator"
+        Log.log("Connection aggregator application starting...")
 
         protocol = MessageProtocol(ALL_CORE_MESSAGES + ALL_SONAR_MESSAGES + ALL_MOTOR_CONTROL_MESSAGES)
 

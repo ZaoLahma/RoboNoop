@@ -12,7 +12,7 @@ class Main:
     @staticmethod
     def run():
         Log.log_file_name = "garrus.log"
-
+        Log.log_application_name = "garrus"
         Log.log("Garrus application starting...")
 
         protocol = MessageProtocol(ALL_CORE_MESSAGES)
