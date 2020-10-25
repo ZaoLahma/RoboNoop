@@ -1,6 +1,11 @@
 from ...core.runtime.task_base import TaskBase
 from ..log.log import Log
 from .message_protocol import MessageProtocol
+USE_PSUTIL = True
+try:
+    import psutil
+except ImportError:
+    USE_PSUTIL = False
 import struct
 import socket
 
@@ -128,6 +133,8 @@ class CommEndpoint(TaskBase):
                 return None
             except MemoryError:
                 Log.log("Out of memory, skipping message")
+                if True == USE_PSUTIL:
+                    Log.log(psutil.virtual_memory().available)
                 return None
             return bytearray(data)
 
