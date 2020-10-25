@@ -117,15 +117,18 @@ class CommEndpoint(TaskBase):
         return messages
 
     def receive_data(self, connection, num_bytes):
-        data = []
-        while (len(data) < num_bytes):
+        data = [None] * num_bytes
+        data_index = 0
+        while (data_index < num_bytes):
             try:
-                packet = connection.recv(num_bytes - len(data))
+                packet = connection.recv(num_bytes - data_index)
                 if not packet:
                     return False
-                data += packet
+                for byte in packet:
+                    data[data_index] = byte
+                    data_index = data_index + 1
             except socket.timeout:
-                if len(data) > 0:
+                if data_index > 0:
                     continue
                 else:
                     return None
