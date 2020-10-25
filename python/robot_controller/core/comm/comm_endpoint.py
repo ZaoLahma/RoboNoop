@@ -117,7 +117,11 @@ class CommEndpoint(TaskBase):
         return messages
 
     def receive_data(self, connection, num_bytes):
-        data = [None] * num_bytes
+        try:
+            data = [None] * num_bytes
+        except MemoryError:
+            Log.log("num_bytes: " + str(num_bytes))
+            return None
         data_index = 0
         while (data_index < num_bytes):
             try:
