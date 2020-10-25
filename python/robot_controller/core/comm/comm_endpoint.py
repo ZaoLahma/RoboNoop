@@ -126,6 +126,9 @@ class CommEndpoint(TaskBase):
                     return None
             except ConnectionResetError:
                 return None
+            except MemoryError:
+                Log.log("Out of memory, skipping message")
+                return None
             return bytearray(data)
 
     def receive_message(self, connection):
