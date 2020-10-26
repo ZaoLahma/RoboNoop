@@ -25,33 +25,18 @@ class HeartbeatCfm(MessageBase):
     def decode(self, data):
         return None
 
-class DataTransfer(MessageBase):
-    def __init__(self):
-        self.data = {}
-
-    def add_data(self, data_type, data):
-        try:
-            dtype = self.data[data_type]
-        except KeyError:
-            self.data[data_type] = []
-            dtype = self.data[data_type]
-        dtype.append(data)
-
-    def get_data(self, data_type):
-        return self.data[data_type]
+class BinaryDataTransfer(MessageBase):
+    def __init__(self, data_buf = None):
+        self.data_buf = data_buf
 
     @staticmethod
     def get_msg_id():
         return 2
         
     def encode(self):
-        #Log.log("data: " + str(json.dumps(self.data).encode("utf-8")))
-        return json.dumps(self.data).encode("utf-8")
+        return self.data_buf
 
     def decode(self, data):
-        try:
-            self.data = json.loads(data.decode("utf-8"))
-        except:
-            Log.log("Failed to decode JSON blob")
+        self.data_buf = data
 
-ALL_CORE_MESSAGES = [HeartbeatReq, HeartbeatCfm, DataTransfer]
+ALL_CORE_MESSAGES = [HeartbeatReq, HeartbeatCfm, BinaryDataTransfer]

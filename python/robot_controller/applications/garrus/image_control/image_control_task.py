@@ -1,6 +1,6 @@
 from ....core.runtime.task_base import TaskBase
 from ....core.log.log import Log
-from ....core.comm.core_messages import DataTransfer
+from ....core.comm.core_messages import BinaryDataTransfer
 from ....core.config.config import Config
 from ....core.comm.comm_utils import CommUtils
 from io import BytesIO
@@ -30,10 +30,8 @@ class ImageControlTask(TaskBase):
         image = BytesIO()
         self.camera.capture(image, "rgb", use_video_port=True)
         image = bytearray(image.getvalue())
-        image_data = b64encode(image).decode('utf-8')
-
-        data_transfer = DataTransfer()
-        data_transfer.add_data("image_data", image_data)
+        
+        data_transfer = BinaryDataTransfer(image)
         self.comm_if.send_message(data_transfer)
 
 
