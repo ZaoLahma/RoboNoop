@@ -23,7 +23,7 @@ class MasterChief(TaskBase):
 
         self.state_def =  [
             State("INIT", self.handle_init, "CONNECT_DAREDEVIL", "INIT"),
-            State("IDLE", self.handle_idle, "CONNECT_CONN_AGGREGATOR", "IDLE"),
+            State("IDLE", self.handle_idle, "CONNECT_DAREDEVIL", "IDLE"),
             State("CONNECT_CONN_AGGREGATOR", self.handle_connect_conn_aggregator, "CONNECT_DAREDEVIL", "START_PROCESSES"),
             State("CONNECT_DAREDEVIL", self.handle_connect_daredevil, "CONNECT_FEAR", "START_PROCESSES"),
             State("CONNECT_FEAR", self.handle_connect_fear, "CONNECT_KRATOS", "START_PROCESSES"),

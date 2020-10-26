@@ -5,37 +5,37 @@
         {
             "daredevil" : 
             {
-                "address" : "localhost",
+                "address" : "192.168.0.37",
                 "port-no" : 3300
             },
             "fear" :
             {
-                "address" : "localhost",
+                "address" : "192.168.0.37",
                 "port-no" : 3301
             },
             "garrus" : 
             {
-                "address" : "localhost",
+                "address" : "192.168.0.37",
                 "port-no" : 3302
             },
             "hwal" : 
             {
-                "address" : "localhost",
+                "address" : "192.168.0.37",
                 "port-no" : 3303
             },
             "kratos" : 
             {
-                "address" : "localhost",
+                "address" : "192.168.0.37",
                 "port-no" : 3304
             },
             "masterchief" : 
             {
-                "address" : "localhost",
+                "address" : "192.168.0.37",
                 "port-no" : 3305
             },
             "conn_aggregator" :
             {
-                "address" : "localhost",
+                "address" : "192.168.0.37",
                 "port-no" : 3306
             }
         },

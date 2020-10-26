@@ -20,7 +20,11 @@ class CommUtils:
                 comm_if.connect(host, port_no)
                 ret_val = True
             except Exception as e:
-                Log.log("Exception when connecting to {0} at {1}:{2} - {3}".format(app_name, host, port_no, str(e)))
+                try:
+                    comm_if.connect("localhost", port_no)
+                    ret_val = True
+                except Exception as e:
+                    Log.log("Exception when connecting to {0} at {1}:{2} - {3}".format(app_name, host, port_no, str(e)))
         else:
             ret_val = True
         return ret_val
