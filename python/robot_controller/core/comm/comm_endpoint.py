@@ -136,7 +136,7 @@ class CommEndpoint(TaskBase):
                 if True == USE_PSUTIL:
                     Log.log(str(psutil.virtual_memory().available))
                 return None
-            return bytearray(data)
+        return bytearray(data)
 
     def receive_message(self, connection):
         message = None
@@ -145,7 +145,9 @@ class CommEndpoint(TaskBase):
             if False == header:
                 return False
             size = struct.unpack(">i", header[0:4])[0]
+            Log.log("Size to receive: " + str(size))
             data = self.receive_data(connection, size)
+            Log.log("Received size: " + str(len(data)))
             if None != data:
                 if False == data:
                     return False
