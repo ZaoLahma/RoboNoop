@@ -35,23 +35,33 @@ class CommListenerTask(TaskBase):
         self.state_handler.transition()
 
     def handle_masterchief(self):
-        fail = True != CommUtils.connect(self.comm_aggregate_if, "masterchief")
+        fail = False
+        if False == CommUtils.is_connected(self.comm_aggregate_if, "masterchief"):
+            fail = True != CommUtils.connect(self.comm_aggregate_if, "masterchief")
         self.state_handler.transition(fail)
 
     def handle_connect_garrus(self):
-        fail = True != CommUtils.connect(self.comm_aggregate_if, "garrus")
-        self.state_handler.transition(fail)   
+        fail = False
+        if False == CommUtils.is_connected(self.comm_aggregate_if, "garrus"):
+            fail = True != CommUtils.connect(self.comm_aggregate_if, "garrus")
+        self.state_handler.transition(fail)
 
     def handle_connect_daredevil(self):
-        fail = True != CommUtils.connect(self.comm_aggregate_if, "daredevil")
+        fail = False
+        if False == CommUtils.is_connected(self.comm_aggregate_if, "daredevil"):
+            fail = True != CommUtils.connect(self.comm_aggregate_if, "daredevil")
         self.state_handler.transition(fail)
 
     def handle_connect_fear(self):
-        fail = True != CommUtils.connect(self.comm_aggregate_if, "fear")
+        fail = False
+        if False == CommUtils.is_connected(self.comm_aggregate_if, "fear"):
+            fail = True != CommUtils.connect(self.comm_aggregate_if, "fear")
         self.state_handler.transition(fail)
     
     def handle_connect_kratos(self):
-        fail = True != CommUtils.connect(self.comm_aggregate_if, "kratos")
+        fail = False
+        if False == CommUtils.is_connected(self.comm_aggregate_if, "kratos"):
+            fail = True != CommUtils.connect(self.comm_aggregate_if, "kratos")
         self.state_handler.transition(fail)
 
     def handle_enabled(self):
