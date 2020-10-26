@@ -68,6 +68,7 @@ class CommListenerTask(TaskBase):
 
         #Check if still connected
         connected = CommUtils.is_connected(self.comm_aggregate_if, "masterchief")
+        connected = connected and CommUtils.is_connected(self.comm_aggregate_if, "garrus")
         connected = connected and CommUtils.is_connected(self.comm_aggregate_if, "daredevil")
         connected = connected and CommUtils.is_connected(self.comm_aggregate_if, "fear")
         connected = connected and CommUtils.is_connected(self.comm_aggregate_if, "kratos")
