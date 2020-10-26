@@ -84,4 +84,5 @@ class CommListenerTask(TaskBase):
         connected = connected and CommUtils.is_connected(self.comm_aggregate_if, "kratos")
 
         fail = False == connected
-        self.state_handler.transition(fail)
+        if True == fail:
+            self.state_handler.transition(fail)
