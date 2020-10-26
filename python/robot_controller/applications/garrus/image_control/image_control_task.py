@@ -26,10 +26,10 @@ class ImageControlTask(TaskBase):
 
 
     def run(self):
-        Log.log("======= Run ======")
         image = BytesIO()
         self.camera.capture(image, "rgb", use_video_port=True)
         image = bytearray(image.getvalue())
+        Log.log("Captured image of size: " + str(len(image)))
         
         data_transfer = BinaryDataTransfer(image)
         self.comm_if.send_message(data_transfer)
