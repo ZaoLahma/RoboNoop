@@ -44,25 +44,26 @@ class ConnectionHandler(Thread):
         self.messages_to_send = []
         self.received_messages = []
         self.active = False
-        self.mutex = Lock()
+        self.send_mutex = Lock()
+        self.receive_mutex = Lock()
 
     def send_messages(self, messages):
-        self.mutex.acquire()
+        self.send_mutex.acquire()
         self.messages_to_send.extend(messages)
         self.outputs = self.inputs
-        self.mutex.release()
+        self.send_mutex.release()
 
     def send_message(self, message):
-        self.mutex.acquire()
+        self.send_mutex.acquire()
         self.messages_to_send.append(message)
         self.outputs = self.inputs
-        self.mutex.release()
+        self.send_mutex.release()
 
     def get_received_messages(self):
-        self.mutex.acquire()
+        self.receive_mutex.acquire()
         ret_val = self.received_messages
         self.received_messages = []
-        self.mutex.release()
+        self.receive_mutex.release()
         return ret_val
 
     def run(self):
@@ -79,15 +80,18 @@ class ConnectionHandler(Thread):
 
             for write_sock in writable:
                 self.send_messages_to_sock(write_sock)
+        Log.log("Exiting ConnectionHandler for {}".format(self.port_no))
 
     def receive_next_message(self, read_sock):
-        self.mutex.acquire()
+        self.receive_mutex.acquire()
         try:
+            read_sock.settimeout(0.5)
             message = self.receive_message(read_sock)
             if None != message:
                 self.received_messages.append(message)
+            read_sock.settimeout(None)
         finally:
-            self.mutex.release()
+            self.receive_mutex.release()
 
     def receive_message(self, read_sock):
         message = None
@@ -98,8 +102,6 @@ class ConnectionHandler(Thread):
             size = struct.unpack(">i", header[0:4])[0]
             data = self.receive_data(read_sock, size)
             if None != data:
-                if False == data:
-                    return False
                 for protocol in self.protocols:
                     message = protocol.decode_message(data)
                     if None != message:
@@ -111,7 +113,7 @@ class ConnectionHandler(Thread):
         while (len(data) < num_bytes):
             try:
                 packet = read_sock.recv(num_bytes - len(data))
-                if None == packet:
+                if not packet:
                     self.active = False
                     return None
                 data += packet
@@ -126,7 +128,7 @@ class ConnectionHandler(Thread):
         return bytearray(data)
 
     def send_messages_to_sock(self, send_sock):
-        self.mutex.acquire()
+        self.send_mutex.acquire()
         try:
             for message in self.messages_to_send:
                 data = MessageProtocol.encode_message(message)
@@ -137,12 +139,10 @@ class ConnectionHandler(Thread):
                 except Exception:
                     self.active = False
                     break
-                else:
-                    Log.log("All sent ok")
             self.outputs = []
             self.messages_to_send = []
         finally:
-            self.mutex.release()
+            self.send_mutex.release()
 
 
 class CommEndpoint(TaskBase):
@@ -194,7 +194,6 @@ class CommEndpoint(TaskBase):
         disconnected =  []
         for connection_handler in self.connection_handlers:
             messages = connection_handler.get_received_messages()
-            Log.log("Received messages in task {}".format(len(messages)))
             self.received_messages.extend(messages)
             if True == connection_handler.active:
                 connection_handler.send_messages(self.messages_to_send)
