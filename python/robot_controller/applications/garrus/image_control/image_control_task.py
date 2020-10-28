@@ -1,10 +1,9 @@
 from ....core.runtime.task_base import TaskBase
 from ....core.log.log import Log
-from ....core.comm.core_messages import BinaryDataTransfer
 from ....core.config.config import Config
 from ....core.comm.comm_utils import CommUtils
+from .image_control_messages import BinaryDataTransfer
 from io import BytesIO
-from base64 import b64encode
 
 try:
     import picamera

@@ -25,18 +25,4 @@ class HeartbeatCfm(MessageBase):
     def decode(self, data):
         return None
 
-class BinaryDataTransfer(MessageBase):
-    def __init__(self, data_buf = None):
-        self.data_buf = data_buf
-
-    @staticmethod
-    def get_msg_id():
-        return 2
-        
-    def encode(self):
-        return self.data_buf
-
-    def decode(self, data):
-        self.data_buf = data
-
-ALL_CORE_MESSAGES = [HeartbeatReq, HeartbeatCfm, BinaryDataTransfer]
+ALL_CORE_MESSAGES = [HeartbeatReq, HeartbeatCfm]
