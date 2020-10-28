@@ -1,27 +1,165 @@
 from ...core.runtime.task_base import TaskBase
 from ..log.log import Log
 from .message_protocol import MessageProtocol
-USE_PSUTIL = True
-try:
-    import psutil
-except ImportError:
-    USE_PSUTIL = False
+from threading import Thread, Lock
 import struct
 import socket
+import select
 
-class ConnectionInfo:
-    def __init__(self, connection, port_no):
-        self.connection = connection
+
+class ConnectionListener(Thread):
+    def __init__(self, conn_established):
+        Thread.__init__(self)
+        self.conn_established = conn_established
+        self.conn_listeners = []
+        self.active = False
+
+    def publish_service(self, port_no):
+        conn_listener = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        conn_listener.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        conn_listener.bind(('', port_no))
+        conn_listener.listen(5)
+        self.conn_listeners.append(conn_listener)
+
+    def run(self):
+        Log.log("Connection listener started")
+        self.active = True
+        while True == self.active:
+            readable, _, exceptional = select.select(self.conn_listeners, [], self.conn_listeners, 1)
+            for sock in readable:
+                (connection, address) = sock.accept()
+                Log.log("Connected to by {}".format(address))
+                self.conn_established(sock.getsockname()[1], connection)
+
+            for broken in exceptional:
+                self.conn_listeners.remove(broken)
+
+class ConnectionHandler(Thread):
+    def __init__(self, port_no, connection, protocols):
+        Thread.__init__(self)
         self.port_no = port_no
+        self.inputs = [connection]
+        self.protocols = protocols
+        self.outputs = []
+        self.messages_to_send = []
+        self.received_messages = []
+        self.active = False
+        self.mutex = Lock()
+
+    def send_messages(self, messages):
+        self.mutex.acquire()
+        self.messages_to_send.extend(messages)
+        self.outputs = self.inputs
+        self.mutex.release()
+
+    def send_message(self, message):
+        self.mutex.acquire()
+        self.messages_to_send.append(message)
+        self.outputs = self.inputs
+        self.mutex.release()
+
+    def get_received_messages(self):
+        self.mutex.acquire()
+        ret_val = self.received_messages
+        self.received_messages = []
+        self.mutex.release()
+        return ret_val
+
+    def run(self):
+        Log.log("ConnectionHandler started for {}".format(self.port_no))
+        self.active = True
+        while True == self.active:
+            readable, writable, exceptional = select.select(self.inputs, self.outputs, self.inputs, 0.05)
+
+            for broken_sock in exceptional:
+                self.inputs.remove(broken_sock)
+
+            for read_sock in readable:
+                self.receive_next_message(read_sock)
+
+            for write_sock in writable:
+                self.send_messages_to_sock(write_sock)
+
+    def receive_next_message(self, read_sock):
+        self.mutex.acquire()
+        try:
+            message = self.receive_message(read_sock)
+            if None != message:
+                self.received_messages.append(message)
+        finally:
+            self.mutex.release()
+
+    def receive_message(self, read_sock):
+        message = None
+        header = self.receive_data(read_sock, 4)
+        if None != header:
+            if False == header:
+                return False
+            size = struct.unpack(">i", header[0:4])[0]
+            data = self.receive_data(read_sock, size)
+            if None != data:
+                if False == data:
+                    return False
+                for protocol in self.protocols:
+                    message = protocol.decode_message(data)
+                    if None != message:
+                        break
+        return message
+
+    def receive_data(self, read_sock, num_bytes):
+        data = []
+        while (len(data) < num_bytes):
+            try:
+                packet = read_sock.recv(num_bytes - len(data))
+                if None == packet:
+                    self.active = False
+                    return None
+                data += packet
+            except socket.timeout:
+                if len(data) > 0:
+                    continue
+                else:
+                    return None
+            except ConnectionResetError:
+                self.active = False
+                return None
+        return bytearray(data)
+
+    def send_messages_to_sock(self, send_sock):
+        self.mutex.acquire()
+        try:
+            for message in self.messages_to_send:
+                data = MessageProtocol.encode_message(message)
+                data_size = struct.pack(">i", len(data))
+                try:
+                    send_sock.sendall(data_size)
+                    send_sock.sendall(data)
+                except Exception:
+                    self.active = False
+                    break
+                else:
+                    Log.log("All sent ok")
+            self.outputs = []
+            self.messages_to_send = []
+        finally:
+            self.mutex.release()
+
 
 class CommEndpoint(TaskBase):
     def __init__(self, protocols):
         TaskBase.__init__(self)
         self.protocols = protocols
-        self.connection_infos = []
-        self.conn_listeners = []
-        self.messages_to_send = []
+        self.conn_listener = ConnectionListener(self.conn_established)
+        self.conn_listener.start()
+        self.connection_handlers = []
         self.received_messages = []
+        self.messages_to_send = []
+
+    def conn_established(self, port_no, connection):
+        Log.log("Callback for connection received {}".format(port_no))
+        connection_handler = ConnectionHandler(port_no, connection, self.protocols)
+        connection_handler.start()
+        self.connection_handlers.append(connection_handler)
 
     def get_message(self, msg_id):
         ret_val = None
@@ -42,125 +180,42 @@ class CommEndpoint(TaskBase):
 
     def publish_service(self, port_no):
         Log.log("publish_service with port_no {}".format(port_no))
-        try:
-            conn_listener = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            conn_listener.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-            conn_listener.bind(('', port_no))
-            conn_listener.settimeout(0.01)
-            self.conn_listeners.append(conn_listener)
-        except Exception as e:
-            Log.log("Exception when publishing service " + str(port_no) + ": " + str(e))
+        self.conn_listener.publish_service(port_no)
     
     def is_connected(self, port_no):
-        for connection_info in self.connection_infos:
-            if connection_info.port_no == port_no:
-                return True
-        return False
+        ret_val = False
+        for connection_handler in self.connection_handlers:
+            if connection_handler.port_no == port_no and True == connection_handler.active:
+                ret_val = True
+                break
+        return ret_val
 
     def run(self):
-        self.accept_connections()
-        self.receive_messages()
-        self.send_messages()
+        disconnected =  []
+        for connection_handler in self.connection_handlers:
+            messages = connection_handler.get_received_messages()
+            Log.log("Received messages in task {}".format(len(messages)))
+            self.received_messages.extend(messages)
+            if True == connection_handler.active:
+                connection_handler.send_messages(self.messages_to_send)
+            else:
+                disconnected.append(connection_handler)
 
-    def send_messages(self):
-        for connection_info in self.connection_infos:
-            for message in self.messages_to_send:
-                if False == self.send_message_to_connection(connection_info.connection, message):
-                    self.connection_infos.remove(connection_info)
-                    break
-        self.messages_to_send = []
-
-    def receive_messages(self):
-        self.received_messages = []
-        for connection_info in self.connection_infos:
-            received_messages = self.receive_messages_for_conn(connection_info.connection)
-            if None != received_messages:
-                if False == received_messages:
-                    self.connection_infos.remove(connection_info)
-                else:
-                    self.received_messages.extend(received_messages)
-
-    def accept_connections(self):
-        for listener in self.conn_listeners:
-            try:
-                listener.listen(1)
-                (connection, address) = listener.accept()
-                connection.settimeout(0.01)
-                connection_info = ConnectionInfo(connection, -1)
-                self.connection_infos.append(connection_info)
-                Log.log("Connected to by " + str(address) + "...")
-            except socket.timeout:
-                pass
+        for broken in disconnected:
+            Log.log("Disconnecting {}".format(broken.port_no))
+            self.connection_handlers.remove(broken)
 
     def connect(self, address, port_no):
         host = (address, port_no)
         connection = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        connection.settimeout(0.01)
         try:
+            connection.settimeout(0.001)
             connection.connect(host)
         except:
             raise
         else:
             Log.log("Connected to application at address {0}".format(host))
-            connection_info = ConnectionInfo(connection, port_no)
-            self.connection_infos.append(connection_info)
-
-    def receive_messages_for_conn(self, connection):
-        messages = []
-        message = self.receive_message(connection)
-        while None != message:
-            if False == message:
-                return False
-            messages.append(message)
-            message = self.receive_message(connection)
-        
-        return messages
-
-    def receive_data(self, connection, num_bytes):
-        data = []
-        while (len(data) < num_bytes):
-            try:
-                packet = connection.recv(num_bytes - len(data))
-                if not packet:
-                    return False
-                data += packet
-            except socket.timeout:
-                if len(data) > 0:
-                    continue
-                else:
-                    return None
-            except ConnectionResetError:
-                return None
-            except MemoryError:
-                Log.log("Out of memory, skipping message")
-                if True == USE_PSUTIL:
-                    Log.log(str(psutil.virtual_memory().available))
-                return None
-        return bytearray(data)
-
-    def receive_message(self, connection):
-        message = None
-        header = self.receive_data(connection, 4)
-        if None != header:
-            if False == header:
-                return False
-            size = struct.unpack(">i", header[0:4])[0]
-            data = self.receive_data(connection, size)
-            if None != data:
-                if False == data:
-                    return False
-                for protocol in self.protocols:
-                    message = protocol.decode_message(data)
-                    if None != message:
-                        break
-        return message
-
-    def send_message_to_connection(self, connection, message):
-        data = MessageProtocol.encode_message(message)
-        data_size = struct.pack(">i", len(data))
-        try:
-            connection.sendall(data_size)
-            connection.sendall(data)
-            return True
-        except Exception:
-            return False
+            connection.settimeout(None)
+            connection_handler = ConnectionHandler(port_no, connection, self.protocols)
+            connection_handler.start()
+            self.connection_handlers.append(connection_handler)
