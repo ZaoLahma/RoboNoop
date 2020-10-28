@@ -208,7 +208,7 @@ class CommEndpoint(TaskBase):
         host = (address, port_no)
         connection = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         try:
-            connection.settimeout(0.001)
+            connection.settimeout(0.01)
             connection.connect(host)
         except:
             raise
