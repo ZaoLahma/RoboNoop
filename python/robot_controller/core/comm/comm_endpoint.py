@@ -19,7 +19,7 @@ class ConnectionListener(Thread):
         conn_listener = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         conn_listener.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         conn_listener.bind(('', port_no))
-        conn_listener.listen(5)
+        conn_listener.listen(1)
         self.conn_listeners.append(conn_listener)
 
     def run(self):
