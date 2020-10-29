@@ -202,7 +202,7 @@ class CommEndpoint(TaskBase):
         return ret_val
 
     def run(self):
-        self.invalidate_messages()
+        self.received_messages = []
         disconnected =  []
         for connection_handler in self.connection_handlers:
             messages = connection_handler.get_received_messages()
@@ -211,6 +211,7 @@ class CommEndpoint(TaskBase):
                 connection_handler.send_messages(self.messages_to_send)
             else:
                 disconnected.append(connection_handler)
+        self.messages_to_send = []
 
         for broken in disconnected:
             Log.log("Disconnecting {}".format(broken.port_no))
