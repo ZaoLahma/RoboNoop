@@ -1,4 +1,5 @@
 from ...core.runtime.task_base import TaskBase
+from ...core.comm.core_messages import CapabilitiesInd
 from ..log.log import Log
 from .message_protocol import MessageProtocol
 from threading import Thread, Lock
@@ -43,21 +44,21 @@ class ConnectionHandler(Thread):
         self.outputs = []
         self.messages_to_send = []
         self.received_messages = []
+        self.peer_capabilities = []
         self.active = False
         self.send_mutex = Lock()
         self.receive_mutex = Lock()
 
     def send_messages(self, messages):
-        self.send_mutex.acquire()
-        self.messages_to_send.extend(messages)
-        self.outputs = self.inputs
-        self.send_mutex.release()
+        for message in messages:
+            self.send_message(message)
 
     def send_message(self, message):
-        self.send_mutex.acquire()
-        self.messages_to_send.append(message)
-        self.outputs = self.inputs
-        self.send_mutex.release()
+        if CapabilitiesInd.get_msg_id() == message.get_msg_id() or message.get_msg_id() in self.peer_capabilities:
+            self.send_mutex.acquire()
+            self.messages_to_send.append(message)
+            self.outputs = self.inputs
+            self.send_mutex.release()
 
     def get_received_messages(self):
         self.receive_mutex.acquire()
@@ -68,6 +69,12 @@ class ConnectionHandler(Thread):
 
     def run(self):
         Log.log("ConnectionHandler started for {}".format(self.port_no))
+        own_capabilities = []
+        for protocol in self.protocols:
+            for message_class in protocol.message_classes:
+                own_capabilities.append(message_class.get_msg_id())
+        Log.log("Sending capabilities: {}".format(own_capabilities))
+        self.send_message(CapabilitiesInd(own_capabilities))
         self.active = True
         while True == self.active:
             readable, writable, exceptional = select.select(self.inputs, self.outputs, self.inputs, 0.05)
@@ -88,7 +95,11 @@ class ConnectionHandler(Thread):
             read_sock.settimeout(0.5)
             message = self.receive_message(read_sock)
             if None != message:
-                self.received_messages.append(message)
+                if CapabilitiesInd.get_msg_id() == message.get_msg_id():
+                    self.peer_capabilities = message.capabilities
+                    Log.log("Received capabilities: {} ({})".format(self.peer_capabilities, self.port_no))
+                else:
+                    self.received_messages.append(message)
             read_sock.settimeout(None)
         finally:
             self.receive_mutex.release()

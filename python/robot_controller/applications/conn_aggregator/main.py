@@ -6,6 +6,7 @@ from ...core.comm.message_protocol import MessageProtocol
 from ...core.comm.core_messages import ALL_CORE_MESSAGES
 from ..daredevil.sonar_control.sonar_control_messages import ALL_SONAR_MESSAGES
 from ..kratos.motor_control.motor_control_messages import ALL_MOTOR_CONTROL_MESSAGES
+from ..garrus.image_control.image_control_messages import ALL_IMAGE_CONTROL_MESSAGES
 from .comm_listener.comm_listener_task import CommListenerTask
 from time import sleep
 
@@ -16,7 +17,7 @@ class Main:
         Log.log_application_name = "conn_aggregator"
         Log.log("Connection aggregator application starting...")
 
-        protocol = MessageProtocol(ALL_CORE_MESSAGES + ALL_SONAR_MESSAGES + ALL_MOTOR_CONTROL_MESSAGES)
+        protocol = MessageProtocol(ALL_CORE_MESSAGES + ALL_SONAR_MESSAGES + ALL_MOTOR_CONTROL_MESSAGES + ALL_IMAGE_CONTROL_MESSAGES)
 
         comm_aggregate_endpoint = CommEndpoint([protocol])
         comm_endpoint = CommEndpoint([protocol])

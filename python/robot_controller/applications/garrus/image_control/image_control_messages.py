@@ -13,3 +13,5 @@ class BinaryDataTransfer(MessageBase):
 
     def decode(self, data):
         self.data_buf = data
+
+ALL_IMAGE_CONTROL_MESSAGES = [BinaryDataTransfer]
