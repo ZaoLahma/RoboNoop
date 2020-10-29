@@ -16,13 +16,17 @@ import android.widget.TextView;
 import com.github.zaolahma.robotinterface.core.comm.NetworkContext;
 import com.github.zaolahma.robotinterface.core.comm.NetworkStateListener;
 import com.github.zaolahma.robotinterface.core.comm.NetworkThread;
+import com.github.zaolahma.robotinterface.core.comm.protocol.CapabilitiesInd;
 import com.github.zaolahma.robotinterface.core.comm.protocol.DataTransferMessage;
+import com.github.zaolahma.robotinterface.core.comm.protocol.Message;
 import com.github.zaolahma.robotinterface.core.comm.protocol.MessageProtocol;
+import com.github.zaolahma.robotinterface.core.comm.protocol.MoveInd;
 import com.github.zaolahma.robotinterface.core.comm.protocol.Protocol;
 import com.github.zaolahma.robotinterface.core.comm.protocol.SonarDataMessage;
 import com.github.zaolahma.robotinterface.ui.shared.AppContext;
 import com.google.android.material.textfield.TextInputEditText;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -56,8 +60,8 @@ public class SetupActivity extends AppCompatActivity implements View.OnClickList
     @Override
     public void onClick(View v) {
         final String robotAddress = mRobotAddress.getText().toString();
-        Map<Integer, Class> classDefinitions = new HashMap<Integer, Class>();
-        classDefinitions.put(SonarDataMessage.MESSAGE_ID, SonarDataMessage.class);
+        Map<Byte, Class> classDefinitions = new HashMap<Byte, Class>();
+        classDefinitions.put(SonarDataMessage.S_MESSAGE_ID, SonarDataMessage.class);
         classDefinitions.put(DataTransferMessage.S_MESSAGE_ID, DataTransferMessage.class);
         MessageProtocol messageProtocol = new MessageProtocol(classDefinitions);
         List<Protocol> protocolList = new ArrayList<Protocol>();
@@ -74,10 +78,20 @@ public class SetupActivity extends AppCompatActivity implements View.OnClickList
 
     @Override
     public void onConnected() {
-        mConnectionStatus.setTextColor(Color.GREEN);
-        mConnectionStatus.setText("Connected");
-        Intent intent = new Intent(this, MainActivity.class);
-        startActivity(intent);
+        CapabilitiesInd capabilitiesInd = new CapabilitiesInd();
+        capabilitiesInd.addCapability(DataTransferMessage.S_MESSAGE_ID);
+        capabilitiesInd.addCapability(SonarDataMessage.S_MESSAGE_ID);
+        capabilitiesInd.addCapability(MoveInd.S_MESSAGE_ID);
+
+        try {
+            NetworkContext.getApi().sendMessage(capabilitiesInd);
+            mConnectionStatus.setTextColor(Color.GREEN);
+            mConnectionStatus.setText("Connected");
+            Intent intent = new Intent(this, MainActivity.class);
+            startActivity(intent);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

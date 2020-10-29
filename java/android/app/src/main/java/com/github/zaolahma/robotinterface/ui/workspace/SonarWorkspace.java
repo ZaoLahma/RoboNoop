@@ -56,10 +56,13 @@ public class SonarWorkspace extends WorkspaceBase implements MessageListener {
 
     @Override
     public void handleMessage(Message message) {
-        if (mActive && (message.getMessageId() == SonarDataMessage.MESSAGE_ID)) {
+        if (mActive && (message.getMessageId() == SonarDataMessage.S_MESSAGE_ID)) {
+            System.out.println("handleMessage received sonar data");
             SonarDataMessage sonarMessage = (SonarDataMessage) message;
             mCurrDistance = sonarMessage.getDistance();
             mDrawableView.invalidate();
+        } else {
+            System.out.println("mActive: " + mActive + " messageId: " + message.getMessageId());
         }
     }
 

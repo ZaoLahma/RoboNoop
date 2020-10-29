@@ -1,16 +1,9 @@
 package com.github.zaolahma.robotinterface.core.comm.protocol;
 
-import com.google.gson.Gson;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.util.Map;
-
 public class DataTransferMessage implements Message {
-    public static final int S_MESSAGE_ID = 2;
+    public static final byte S_MESSAGE_ID = 2;
 
-    private Map<String, Object> mData;
+    private byte[] mData;
 
     @Override
     public byte[] encode() {
@@ -19,19 +12,15 @@ public class DataTransferMessage implements Message {
 
     @Override
     public void decode(byte[] toDecode) {
-        System.out.println("toDecode size: " + toDecode.length);
-        String jsonString = new String(toDecode);
-        System.out.println("jsonString: " + jsonString);
-        Gson gson = new Gson();
-        mData = gson.fromJson(jsonString, Map.class);
+        mData = toDecode;
     }
 
-    public Map<String, Object> getData() {
+    public byte[] getData() {
         return mData;
     }
 
     @Override
-    public int getMessageId() {
+    public byte getMessageId() {
         return S_MESSAGE_ID;
     }
 }

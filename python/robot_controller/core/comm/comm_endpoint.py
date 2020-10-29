@@ -120,16 +120,19 @@ class ConnectionHandler(Thread):
         return message
 
     def receive_data(self, read_sock, num_bytes):
-        data = []
-        while (len(data) < num_bytes):
+        data = num_bytes * [None]
+        num_received_bytes = 0
+        self.messages_to_send = []
+        while (num_received_bytes < num_bytes):
             try:
-                packet = read_sock.recv(num_bytes - len(data))
+                packet = read_sock.recv(num_bytes - num_received_bytes)
                 if not packet:
                     self.active = False
                     return None
-                data += packet
+                data[num_received_bytes : num_received_bytes + len(packet)] = packet
+                num_received_bytes += len(packet)
             except socket.timeout:
-                if len(data) > 0:
+                if num_received_bytes > 0:
                     continue
                 else:
                     return None

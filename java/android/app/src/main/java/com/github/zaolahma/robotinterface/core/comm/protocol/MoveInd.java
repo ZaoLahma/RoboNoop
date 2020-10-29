@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class MoveInd implements Message {
-    public static final int S_MESSAGE_ID = 12;
+    public static final byte S_MESSAGE_ID = 12;
 
     public static final Map<String, Short> S_DIRECTION;
     static {
@@ -54,7 +54,7 @@ public class MoveInd implements Message {
     }
 
     @Override
-    public int getMessageId() {
+    public byte getMessageId() {
         return S_MESSAGE_ID;
     }
 }

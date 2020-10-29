@@ -72,6 +72,7 @@ public class NetworkThread extends Thread {
             boolean dataComplete = false;
             try {
                 int receivedHeaderSize = inputStream.read(header, 0, 4);
+                System.out.println("receivedHeaderSize: " + receivedHeaderSize);
                 int dataSize = 0;
                 if (4 == receivedHeaderSize) {
                     ByteBuffer headerData = ByteBuffer.wrap(header);
@@ -85,6 +86,7 @@ public class NetworkThread extends Thread {
 
                 int bytesReceived = 0;
                 boolean endTransmission = false;
+                int numReattempts = 0;
                 while (data != null && !endTransmission) {
                     int bytesLeft = dataSize - bytesReceived;
                     int chunkSize = (4096 > bytesLeft) ? bytesLeft : 4096;
@@ -92,8 +94,11 @@ public class NetworkThread extends Thread {
                     bytesReceived += currReceived;
 
                     if (!mRunning || 0 > currReceived) {
-                        endTransmission = true;
-                        mRunning = false;
+                        if (numReattempts > 1000) {
+                            endTransmission = true;
+                            mRunning = false;
+                        }
+                        numReattempts++;
                     }
 
                     if (bytesReceived == dataSize) {
@@ -121,6 +126,8 @@ public class NetworkThread extends Thread {
                             NetworkContext.getApi().receiveMessage(toPost);
                         }
                     });
+                } else {
+                    System.out.println("Message is null");
                 }
             }
         }

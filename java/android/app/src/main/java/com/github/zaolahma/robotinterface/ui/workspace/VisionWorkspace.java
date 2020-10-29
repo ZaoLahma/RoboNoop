@@ -61,17 +61,7 @@ public class VisionWorkspace extends WorkspaceBase implements MessageListener {
         if (mActive && (message.getMessageId() == DataTransferMessage.S_MESSAGE_ID)) {
             DataTransferMessage dataTransferMessage = (DataTransferMessage) message;
 
-            Map<String, Object> data = dataTransferMessage.getData();
-
-            System.out.println("data: " + data.toString());
-
-            List<String> imageDataArray = (ArrayList) data.get("image_data");
-
-            if (null != imageDataArray) {
-                final String imageDataString = imageDataArray.get(0);
-                System.out.println("imageDataString: " + imageDataString);
-                mImageData = Base64.decode(imageDataString, Base64.DEFAULT);
-            }
+            mImageData = dataTransferMessage.getData();
 
             mDrawableView.invalidate();
         }
@@ -90,25 +80,15 @@ public class VisionWorkspace extends WorkspaceBase implements MessageListener {
                 Paint paint = new Paint();
                 int x = 0;
                 int y = 0;
-                int colorOffset = 0;
                 int r = 0;
                 int g = 0;
                 int b = 0;
-                for (int i = 0; i < mImageData.length; ++i) {
-                    if (0 == colorOffset) {
-                        r = mImageData[i];
-                    } else if (1 == colorOffset) {
-                        g = mImageData[i];
-                    } else if (2 == colorOffset) {
-                        b = mImageData[i];
-                    }
-                    colorOffset++;
-                    if (2 < colorOffset) {
-                        paint.setColor(Color.rgb(r, g, b));
-                        canvas.drawPoint(x, y, paint);
-                        colorOffset = 0;
-                    }
-
+                for (int i = 0; i < mImageData.length; i += 3) {
+                    r = mImageData[i];
+                    g = mImageData[i];
+                    b = mImageData[i];
+                    paint.setColor(Color.rgb(r, g, b));
+                    canvas.drawPoint(x, y, paint);
                     x++;
                     if (x == 640) {
                         x = 0;
