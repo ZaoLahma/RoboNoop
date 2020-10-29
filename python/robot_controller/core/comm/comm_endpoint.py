@@ -202,6 +202,7 @@ class CommEndpoint(TaskBase):
         return ret_val
 
     def run(self):
+        self.invalidate_messages()
         disconnected =  []
         for connection_handler in self.connection_handlers:
             messages = connection_handler.get_received_messages()
