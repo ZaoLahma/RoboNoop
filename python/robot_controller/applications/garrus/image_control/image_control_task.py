@@ -14,7 +14,7 @@ class ImageControlTask(TaskBase):
     def __init__(self, comm_if):
         self.comm_if = comm_if
         self.camera = picamera.PiCamera()
-        self.camera.rotation(180)
+        self.camera.rotation = 180
 
         application_config = Config.get_config_val("application")
         resolution_x = application_config["vision"]["garrus"]["image_x_res"]
