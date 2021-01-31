@@ -85,8 +85,8 @@ public class VisionWorkspace extends WorkspaceBase implements MessageListener {
                 int b = 0;
                 for (int i = 0; i < mImageData.length; i += 3) {
                     r = mImageData[i];
-                    g = mImageData[i];
-                    b = mImageData[i];
+                    g = mImageData[i + 1];
+                    b = mImageData[i + 2];
                     paint.setColor(Color.rgb(r, g, b));
                     canvas.drawPoint(x, y, paint);
                     x++;
