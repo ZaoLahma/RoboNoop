@@ -1,11 +1,11 @@
 package com.github.zaolahma.robotinterface.ui.workspace;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Bundle;
-import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,10 +20,6 @@ import com.github.zaolahma.robotinterface.core.comm.NetworkContext;
 import com.github.zaolahma.robotinterface.core.comm.protocol.DataTransferMessage;
 import com.github.zaolahma.robotinterface.core.comm.protocol.Message;
 import com.github.zaolahma.robotinterface.ui.workspace.core.WorkspaceBase;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 public class VisionWorkspace extends WorkspaceBase implements MessageListener {
     private DrawableView mDrawableView;
@@ -77,25 +73,32 @@ public class VisionWorkspace extends WorkspaceBase implements MessageListener {
             canvas.drawColor(Color.rgb(0, 150, 150));
 
             if (null != mImageData) {
-                Paint paint = new Paint();
-                int x = 0;
-                int y = 0;
-                int r = 0;
-                int g = 0;
-                int b = 0;
-                for (int i = 0; i < mImageData.length; i += 3) {
-                    r = mImageData[i];
-                    g = mImageData[i + 1];
-                    b = mImageData[i + 2];
-                    paint.setColor(Color.rgb(r, g, b));
-                    canvas.drawPoint(x, y, paint);
-                    x++;
-                    if (x == 640) {
-                        x = 0;
-                        y += 1;
-                    }
+                Bitmap currFrame = buildFrame(mImageData);
+                canvas.drawBitmap(currFrame, 0, 0, new Paint());
+            }
+        }
+
+        private Bitmap buildFrame(byte[] imageData) {
+            Bitmap retVal = Bitmap.createBitmap(640, 480, Bitmap.Config.ARGB_8888);
+
+            int x = 0;
+            int y = 0;
+            int r = 0;
+            int g = 0;
+            int b = 0;
+            for (int i = 0; i < mImageData.length; i += 3) {
+                r = mImageData[i];
+                g = mImageData[i + 1];
+                b = mImageData[i + 2];
+                retVal.setPixel(x, y, Color.rgb(r, g, b));
+                x++;
+                if (x == 640) {
+                    x = 0;
+                    y += 1;
                 }
             }
+
+            return retVal;
         }
     }
 }
