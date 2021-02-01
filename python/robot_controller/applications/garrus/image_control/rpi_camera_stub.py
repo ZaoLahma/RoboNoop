@@ -11,10 +11,10 @@ class PiCamera:
     return random.randint(0, 255).to_bytes(1, byteorder='little')
 
   def capture(self, buffer, image_format, use_video_port):
-    for _ in range(0, (self.resolution[0] * self.resolution[1])):
-      if 'rgb' == image_format:
+    if 'rgb' == image_format:
+      for _ in range(0, (self.resolution[0] * self.resolution[1])):
         buffer.write(self.__getRandomColorVal())
         buffer.write(self.__getRandomColorVal())
         buffer.write(self.__getRandomColorVal())
-      else:
-        raise NotImplementedError
+    else:
+      raise NotImplementedError
