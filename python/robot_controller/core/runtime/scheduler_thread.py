@@ -21,7 +21,7 @@ class SchedulerThread(Thread):
             elapsed_ms = time_delta.total_seconds() * 1000
             if self.periodicity - elapsed_ms > 0:
                 sleep((self.periodicity - elapsed_ms) / 1000)
-            else:
+            elif 0 != self.periodicity:
                 Log.log("Warning scheduler can't keep up, fired " + str(elapsed_ms - self.periodicity) + " late...")
     
     def start(self, scheduler_peridicity):

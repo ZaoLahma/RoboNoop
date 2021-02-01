@@ -5,6 +5,7 @@ from ....core.state.state import State
 from ....core.state.state import StateHandler
 from ....core.comm.comm_utils import CommUtils
 from ....core.config.config import Config
+from time import sleep
 
 class CommListenerTask(TaskBase):
     def __init__(self, comm_aggregate_if, comm_if):
@@ -38,30 +39,35 @@ class CommListenerTask(TaskBase):
         fail = False
         if False == CommUtils.is_connected(self.comm_aggregate_if, "masterchief"):
             fail = True != CommUtils.connect(self.comm_aggregate_if, "masterchief")
+        sleep(1)
         self.state_handler.transition(fail)
 
     def handle_connect_garrus(self):
         fail = False
         if False == CommUtils.is_connected(self.comm_aggregate_if, "garrus"):
             fail = True != CommUtils.connect(self.comm_aggregate_if, "garrus")
+        sleep(1)
         self.state_handler.transition(fail)
 
     def handle_connect_daredevil(self):
         fail = False
         if False == CommUtils.is_connected(self.comm_aggregate_if, "daredevil"):
             fail = True != CommUtils.connect(self.comm_aggregate_if, "daredevil")
+        sleep(1)
         self.state_handler.transition(fail)
 
     def handle_connect_fear(self):
         fail = False
         if False == CommUtils.is_connected(self.comm_aggregate_if, "fear"):
             fail = True != CommUtils.connect(self.comm_aggregate_if, "fear")
+        sleep(1)
         self.state_handler.transition(fail)
     
     def handle_connect_kratos(self):
         fail = False
         if False == CommUtils.is_connected(self.comm_aggregate_if, "kratos"):
             fail = True != CommUtils.connect(self.comm_aggregate_if, "kratos")
+        sleep(1)
         self.state_handler.transition(fail)
 
     def handle_enabled(self):
