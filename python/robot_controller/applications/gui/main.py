@@ -26,14 +26,15 @@ class Main:
         scheduler = Scheduler("GUI", tasks)
 
         run_in_new_thread = True
-        thread = SchedulerThread(scheduler, run_in_new_thread)
+        scheduler_thread = SchedulerThread(scheduler, run_in_new_thread)
         scheduler_periodicity_ms = 100
-        thread.start(scheduler_periodicity_ms)
+        scheduler_thread.start(scheduler_periodicity_ms)
 
-        Log.log_application_name = "Test"
-        Log.log("Starting...")
         window = Window()
+        window.add_shutdown_hook(scheduler_thread.stop)
         window.add_workspace(WsStart)
         window.activate_workspace(WsStart)
 
         window.run()
+
+        Log.log("Main exiting")

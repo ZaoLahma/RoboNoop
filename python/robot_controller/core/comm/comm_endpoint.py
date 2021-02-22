@@ -35,6 +35,9 @@ class ConnectionListener(Thread):
             for broken in exceptional:
                 self.conn_listeners.remove(broken)
 
+    def stop(self):
+        self.active = False
+
 class ConnectionHandler(Thread):
     def __init__(self, port_no, connection, protocols):
         Thread.__init__(self)
@@ -158,6 +161,9 @@ class ConnectionHandler(Thread):
         finally:
             self.send_mutex.release()
 
+    def stop(self):
+        self.active = False
+
 
 class CommEndpoint(TaskBase):
     def __init__(self, protocols):
@@ -219,6 +225,12 @@ class CommEndpoint(TaskBase):
         for broken in disconnected:
             Log.log("Disconnecting {}".format(broken.port_no))
             self.connection_handlers.remove(broken)
+
+    def stop(self):
+        Log.log("CommEndpoint stop called")
+        self.conn_listener.stop()
+        for connection_handler in self.connection_handlers:
+            connection_handler.stop()
 
     def connect(self, address, port_no):
         host = (address, port_no)

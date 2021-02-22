@@ -23,6 +23,7 @@ class SchedulerThread(Thread):
                 sleep((self.periodicity - elapsed_ms) / 1000)
             elif 0 != self.periodicity:
                 Log.log("Warning scheduler can't keep up, fired " + str(elapsed_ms - self.periodicity) + " late...")
+        Log.log("Thread exiting for " + self.scheduler.context_name)
     
     def start(self, scheduler_peridicity):
         self.periodicity = scheduler_peridicity
@@ -35,6 +36,7 @@ class SchedulerThread(Thread):
     def stop(self):
         Log.log("Stop called for " + self.scheduler.context_name + "...")
         self.active = False
+        self.scheduler.stop()
 
 
     

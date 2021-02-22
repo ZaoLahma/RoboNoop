@@ -18,3 +18,6 @@ class WorkspaceBase(Frame):
 
     def deactivate(self):
         raise NotImplementedError
+
+    def destroy(self):
+        raise NotImplementedError

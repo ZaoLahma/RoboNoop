@@ -10,7 +10,11 @@ class Window(Tk):
     def __init__(self, *args, **kwargs):
         Log.log("Window init")
         Tk.__init__(self, *args, **kwargs)
+
+        self.protocol("WM_DELETE_WINDOW", self.execute_shutdown_hooks)
+
         self.ws_controller = WorkspaceController()
+        self.shutdown_hooks = []
 
         self.btn_frame = Frame(self)
         self.ws_frame = Frame(self)
@@ -20,6 +24,14 @@ class Window(Tk):
 
         test_label = ttk.Label(self.ws_frame, text = "This works?!")
         test_label.grid(row = 0, column = 0)
+
+    def add_shutdown_hook(self, hook):
+        self.shutdown_hooks.append(hook)
+
+    def execute_shutdown_hooks(self):
+        for hook in self.shutdown_hooks:
+            hook()
+        self.destroy()
 
     def get_ws_frame(self):
         return self.ws_frame
