@@ -3,6 +3,8 @@ from tkinter import ttk
 from tkinter import Frame
 from tkinter import LEFT
 from tkinter import RIGHT
+from tkinter import TOP
+from tkinter import NW
 from ....core.log.log import Log
 from ..workspace.core.workspace_controller import WorkspaceController
 

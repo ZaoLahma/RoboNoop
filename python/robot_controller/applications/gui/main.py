@@ -5,8 +5,11 @@ from ...core.comm.comm_endpoint import CommEndpoint
 from ...core.comm.message_protocol import MessageProtocol
 from ...core.comm.core_messages import ALL_CORE_MESSAGES
 from ...core.config.config import Config
+from .comm.comm_ctxt import CommCtxt
+from .comm.connect_task import ConnectTask
 from .core.window import Window
-from .workspace.ws_start import WsStart
+from .workspace.ws_conn_status import WsConnStatus
+from .workspace.ws_sensor_data import WsSensorData
 from time import sleep
 
 class Main:
@@ -19,9 +22,13 @@ class Main:
         protocol = MessageProtocol(ALL_CORE_MESSAGES)
 
         comm_task = CommEndpoint([protocol])
+        connect_task = ConnectTask(comm_task)
+
+        CommCtxt.set_comm_if(comm_task)
 
         tasks = []
         tasks.append(comm_task)
+        tasks.append(connect_task)
 
         scheduler = Scheduler("GUI", tasks)
 
@@ -32,8 +39,9 @@ class Main:
 
         window = Window()
         window.add_shutdown_hook(scheduler_thread.stop)
-        window.add_workspace(WsStart)
-        window.activate_workspace(WsStart)
+        window.add_workspace(WsConnStatus)
+        window.add_workspace(WsSensorData)
+        window.activate_workspace(WsConnStatus)
 
         window.run()
 
