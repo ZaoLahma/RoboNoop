@@ -5,6 +5,7 @@ from ...core.comm.comm_endpoint import CommEndpoint
 from ...core.comm.message_protocol import MessageProtocol
 from ...core.comm.core_messages import ALL_CORE_MESSAGES
 from ...core.config.config import Config
+from ...applications.daredevil.sonar_control.sonar_control_messages import ALL_SONAR_MESSAGES
 from .comm.comm_ctxt import CommCtxt
 from .comm.connect_task import ConnectTask
 from .core.window import Window
@@ -19,7 +20,7 @@ class Main:
 
         Log.log("GUI application starting...")
 
-        protocol = MessageProtocol(ALL_CORE_MESSAGES)
+        protocol = MessageProtocol(ALL_CORE_MESSAGES + ALL_SONAR_MESSAGES)
 
         comm_task = CommEndpoint([protocol])
         connect_task = ConnectTask(comm_task)
@@ -37,7 +38,9 @@ class Main:
         scheduler_periodicity_ms = 100
         scheduler_thread.start(scheduler_periodicity_ms)
 
-        window = Window()
+        resolution = (400, 400)
+
+        window = Window(resolution)
         window.add_shutdown_hook(scheduler_thread.stop)
         window.add_workspace(WsConnStatus)
         window.add_workspace(WsSensorData)
