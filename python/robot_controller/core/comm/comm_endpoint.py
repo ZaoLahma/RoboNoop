@@ -183,6 +183,7 @@ class CommEndpoint(TaskBase):
 
     def get_message(self, msg_id):
         ret_val = None
+        #Log.log("Received messages: {0}".format(self.received_messages))
         for message in self.received_messages:
             if message.get_msg_id() == msg_id:
                 ret_val = message
