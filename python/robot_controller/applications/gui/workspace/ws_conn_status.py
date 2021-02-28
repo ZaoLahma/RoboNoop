@@ -27,19 +27,19 @@ class WsConnStatus(WorkspaceBase):
 
     def refresh(self):
         if self.active:
-            self.ws_frame.after(500, self.refresh)
+            self.after(500, self.refresh)
             self.update_appl_labels()
 
     def activate(self):
         Log.log("Activate called")
-        self.ws_header = ttk.Label(self.ws_frame, text = "Connection status", anchor = "w", width = 20)
+        self.ws_header = ttk.Label(self, text = "Connection status", anchor = "w", width = 20)
         self.ws_header.grid(row = 0, column = 0)
         for application in self.applications:
-            appl_label = ttk.Label(self.ws_frame, text = "{0} : {1}".format(application, False), anchor = "w", width = 20)
+            appl_label = ttk.Label(self, text = "{0} : {1}".format(application, False), anchor = "w", width = 20)
             appl_label.grid(row = len(self.appl_labels) + 1, column = 0)
             self.appl_labels.append(appl_label)
         self.active = True
-        self.ws_frame.after(500, self.refresh)
+        self.after(500, self.refresh)
 
     def pause(self):
         Log.log("Pause called")

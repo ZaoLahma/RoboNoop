@@ -16,16 +16,16 @@ class WsSensorData(WorkspaceBase):
 
     def refresh(self):
         if self.active:
-            self.ws_frame.after(500, self.refresh)
+            self.after(500, self.refresh)
 
     def activate(self):
         Log.log("Activate called")
-        self.ws_header = ttk.Label(self.ws_frame, text = "Sensor data", anchor = "nw", width = 20)
+        self.ws_header = ttk.Label(self, text = "Sensor data", anchor = "nw", width = 20)
         self.ws_header.grid(row = 0 , column = 0)
-        self.ws_test = ttk.Label(self.ws_frame, text = "Is this working?!\nTest\nTest", anchor = "nw", width = 20)
+        self.ws_test = ttk.Label(self, text = "Is this working?!\nTest\nTest", anchor = "nw", width = 20)
         self.ws_test.grid(row = 1, column = 0)
         self.active = True
-        self.ws_frame.after(500, self.refresh)
+        self.after(500, self.refresh)
 
     def pause(self):
         Log.log("Pause called")
