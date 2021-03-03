@@ -2,7 +2,7 @@ from ....core.runtime.task_base import TaskBase
 from ....core.log.log import Log
 from ....core.config.config import Config
 from ....core.comm.comm_utils import CommUtils
-from .image_control_messages import BinaryDataTransfer
+from .image_control_messages import ImageData
 from io import BytesIO
 
 try:
@@ -31,7 +31,7 @@ class ImageControlTask(TaskBase):
         image = bytearray(image.getvalue())
         Log.log("Captured image of size: " + str(len(image)))
         
-        data_transfer = BinaryDataTransfer(image)
+        data_transfer = ImageData(image)
         self.comm_if.send_message(data_transfer)
 
 

@@ -1,6 +1,6 @@
 from ....core.log.log import Log
 from ....core.comm.comm_utils import CommUtils
-from ....applications.garrus.image_control.image_control_messages import BinaryDataTransfer
+from ....applications.garrus.image_control.image_control_messages import ImageData
 from ..comm.comm_ctxt import CommCtxt
 from .core.workspace_base import WorkspaceBase
 
@@ -29,7 +29,7 @@ class WsImage(WorkspaceBase):
             return
         if self.active and False == self.rendering:
             self.rendering = True
-            msg = CommCtxt.get_comm_if().get_message(BinaryDataTransfer.get_msg_id())
+            msg = CommCtxt.get_comm_if().get_message(ImageData.get_msg_id())
             if None != msg:
                 Log.log("Calling show_image")
                 self.show_image(msg.data_buf)
