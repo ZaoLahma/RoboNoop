@@ -3,6 +3,8 @@ from ....core.log.log import Log
 from ....core.config.config import Config
 from ....core.comm.comm_utils import CommUtils
 from .image_control_messages import ImageData
+from .image_control_messages import COLOR
+from .image_control_messages import MONOCHROME
 from io import BytesIO
 
 try:
@@ -10,9 +12,10 @@ try:
 except ImportError:
     from . import rpi_camera_stub as picamera
 
-class ImageControlTask(TaskBase):
+class ImageCaptureTask(TaskBase):
     def __init__(self, comm_if):
         self.comm_if = comm_if
+        self.color_mode = COLOR
         self.camera = picamera.PiCamera()
         self.camera.rotation = 180
 
@@ -20,10 +23,15 @@ class ImageControlTask(TaskBase):
         resolution_x = application_config["vision"]["garrus"]["image_x_res"]
         resolution_y = application_config["vision"]["garrus"]["image_y_res"]
 
-        self.camera.resolution = (resolution_x, resolution_y)
+        self.resolution = (resolution_x, resolution_y)
+
+        self.camera.resolution = self.resolution
 
         CommUtils.publish_service(self.comm_if, "garrus")
 
+    def set_image_mode(self, resolution, color_mode):
+        self.camera.resolution = resolution
+        self.color_mode = color_mode
 
     def run(self):
         image = BytesIO()
@@ -31,7 +39,7 @@ class ImageControlTask(TaskBase):
         image = bytearray(image.getvalue())
         Log.log("Captured image of size: " + str(len(image)))
         
-        data_transfer = ImageData(image)
+        data_transfer = ImageData(self.resolution, self.color_mode, image)
         self.comm_if.send_message(data_transfer)
 
 

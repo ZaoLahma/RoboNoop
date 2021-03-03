@@ -5,7 +5,7 @@ from ...core.comm.comm_endpoint import CommEndpoint
 from ...core.comm.message_protocol import MessageProtocol
 from ...core.comm.core_messages import ALL_CORE_MESSAGES
 from ...core.config.config import Config
-from .image_control.image_control_task import ImageControlTask
+from .image_control.image_capture_task import ImageCaptureTask
 from time import sleep
 
 class Main:
@@ -18,7 +18,7 @@ class Main:
         protocol = MessageProtocol(ALL_CORE_MESSAGES)
 
         comm_task = CommEndpoint([protocol])
-        image_control_task = ImageControlTask(comm_task)
+        image_control_task = ImageCaptureTask(comm_task)
 
         tasks = []
         tasks.append(comm_task)

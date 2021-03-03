@@ -31,12 +31,11 @@ class WsImage(WorkspaceBase):
             self.rendering = True
             msg = CommCtxt.get_comm_if().get_message(ImageData.get_msg_id())
             if None != msg:
-                Log.log("Calling show_image")
-                self.show_image(msg.data_buf)
+                self.show_image(msg.resolution, msg.color_mode, msg.image_data)
             self.rendering = False
             self.after(100, self.refresh)
 
-    def show_image(self, image):
+    def show_image(self, resolution, color_mode, image):
         self.rendering = True
         byte_offset = 0
         x = 0
@@ -59,7 +58,7 @@ class WsImage(WorkspaceBase):
                 byte_offset = 0
                 hex_row.append("#%02x%02x%02x " % (R, G, B))
                 x += 1
-                if x == self.ws_resolution[0]:
+                if x == resolution[0]:
                     hex_row.append('}')
                     hex_image.append(''.join(hex_row))
                     hex_row = []
@@ -67,7 +66,7 @@ class WsImage(WorkspaceBase):
                     x = 0
                     y += 1
         if self.active and not self.image == None:
-            self.image.put(''.join(hex_image), to=(0, 0, self.ws_resolution[0], self.ws_resolution[1]))
+            self.image.put(''.join(hex_image), to=(0, 0, resolution[0], resolution[1]))
 
     def activate(self):
         self.active = True
