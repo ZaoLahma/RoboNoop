@@ -10,16 +10,23 @@ from tkinter import ttk
 from tkinter import Canvas
 from tkinter import TOP
 from tkinter import PhotoImage
+from tkinter import Label
+
+from PIL import Image
+from PIL import ImageTk
+
+import numpy as np
+
+import cv2
 
 class WsImage(WorkspaceBase):
     def __init__(self, parent_frame, ws_controller, ws_resolution):
         WorkspaceBase.__init__(self, parent_frame, ws_controller, ws_resolution)
         self.active = False
         self.rendering = False
-        self.canvas = Canvas(self, width=self.ws_resolution[0], height=self.ws_resolution[1], bg="#000000")
-        self.canvas.pack(side = TOP)
-        self.image = PhotoImage(width=self.ws_resolution[0], height=self.ws_resolution[1])
-        self.canvas.create_image((self.ws_resolution[0]/2, self.ws_resolution[1]/2), image=self.image, state="normal")
+        self.image_label = Label(self)
+        self.image_label.pack(side = TOP)
+        self.image = None
         self.hex_row_buffer = []
         self.hex_row_buffer_size = 0
 
@@ -40,40 +47,13 @@ class WsImage(WorkspaceBase):
             self.after(100, self.refresh)
 
     def show_image(self, resolution, color_mode, image):
-        Log.log("Show image begin")
-        self.rendering = True
-        x = 0
-        y = 0
-        pixel_val = None
-
-        if COLOR == color_mode:
-            pixel_val = [0, 0, 0]
-        elif MONOCHROME == color_mode:
-            pixel_val = [0]
-        else:
-            raise NotImplementedError
-
-        hex_image = []
-        hex_row = []
-        hex_row.append('{')
-        for i in range(0, len(image), len(pixel_val)):
-            hex_row.append("#")
-            for o in range(0, len(pixel_val)):
-                hex_row.append("%02x" % image[i + o])
-            hex_row.append(" ")
-            x += 1
-            if x == resolution[0]:
-                hex_row.append('}')
-                hex_image.append(''.join(hex_row))
-                hex_row = []
-                hex_row.append(' {')
-                x = 0
-                y += 1
-        if self.active and not self.image == None:
-            Log.log("Before put")
-            self.image.put(''.join(hex_image), to=(0, 0, resolution[0], resolution[1]))
-            Log.log("After put")
-        Log.log("Show image end")
+        Log.log("enter show_image")
+        to_show = np.frombuffer(image, dtype=np.uint8)
+        to_show = np.reshape(to_show, (resolution[1], resolution[0], 3))
+        to_show = Image.fromarray(to_show)
+        self.image = ImageTk.PhotoImage(to_show)
+        self.image_label.configure(image=self.image)
+        Log.log("exit show_image")
 
     def activate(self):
         self.active = True
