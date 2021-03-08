@@ -48,8 +48,7 @@ class WsImage(WorkspaceBase):
 
     def show_image(self, resolution, color_mode, image):
         Log.log("enter show_image")
-        to_show = np.frombuffer(image, dtype=np.uint8)
-        to_show = np.reshape(to_show, (resolution[1], resolution[0], 3))
+        to_show = np.frombuffer(image, dtype=np.uint8).reshape((resolution[1], resolution[0], 3))
         to_show = Image.fromarray(to_show)
         self.image = ImageTk.PhotoImage(to_show)
         self.image_label.configure(image=self.image)
