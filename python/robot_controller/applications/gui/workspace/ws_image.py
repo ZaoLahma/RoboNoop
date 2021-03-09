@@ -40,8 +40,9 @@ class WsImage(WorkspaceBase):
             return
         if self.active and False == self.rendering:
             self.rendering = True
-            msg = CommCtxt.get_comm_if().get_message(ImageData.get_msg_id())
+            msg = CommCtxt.get_comm_storage().get_message(ImageData.get_msg_id())
             if None != msg:
+                msg = msg.message
                 self.show_image(msg.resolution, msg.color_mode, msg.image_data)
             self.rendering = False
             self.after(100, self.refresh)

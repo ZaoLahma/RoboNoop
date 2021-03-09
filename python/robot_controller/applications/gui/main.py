@@ -2,6 +2,7 @@ from ...core.runtime.scheduler import Scheduler
 from ...core.runtime.scheduler_thread import SchedulerThread
 from ...core.log.log import Log
 from ...core.comm.comm_endpoint import CommEndpoint
+from ...core.comm.message_storage import MessageStorage
 from ...core.comm.message_protocol import MessageProtocol
 from ...core.comm.core_messages import ALL_CORE_MESSAGES
 from ...core.config.config import Config
@@ -26,12 +27,15 @@ class Main:
 
         comm_task = CommEndpoint([protocol])
         connect_task = ConnectTask(comm_task)
+        message_storage_task = MessageStorage(comm_task)
 
         CommCtxt.set_comm_if(comm_task)
+        CommCtxt.set_comm_storage(message_storage_task)
 
         tasks = []
         tasks.append(comm_task)
         tasks.append(connect_task)
+        tasks.append(message_storage_task)
 
         scheduler = Scheduler("GUI", tasks)
 

@@ -17,10 +17,10 @@ class WsSensorData(WorkspaceBase):
 
     def refresh(self):
         if self.active:
-            sonar_msg = CommCtxt.get_comm_if().get_message(SonarDataInd.get_msg_id())
+            sonar_msg = CommCtxt.get_comm_storage().get_message(SonarDataInd.get_msg_id())
             Log.log("sonar_msg: " + str(sonar_msg))
             if None != sonar_msg:
-                distance = sonar_msg.distance
+                distance = sonar_msg.message.distance
                 self.ws_test.configure(text = "Distance: {0}".format(distance))
             self.after(100, self.refresh)
 
