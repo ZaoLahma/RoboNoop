@@ -1,4 +1,5 @@
 from ..runtime.task_base import TaskBase
+from ..log.log import Log
 
 from time import time
 
@@ -15,6 +16,7 @@ class MessageStorage(TaskBase):
 
     def run(self):
         received_messages = self.comm_if.get_all_messages()
+        Log.log("Received messages: " + str(received_messages))
         self.comm_if.invalidate_messages()
 
         for message in received_messages:

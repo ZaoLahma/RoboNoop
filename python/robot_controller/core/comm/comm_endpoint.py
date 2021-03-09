@@ -93,19 +93,19 @@ class ConnectionHandler(Thread):
         Log.log("Exiting ConnectionHandler for {}".format(self.port_no))
 
     def receive_next_message(self, read_sock):
+        curr_messages = []
+        read_sock.settimeout(0.5)
+        message = self.receive_message(read_sock)
+        if None != message:
+            if CapabilitiesInd.get_msg_id() == message.get_msg_id():
+                self.peer_capabilities = message.capabilities
+                Log.log("Received capabilities: {} ({})".format(self.peer_capabilities, self.port_no))
+            else:
+                curr_messages.append(message)
+        read_sock.settimeout(None)
         self.receive_mutex.acquire()
-        try:
-            read_sock.settimeout(0.5)
-            message = self.receive_message(read_sock)
-            if None != message:
-                if CapabilitiesInd.get_msg_id() == message.get_msg_id():
-                    self.peer_capabilities = message.capabilities
-                    Log.log("Received capabilities: {} ({})".format(self.peer_capabilities, self.port_no))
-                else:
-                    self.received_messages.append(message)
-            read_sock.settimeout(None)
-        finally:
-            self.receive_mutex.release()
+        self.received_messages = curr_messages
+        self.receive_mutex.release()
 
     def receive_message(self, read_sock):
         message = None
@@ -146,20 +146,19 @@ class ConnectionHandler(Thread):
 
     def send_messages_to_sock(self, send_sock):
         self.send_mutex.acquire()
-        try:
-            for message in self.messages_to_send:
-                data = MessageProtocol.encode_message(message)
-                data_size = struct.pack(">i", len(data))
-                try:
-                    send_sock.sendall(data_size)
-                    send_sock.sendall(data)
-                except Exception:
-                    self.active = False
-                    break
-            self.outputs = []
-            self.messages_to_send = []
-        finally:
-            self.send_mutex.release()
+        curr_messages_to_send = self.messages_to_send
+        self.messages_to_send = []
+        self.send_mutex.release()
+        for message in curr_messages_to_send:
+            data = MessageProtocol.encode_message(message)
+            data_size = struct.pack(">i", len(data))
+            try:
+                send_sock.sendall(data_size)
+                send_sock.sendall(data)
+            except Exception:
+                self.active = False
+                break
+        self.outputs = []
 
     def stop(self):
         self.active = False
