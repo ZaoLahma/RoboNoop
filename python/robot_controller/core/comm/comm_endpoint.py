@@ -45,7 +45,7 @@ class ConnectionHandler(Thread):
         self.inputs = [connection]
         self.protocols = protocols
         self.outputs = []
-        self.messages_to_send = []
+        self.messages_to_send = {}
         self.received_messages = []
         self.peer_capabilities = []
         self.active = False
@@ -59,7 +59,7 @@ class ConnectionHandler(Thread):
     def send_message(self, message):
         if CapabilitiesInd.get_msg_id() == message.get_msg_id() or message.get_msg_id() in self.peer_capabilities:
             self.send_mutex.acquire()
-            self.messages_to_send.append(message)
+            self.messages_to_send[message.get_msg_id()] = message
             self.outputs = self.inputs
             self.send_mutex.release()
 
@@ -90,18 +90,21 @@ class ConnectionHandler(Thread):
 
             for write_sock in writable:
                 self.send_messages_to_sock(write_sock)
+
         Log.log("Exiting ConnectionHandler for {}".format(self.port_no))
 
     def receive_next_message(self, read_sock):
         curr_messages = []
-        read_sock.settimeout(0.5)
+        read_sock.settimeout(0.1)
         message = self.receive_message(read_sock)
         if None != message:
+            Log.log("message: " + str(message))
             if CapabilitiesInd.get_msg_id() == message.get_msg_id():
                 self.peer_capabilities = message.capabilities
                 Log.log("Received capabilities: {} ({})".format(self.peer_capabilities, self.port_no))
             else:
                 curr_messages.append(message)
+            message = self.receive_message(read_sock)
         read_sock.settimeout(None)
         self.receive_mutex.acquire()
         self.received_messages = curr_messages
@@ -125,7 +128,6 @@ class ConnectionHandler(Thread):
     def receive_data(self, read_sock, num_bytes):
         data = num_bytes * [None]
         num_received_bytes = 0
-        self.messages_to_send = []
         while (num_received_bytes < num_bytes):
             try:
                 packet = read_sock.recv(num_bytes - num_received_bytes)
@@ -146,8 +148,8 @@ class ConnectionHandler(Thread):
 
     def send_messages_to_sock(self, send_sock):
         self.send_mutex.acquire()
-        curr_messages_to_send = self.messages_to_send
-        self.messages_to_send = []
+        curr_messages_to_send = self.messages_to_send.values()
+        self.messages_to_send = {}
         self.send_mutex.release()
         for message in curr_messages_to_send:
             data = MessageProtocol.encode_message(message)

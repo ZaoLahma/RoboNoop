@@ -34,14 +34,14 @@ class Main:
 
         tasks = []
         tasks.append(comm_task)
-        tasks.append(connect_task)
         tasks.append(message_storage_task)
+        tasks.append(connect_task)
 
         scheduler = Scheduler("GUI", tasks)
 
         run_in_new_thread = True
         scheduler_thread = SchedulerThread(scheduler, run_in_new_thread)
-        scheduler_periodicity_ms = 100
+        scheduler_periodicity_ms = 1000
         scheduler_thread.start(scheduler_periodicity_ms)
 
         resolution = (640, 400)

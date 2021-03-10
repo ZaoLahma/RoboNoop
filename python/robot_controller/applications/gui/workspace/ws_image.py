@@ -15,6 +15,8 @@ from tkinter import Label
 from PIL import Image
 from PIL import ImageTk
 
+from time import time
+
 import numpy as np
 
 import cv2
@@ -42,6 +44,7 @@ class WsImage(WorkspaceBase):
             self.rendering = True
             msg = CommCtxt.get_comm_storage().get_message(ImageData.get_msg_id())
             if None != msg:
+                Log.log("Age: " + str(time() - msg.timestamp))
                 msg = msg.message
                 self.show_image(msg.resolution, msg.color_mode, msg.image_data)
             self.rendering = False

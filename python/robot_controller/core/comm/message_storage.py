@@ -22,6 +22,8 @@ class MessageStorage(TaskBase):
         for message in received_messages:
             self.received_messages[message.get_msg_id()] = MessageData(message)
 
+        Log.log("self.received_messages: " + str(self.received_messages))
+
     def get_message(self, msg_id):
         return self.received_messages.get(msg_id)
         
