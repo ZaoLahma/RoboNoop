@@ -24,6 +24,11 @@ class MessageProtocol:
         now = time()
         msg_time = struct.unpack('>d', data[0:8])[0]
         Log.log("Age when received: " + str(now - msg_time))
+
+        if ((now - msg_time) > 0.5):
+            Log.log("Throwing away message that is too old")
+            return None
+
         msg_id = struct.unpack('>B', data[8:9])[0]
         msg = None
         for message_class in self.message_classes:
