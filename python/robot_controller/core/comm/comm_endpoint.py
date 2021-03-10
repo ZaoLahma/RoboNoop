@@ -183,7 +183,13 @@ class CommEndpoint(TaskBase):
         self.connection_handlers.append(connection_handler)
 
     def get_message(self, msg_id):
-        return self.received_messages[msg_id]
+        message = None
+        try:
+            message = self.received_messages[msg_id]
+        except KeyError:
+            pass
+        return message
+
 
     def get_all_messages(self):
         return self.received_messages.values()
