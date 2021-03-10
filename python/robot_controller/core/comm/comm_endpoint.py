@@ -95,7 +95,7 @@ class ConnectionHandler(Thread):
 
     def receive_next_message(self, read_sock):
         curr_messages = {}
-        read_sock.settimeout(0.5)
+        read_sock.settimeout(0.05)
         message = self.receive_message(read_sock)
         if None != message:
             #Log.log("message: " + str(message))
@@ -133,7 +133,7 @@ class ConnectionHandler(Thread):
             Log.log("Memory error when allocating: " + str(num_bytes))
             return None
         num_received_bytes = 0
-        while (num_received_bytes < num_bytes):
+        while (num_received_bytes < num_bytes and self.active):
             try:
                 packet = read_sock.recv(num_bytes - num_received_bytes)
                 if not packet:

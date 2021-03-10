@@ -12,6 +12,9 @@ class MessageProtocol:
         now = time()
         if None == message.msg_create_time:
             message.msg_create_time = now
+        else:
+            Log.log("Using the message create time for message " + str(message.get_msg_id()))
+        Log.log("Age when sending: " + str(now - message.msg_create_time))
         data = struct.pack('>d', message.msg_create_time)
         data += struct.pack('>d', now)
         data += struct.pack('>B', message.get_msg_id())
@@ -24,7 +27,7 @@ class MessageProtocol:
 
     def decode_message(self, data):
         now = time()
-        create_time = struct.unpack('>d', data[0:8])[0]
+        msg_create_time = struct.unpack('>d', data[0:8])[0]
         msg_send_time = struct.unpack('>d', data[8:16])[0]
         Log.log("Age when received: " + str(now - msg_send_time))
 
@@ -40,6 +43,7 @@ class MessageProtocol:
                 break
         if None != msg:
             msg.msg_receive_time = time()
+            msg.msg_create_time = msg_create_time
             msg.msg_send_time = msg_send_time
             msg.decode(data[17:])
         return msg

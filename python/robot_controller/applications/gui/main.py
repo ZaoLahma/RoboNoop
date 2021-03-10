@@ -41,7 +41,7 @@ class Main:
 
         run_in_new_thread = True
         scheduler_thread = SchedulerThread(scheduler, run_in_new_thread)
-        scheduler_periodicity_ms = 250
+        scheduler_periodicity_ms = 0
         scheduler_thread.start(scheduler_periodicity_ms)
 
         resolution = (640, 400)
