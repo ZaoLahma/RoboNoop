@@ -7,6 +7,8 @@ from .image_control_messages import COLOR
 from .image_control_messages import MONOCHROME
 from io import BytesIO
 
+from time import time
+
 try:
     import picamera
 except ImportError:
@@ -40,6 +42,7 @@ class ImageCaptureTask(TaskBase):
         Log.log("Captured image of size: " + str(len(image)))
         
         data_transfer = ImageData(self.resolution, self.color_mode, image)
+        data_transfer.msg_create_time = time()
         self.comm_if.send_message(data_transfer)
 
 

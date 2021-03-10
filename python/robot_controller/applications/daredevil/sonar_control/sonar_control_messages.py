@@ -4,6 +4,7 @@ import struct
 
 class SonarDataInd(MessageBase):
     def __init__(self, distance=-1):
+        MessageBase.__init__(self)
         self.distance = distance
 
     @staticmethod

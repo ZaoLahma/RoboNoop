@@ -7,6 +7,7 @@ MONOCHROME = 1
 
 class ImageData(MessageBase):
     def __init__(self, resolution = None, color_mode = None, image_data = None):
+        MessageBase.__init__(self)
         self.resolution = resolution
         self.color_mode = color_mode
         self.image_data = image_data
@@ -37,6 +38,7 @@ class ImageData(MessageBase):
 
 class ImageModeSelect(MessageBase):
     def __init__(self, resolution = (640, 480), mode = COLOR):
+        MessageBase.__init__(self)
         self.resolution = resolution
         self.mode = mode
 

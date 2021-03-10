@@ -45,6 +45,7 @@ class WsImage(WorkspaceBase):
             msg = CommCtxt.get_comm_storage().get_message(ImageData.get_msg_id())
             if None != msg:
                 Log.log("Age: " + str(time() - msg.msg_send_time))
+                Log.log("Age from creation to sending: " + str(msg.msg_create_time - msg.msg_send_time))
                 self.show_image(msg.resolution, msg.color_mode, msg.image_data)
             self.rendering = False
             self.after(100, self.refresh)

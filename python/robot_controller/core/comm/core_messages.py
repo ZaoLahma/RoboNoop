@@ -4,6 +4,9 @@ import struct
 import json
 
 class HeartbeatReq(MessageBase):
+    def __init__(self):
+        MessageBase.__init__(self)
+
     @staticmethod
     def get_msg_id():
         return 0
@@ -15,6 +18,9 @@ class HeartbeatReq(MessageBase):
         return None
 
 class HeartbeatCfm(MessageBase):
+    def __init__(self):
+        MessageBase.__init__(self)
+
     @staticmethod
     def get_msg_id():
         return 1
@@ -27,6 +33,7 @@ class HeartbeatCfm(MessageBase):
 
 class CapabilitiesInd(MessageBase):
     def __init__(self, capabilities = None):
+        MessageBase.__init__(self)
         self.capabilities = capabilities
 
     @staticmethod

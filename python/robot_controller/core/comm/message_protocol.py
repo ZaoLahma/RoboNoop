@@ -10,7 +10,10 @@ class MessageProtocol:
     @staticmethod
     def encode_message(message):
         now = time()
-        data = struct.pack('>d', now)
+        if None == message.msg_create_time:
+            message.msg_create_time = now
+        data = struct.pack('>d', message.msg_create_time)
+        data += struct.pack('>d', now)
         data += struct.pack('>B', message.get_msg_id())
         payload = message.encode()
 
@@ -21,14 +24,15 @@ class MessageProtocol:
 
     def decode_message(self, data):
         now = time()
-        msg_time = struct.unpack('>d', data[0:8])[0]
-        Log.log("Age when received: " + str(now - msg_time))
+        create_time = struct.unpack('>d', data[0:8])[0]
+        msg_send_time = struct.unpack('>d', data[8:16])[0]
+        Log.log("Age when received: " + str(now - msg_send_time))
 
-        if ((now - msg_time) > 1.0):
+        if ((now - msg_send_time) > 1.0):
             Log.log("Throwing away message that is too old")
             return None
 
-        msg_id = struct.unpack('>B', data[8:9])[0]
+        msg_id = struct.unpack('>B', data[16:17])[0]
         msg = None
         for message_class in self.message_classes:
             if msg_id == message_class.get_msg_id():
@@ -36,6 +40,6 @@ class MessageProtocol:
                 break
         if None != msg:
             msg.msg_receive_time = time()
-            msg.msg_send_time = msg_time
-            msg.decode(data[9:])
+            msg.msg_send_time = msg_send_time
+            msg.decode(data[17:])
         return msg

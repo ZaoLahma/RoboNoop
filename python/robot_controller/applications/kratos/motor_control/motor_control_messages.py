@@ -3,6 +3,9 @@ from ....core.log.log import Log
 import struct
 
 class UnlockInd(MessageBase):
+    def __init__(self):
+        MessageBase.__init__(self)
+
     @staticmethod
     def get_msg_id():
         return 10
@@ -15,6 +18,7 @@ class UnlockInd(MessageBase):
 
 class ReleaseCtrlInd(MessageBase):
     def __init__(self, sub_system=1000):
+        MessageBase.__init__(self)
         self.sub_system = sub_system
 
     @staticmethod
@@ -37,6 +41,7 @@ class MoveInd(MessageBase):
     RIGHT    = 3
     BACKWARD = 4
     def __init__(self, direction=STOP, power=100, sub_system=1000):
+        MessageBase.__init__(self)
         self.direction = direction
         self.power = power
         self.sub_system = sub_system
