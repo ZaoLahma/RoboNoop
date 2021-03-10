@@ -128,6 +128,7 @@ class ConnectionHandler(Thread):
     def receive_data(self, read_sock, num_bytes):
         data = num_bytes * [None]
         num_received_bytes = 0
+        self.messages_to_send = {}
         while (num_received_bytes < num_bytes):
             try:
                 packet = read_sock.recv(num_bytes - num_received_bytes)

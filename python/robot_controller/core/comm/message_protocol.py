@@ -25,7 +25,7 @@ class MessageProtocol:
         msg_time = struct.unpack('>d', data[0:8])[0]
         Log.log("Age when received: " + str(now - msg_time))
 
-        if ((now - msg_time) > 0.5):
+        if ((now - msg_time) > 1.0):
             Log.log("Throwing away message that is too old")
             return None
 
@@ -36,5 +36,7 @@ class MessageProtocol:
                 msg = message_class()
                 break
         if None != msg:
+            msg.msg_receive_time = time()
+            msg.msg_send_time = msg_time
             msg.decode(data[9:])
         return msg

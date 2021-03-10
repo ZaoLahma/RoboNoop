@@ -3,11 +3,6 @@ from ..log.log import Log
 
 from time import time
 
-class MessageData():
-    def __init__(self, message):
-        self.message = message
-        self.timestamp = time()
-
 class MessageStorage(TaskBase):
     def __init__(self, comm_if):
         TaskBase.__init__(self)
@@ -20,7 +15,7 @@ class MessageStorage(TaskBase):
         self.comm_if.invalidate_messages()
 
         for message in received_messages:
-            self.received_messages[message.get_msg_id()] = MessageData(message)
+            self.received_messages[message.get_msg_id()] = message
 
     def get_message(self, msg_id):
         return self.received_messages.get(msg_id)

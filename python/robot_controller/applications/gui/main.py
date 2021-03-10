@@ -26,8 +26,8 @@ class Main:
         protocol = MessageProtocol(ALL_CORE_MESSAGES + ALL_SONAR_MESSAGES + ALL_IMAGE_CONTROL_MESSAGES)
 
         comm_task = CommEndpoint([protocol])
-        connect_task = ConnectTask(comm_task)
         message_storage_task = MessageStorage(comm_task)
+        connect_task = ConnectTask(comm_task)
 
         CommCtxt.set_comm_if(comm_task)
         CommCtxt.set_comm_storage(message_storage_task)
@@ -41,7 +41,7 @@ class Main:
 
         run_in_new_thread = True
         scheduler_thread = SchedulerThread(scheduler, run_in_new_thread)
-        scheduler_periodicity_ms = 1000
+        scheduler_periodicity_ms = 250
         scheduler_thread.start(scheduler_periodicity_ms)
 
         resolution = (640, 400)

@@ -5,6 +5,7 @@ from ..comm.comm_ctxt import CommCtxt
 from .core.workspace_base import WorkspaceBase
 
 from tkinter import ttk
+from time import time
 
 class WsSensorData(WorkspaceBase):
     def __init__(self, parent_frame, ws_controller, ws_resolution):
@@ -18,9 +19,9 @@ class WsSensorData(WorkspaceBase):
     def refresh(self):
         if self.active:
             sonar_msg = CommCtxt.get_comm_storage().get_message(SonarDataInd.get_msg_id())
-            #Log.log("sonar_msg: " + str(sonar_msg))
             if None != sonar_msg:
-                distance = sonar_msg.message.distance
+                Log.log("sonar_msg age: " + str(time() - sonar_msg.msg_send_time))
+                distance = sonar_msg.distance
                 self.ws_test.configure(text = "Distance: {0}".format(distance))
             self.after(100, self.refresh)
 
