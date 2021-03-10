@@ -35,7 +35,7 @@ class ImageCaptureTask(TaskBase):
 
     def run(self):
         image = BytesIO()
-        self.camera.capture(image, "rgb", use_video_port=True)
+        self.camera.capture(image, "rgb", use_video_port=False)
         image = bytearray(image.getvalue())
         Log.log("Captured image of size: " + str(len(image)))
         

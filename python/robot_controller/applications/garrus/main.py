@@ -21,12 +21,12 @@ class Main:
         image_control_task = ImageCaptureTask(comm_task)
 
         tasks = []
-        tasks.append(image_control_task)
         tasks.append(comm_task)
+        tasks.append(image_control_task)
 
         scheduler = Scheduler("Garrus", tasks)
 
         run_in_new_thread = False
         thread = SchedulerThread(scheduler, run_in_new_thread)
-        scheduler_periodicity_ms = 500
+        scheduler_periodicity_ms = 250
         thread.start(scheduler_periodicity_ms)

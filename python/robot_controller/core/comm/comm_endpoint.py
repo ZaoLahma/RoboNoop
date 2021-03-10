@@ -133,7 +133,6 @@ class ConnectionHandler(Thread):
             Log.log("Memory error when allocating: " + str(num_bytes))
             return None
         num_received_bytes = 0
-        self.messages_to_send = {}
         while (num_received_bytes < num_bytes):
             try:
                 packet = read_sock.recv(num_bytes - num_received_bytes)
