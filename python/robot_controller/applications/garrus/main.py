@@ -21,8 +21,8 @@ class Main:
         image_control_task = ImageCaptureTask(comm_task)
 
         tasks = []
-        tasks.append(comm_task)
         tasks.append(image_control_task)
+        tasks.append(comm_task)
 
         scheduler = Scheduler("Garrus", tasks)
 
