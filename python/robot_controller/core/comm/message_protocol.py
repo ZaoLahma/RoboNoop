@@ -11,7 +11,6 @@ class MessageProtocol:
     def encode_message(message):
         now = time()
         data = struct.pack('>d', now)
-        unpacked = struct.unpack('>d', data[0:8])[0]
         data += struct.pack('>B', message.get_msg_id())
         payload = message.encode()
 
