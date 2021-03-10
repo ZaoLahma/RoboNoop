@@ -46,7 +46,7 @@ class ConnectionHandler(Thread):
         self.protocols = protocols
         self.outputs = []
         self.messages_to_send = {}
-        self.received_messages = []
+        self.received_messages = {}
         self.peer_capabilities = []
         self.active = False
         self.send_mutex = Lock()
@@ -66,7 +66,7 @@ class ConnectionHandler(Thread):
     def get_received_messages(self):
         self.receive_mutex.acquire()
         ret_val = self.received_messages
-        self.received_messages = []
+        self.received_messages = {}
         self.receive_mutex.release()
         return ret_val
 
@@ -94,7 +94,7 @@ class ConnectionHandler(Thread):
         Log.log("Exiting ConnectionHandler for {}".format(self.port_no))
 
     def receive_next_message(self, read_sock):
-        curr_messages = []
+        curr_messages = {}
         read_sock.settimeout(0.1)
         message = self.receive_message(read_sock)
         if None != message:
@@ -103,7 +103,7 @@ class ConnectionHandler(Thread):
                 self.peer_capabilities = message.capabilities
                 Log.log("Received capabilities: {} ({})".format(self.peer_capabilities, self.port_no))
             else:
-                curr_messages.append(message)
+                curr_messages[message.get_msg_id()] = message
             message = self.receive_message(read_sock)
         read_sock.settimeout(None)
         self.receive_mutex.acquire()
@@ -173,8 +173,8 @@ class CommEndpoint(TaskBase):
         self.conn_listener = ConnectionListener(self.conn_established)
         self.conn_listener.start()
         self.connection_handlers = []
-        self.received_messages = []
-        self.messages_to_send = []
+        self.received_messages = {}
+        self.messages_to_send = {}
 
     def conn_established(self, port_no, connection):
         Log.log("Callback for connection received {}".format(port_no))
@@ -183,22 +183,16 @@ class CommEndpoint(TaskBase):
         self.connection_handlers.append(connection_handler)
 
     def get_message(self, msg_id):
-        ret_val = None
-        #Log.log("Received messages: {0}".format(self.received_messages))
-        for message in self.received_messages:
-            if message.get_msg_id() == msg_id:
-                ret_val = message
-                break
-        return ret_val
+        return self.received_messages[msg_id]
 
     def get_all_messages(self):
-        return self.received_messages
+        return self.received_messages.values()
 
     def invalidate_messages(self):
-        self.received_messages = []
+        self.received_messages = {}
 
     def send_message(self, message):
-        self.messages_to_send.append(message)
+        self.messages_to_send[message.get_msg_id()] = message
 
     def publish_service(self, port_no):
         Log.log("publish_service with port_no {}".format(port_no))
@@ -213,16 +207,17 @@ class CommEndpoint(TaskBase):
         return ret_val
 
     def run(self):
-        self.received_messages = []
+        self.received_messages = {}
         disconnected =  []
         for connection_handler in self.connection_handlers:
             messages = connection_handler.get_received_messages()
-            self.received_messages.extend(messages)
+            for message in messages.values():
+                self.received_messages[message.get_msg_id()] = message
             if True == connection_handler.active:
-                connection_handler.send_messages(self.messages_to_send)
+                connection_handler.send_messages(self.messages_to_send.values())
             else:
                 disconnected.append(connection_handler)
-        self.messages_to_send = []
+        self.messages_to_send = {}
 
         for broken in disconnected:
             Log.log("Disconnecting {}".format(broken.port_no))
