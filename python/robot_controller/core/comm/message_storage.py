@@ -16,12 +16,12 @@ class MessageStorage(TaskBase):
 
     def run(self):
         received_messages = self.comm_if.get_all_messages()
-        Log.log("Received messages: " + str(received_messages))
+        #Log.log("Received messages: " + str(received_messages))
         self.comm_if.invalidate_messages()
 
         for message in received_messages:
             self.received_messages[message.get_msg_id()] = MessageData(message)
-            
+
     def get_message(self, msg_id):
         return self.received_messages.get(msg_id)
         

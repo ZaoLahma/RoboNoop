@@ -98,7 +98,7 @@ class ConnectionHandler(Thread):
         read_sock.settimeout(0.1)
         message = self.receive_message(read_sock)
         if None != message:
-            Log.log("message: " + str(message))
+            #Log.log("message: " + str(message))
             if CapabilitiesInd.get_msg_id() == message.get_msg_id():
                 self.peer_capabilities = message.capabilities
                 Log.log("Received capabilities: {} ({})".format(self.peer_capabilities, self.port_no))
@@ -189,7 +189,6 @@ class CommEndpoint(TaskBase):
         except KeyError:
             pass
         return message
-
 
     def get_all_messages(self):
         return self.received_messages.values()

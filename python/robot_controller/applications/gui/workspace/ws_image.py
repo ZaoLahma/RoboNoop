@@ -44,19 +44,19 @@ class WsImage(WorkspaceBase):
             self.rendering = True
             msg = CommCtxt.get_comm_storage().get_message(ImageData.get_msg_id())
             if None != msg:
-                Log.log("Age: " + str(time() - msg.timestamp))
+                #Log.log("Age: " + str(time() - msg.timestamp))
                 msg = msg.message
                 self.show_image(msg.resolution, msg.color_mode, msg.image_data)
             self.rendering = False
             self.after(500, self.refresh)
 
     def show_image(self, resolution, color_mode, image):
-        Log.log("enter show_image")
+        #Log.log("enter show_image")
         to_show = np.frombuffer(image, dtype=np.uint8).reshape((resolution[1], resolution[0], 3))
         to_show = Image.fromarray(to_show)
         self.image = ImageTk.PhotoImage(to_show)
         self.image_label.configure(image=self.image)
-        Log.log("exit show_image")
+        #Log.log("exit show_image")
 
     def activate(self):
         self.active = True
