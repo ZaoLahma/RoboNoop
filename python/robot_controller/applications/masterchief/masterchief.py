@@ -8,7 +8,6 @@ from ..kratos.main import Main as KratosMain
 from ..daredevil.main import Main as DaredevilMain
 from ..garrus.main import Main as GarrusMain
 from ..fear.main import Main as FearMain
-from ..conn_aggregator.main import Main as ConnAggregatorMain
 
 from ...core.log.log import Log
 from datetime import datetime
@@ -24,7 +23,6 @@ class MasterChief(TaskBase):
         self.state_def =  [
             State("INIT", self.handle_init, "CONNECT_DAREDEVIL", "INIT"),
             State("IDLE", self.handle_idle, "CONNECT_DAREDEVIL", "IDLE"),
-            State("CONNECT_CONN_AGGREGATOR", self.handle_connect_conn_aggregator, "CONNECT_DAREDEVIL", "START_PROCESSES"),
             State("CONNECT_DAREDEVIL", self.handle_connect_daredevil, "CONNECT_FEAR", "START_PROCESSES"),
             State("CONNECT_FEAR", self.handle_connect_fear, "CONNECT_KRATOS", "START_PROCESSES"),
             State("CONNECT_KRATOS", self.handle_connect_kratos, "CONNECT_GARRUS", "START_PROCESSES"),
@@ -82,12 +80,6 @@ class MasterChief(TaskBase):
         fail = True != CommUtils.connect(self.comm_if, "garrus")
         if True == fail:
             self.processes_to_start.append(("GarrusProcess", GarrusMain.run))
-        self.state_handler.transition(fail)
-
-    def handle_connect_conn_aggregator(self):
-        fail = True != CommUtils.connect(self.comm_if, "conn_aggregator")
-        if True == fail:
-            self.processes_to_start.append(("ConnAggregatorProcess", ConnAggregatorMain.run))
         self.state_handler.transition(fail)
 
     def handle_start_processes(self):
