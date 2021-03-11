@@ -46,11 +46,10 @@ class ConnectionHandler(Thread):
         self.protocols = protocols
         self.outputs = []
         self.messages_to_send = {}
-        self.received_messages = {}
+        self.receive_hooks = []
         self.peer_capabilities = []
         self.active = False
         self.send_mutex = Lock()
-        self.receive_mutex = Lock()
 
     def send_messages(self, messages):
         for message in messages:
@@ -63,12 +62,8 @@ class ConnectionHandler(Thread):
             self.outputs = self.inputs
             self.send_mutex.release()
 
-    def get_received_messages(self):
-        self.receive_mutex.acquire()
-        ret_val = self.received_messages
-        self.received_messages = {}
-        self.receive_mutex.release()
-        return ret_val
+    def register_receive_hook(self, hook):
+        self.receive_hooks.append(hook)
 
     def run(self):
         Log.log("ConnectionHandler started for {}".format(self.port_no))
@@ -94,8 +89,7 @@ class ConnectionHandler(Thread):
         Log.log("Exiting ConnectionHandler for {}".format(self.port_no))
 
     def receive_next_message(self, read_sock):
-        curr_messages = {}
-        read_sock.settimeout(0.05)
+        read_sock.settimeout(0.1)
         message = self.receive_message(read_sock)
         if None != message:
             #Log.log("message: " + str(message))
@@ -103,12 +97,9 @@ class ConnectionHandler(Thread):
                 self.peer_capabilities = message.capabilities
                 Log.log("Received capabilities: {} ({})".format(self.peer_capabilities, self.port_no))
             else:
-                curr_messages[message.get_msg_id()] = message
-            message = self.receive_message(read_sock)
+                for hook in self.receive_hooks:
+                    hook(message)
         read_sock.settimeout(None)
-        self.receive_mutex.acquire()
-        self.received_messages = curr_messages
-        self.receive_mutex.release()
 
     def receive_message(self, read_sock):
         message = None
@@ -177,6 +168,7 @@ class CommEndpoint(TaskBase):
         self.protocols = protocols
         self.conn_listener = ConnectionListener(self.conn_established)
         self.conn_listener.start()
+        self.receive_mutex = Lock()
         self.connection_handlers = []
         self.received_messages = {}
         self.messages_to_send = {}
@@ -184,6 +176,7 @@ class CommEndpoint(TaskBase):
     def conn_established(self, port_no, connection):
         Log.log("Callback for connection received {}".format(port_no))
         connection_handler = ConnectionHandler(port_no, connection, self.protocols)
+        connection_handler.register_receive_hook(self.receive_hook)
         connection_handler.start()
         self.connection_handlers.append(connection_handler)
 
@@ -216,13 +209,14 @@ class CommEndpoint(TaskBase):
                 break
         return ret_val
 
+    def receive_hook(self, message):
+        self.receive_mutex.acquire()
+        self.received_messages[message.get_msg_id()] = message
+        self.receive_mutex.release()
+
     def run(self):
-        self.received_messages = {}
         disconnected =  []
         for connection_handler in self.connection_handlers:
-            messages = connection_handler.get_received_messages()
-            for message in messages.values():
-                self.received_messages[message.get_msg_id()] = message
             if True == connection_handler.active:
                 connection_handler.send_messages(self.messages_to_send.values())
             else:
@@ -251,5 +245,6 @@ class CommEndpoint(TaskBase):
             Log.log("Connected to application at address {0}".format(host))
             connection.settimeout(None)
             connection_handler = ConnectionHandler(port_no, connection, self.protocols)
+            connection_handler.register_receive_hook(self.receive_hook)
             connection_handler.start()
             self.connection_handlers.append(connection_handler)

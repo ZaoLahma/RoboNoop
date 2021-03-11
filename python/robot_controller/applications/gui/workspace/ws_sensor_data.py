@@ -18,7 +18,7 @@ class WsSensorData(WorkspaceBase):
 
     def refresh(self):
         if self.active:
-            sonar_msg = CommCtxt.get_comm_storage().get_message(SonarDataInd.get_msg_id())
+            sonar_msg = CommCtxt.get_comm_if().get_message(SonarDataInd.get_msg_id())
             if None != sonar_msg:
                 Log.log("sonar_msg age: " + str(time() - sonar_msg.msg_send_time))
                 distance = sonar_msg.distance
