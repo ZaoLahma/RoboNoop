@@ -129,8 +129,12 @@ class ConnectionHandler(Thread):
         num_received_bytes = 0
         while (num_received_bytes < num_bytes and self.active):
             try:
+                buf_size = num_bytes - num_received_bytes
+                if buf_size > 4096:
+                    buf_size = 4096
                 packet = read_sock.recv(num_bytes - num_received_bytes)
                 if not packet:
+                    Log.log("NOT PACKET")
                     self.active = False
                     return None
                 data[num_received_bytes : num_received_bytes + len(packet)] = packet
@@ -141,6 +145,7 @@ class ConnectionHandler(Thread):
                 else:
                     return None
             except ConnectionResetError:
+                Log.log("CONNECTION RESET ERROR")
                 self.active = False
                 return None
         return bytearray(data)
