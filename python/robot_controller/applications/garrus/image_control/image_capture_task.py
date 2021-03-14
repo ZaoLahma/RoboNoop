@@ -54,11 +54,11 @@ class ImageCaptureTask(TaskBase):
         image = BytesIO()
         self.camera.capture(image, "rgb", use_video_port=True)
         image = self.process_image(image)
-        Log.log("Captured image of size: " + str(len(image)))
+        #Log.log("Captured image of size: " + str(len(image)))
         
         data_transfer = ImageData(self.resolution, self.color_mode, image)
-        Log.log("Before send message")
+        #Log.log("Before send message")
         self.comm_if.send_message(data_transfer)
-        Log.log("After send message")
+        #Log.log("After send message")
 
 

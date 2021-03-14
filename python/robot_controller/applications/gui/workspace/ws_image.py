@@ -29,7 +29,7 @@ class WsImage(WorkspaceBase):
         self.active = False
         self.rendering = False
         self.color_mode = COLOR
-        self.image_label = Label(self)
+        self.image_label = Label(self, text="placeholder")
         self.image_label.pack(side = TOP)
         self.image = None
         self.image_mode_button = ttk.Button(self, text = "Monochrome", command = lambda : self.toggle_image_mode())
@@ -48,7 +48,6 @@ class WsImage(WorkspaceBase):
         else:
             self.color_mode = COLOR
             self.image_mode_button.configure(text = "Monochrome")
-
         msg = ImageModeSelect(color_mode=self.color_mode)
         CommCtxt.get_comm_if().send_message(msg)
 

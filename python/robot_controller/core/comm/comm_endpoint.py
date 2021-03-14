@@ -59,8 +59,11 @@ class ConnectionHandler(Thread):
         if CapabilitiesInd.get_msg_id() == message.get_msg_id() or message.get_msg_id() in self.peer_capabilities:
             self.send_mutex.acquire()
             self.messages_to_send[message.get_msg_id()] = message
+            Log.log("Messages to send: " + str(self.messages_to_send))
             self.outputs = self.inputs
             self.send_mutex.release()
+        else:
+            Log.log("NOT SENDING MESSAGE")
 
     def register_receive_hook(self, hook):
         self.receive_hooks.append(hook)
