@@ -47,6 +47,16 @@ class ImageCaptureTask(TaskBase):
         Log.log("Iterate done")
         return image_data
 
+    def process_image_new(self, image):
+        if COLOR == self.color_mode:
+            return bytearray(image.getvalue())
+        image = image.getvalue()
+        image = [image[i : i + 3] for i in range(0, len(image), 3)]
+        image = [[int((sum(pixel_vals) / 3) + 0.5)] for pixel_vals in image]
+        image = [pix_val for pix_vals in image for pix_val in pix_vals]
+        Log.log("image size: " + str(len(image)))
+        return bytearray(image)
+
     def run(self):
         msg = self.comm_if.get_message(ImageModeSelect.get_msg_id())
         if None != msg:
@@ -55,7 +65,7 @@ class ImageCaptureTask(TaskBase):
 
         image = BytesIO()
         self.camera.capture(image, "rgb", use_video_port=False)
-        image = self.process_image(image)
+        image = self.process_image_new(image)
         Log.log("Captured image of size: " + str(len(image)))
         
         data_transfer = ImageData(self.resolution, self.color_mode, image)
