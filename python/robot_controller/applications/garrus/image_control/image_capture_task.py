@@ -40,6 +40,8 @@ class ImageCaptureTask(TaskBase):
         Log.log("Captured image of size: " + str(len(image)))
         
         data_transfer = ImageData(self.resolution, self.color_mode, image)
+        Log.log("Before send message")
         self.comm_if.send_message(data_transfer)
+        Log.log("After send message")
 
 
