@@ -69,9 +69,11 @@ class ImageCaptureTask(TaskBase):
         return image
 
     def process_image_numpy_new(self, image):
+        now = time()
         image = bytearray(image.getvalue())
         if MONOCHROME == self.color_mode:
             image = bytearray(np.frombuffer(image, dtype=np.uint8, count=self.resolution[0] * self.resolution[1]).tolist())
+        Log.log("Image processing took: " + str(time() - now) + " seconds")
         return image
 
     def run(self):
