@@ -32,8 +32,8 @@ class WsImage(WorkspaceBase):
         self.image_label = Label(self)
         self.image_label.pack(side = TOP)
         self.image = None
-        #self.image_mode_button = ttk.Button(self, text = "Monochrome", command = lambda : self.toggle_image_mode())
-        #self.image_mode_button.pack(side = BOTTOM)
+        self.image_mode_button = ttk.Button(self, text = "Monochrome", command = lambda : self.toggle_image_mode())
+        self.image_mode_button.pack(side = BOTTOM)
         self.hex_row_buffer = []
         self.hex_row_buffer_size = 0
 
@@ -60,10 +60,10 @@ class WsImage(WorkspaceBase):
             msg = CommCtxt.get_comm_if().get_message(ImageData.get_msg_id())
             if None != msg:
                 now = time()
-                #Log.log("Age from creation to sending: " + str(msg.msg_send_time - msg.msg_create_time))
-                #Log.log("Age from sending to now: " + str(now - msg.msg_send_time))
-                #Log.log("Age from receiving to now: " + str(now - msg.msg_receive_time))
-                #Log.log("Total age: " + str(now - msg.msg_create_time))
+                Log.log("Age from creation to sending: " + str(msg.msg_send_time - msg.msg_create_time))
+                Log.log("Age from sending to now: " + str(now - msg.msg_send_time))
+                Log.log("Age from receiving to now: " + str(now - msg.msg_receive_time))
+                Log.log("Total age: " + str(now - msg.msg_create_time))
                 self.show_image(msg.resolution, msg.color_mode, msg.image_data)
             self.rendering = False
             self.after(200, self.refresh)
