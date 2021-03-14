@@ -102,7 +102,7 @@ class ConnectionHandler(Thread):
             else:
                 for hook in self.receive_hooks:
                     hook(message)
-        read_sock.settimeout(0)
+        read_sock.settimeout(None)
 
     def receive_message(self, read_sock):
         message = None
