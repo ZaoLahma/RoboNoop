@@ -51,9 +51,7 @@ class ImageCaptureTask(TaskBase):
         if COLOR == self.color_mode:
             return bytearray(image.getvalue())
         image = image.getvalue()
-        image = [image[i : i + 3] for i in range(0, len(image), 3)]
-        image = [[int((sum(pixel_vals) / 3) + 0.5)] for pixel_vals in image]
-        image = [pix_val for pix_vals in image for pix_val in pix_vals]
+        image = [int((sum(image[i : i + 3]) / 3) + 0.5) for i in range(0, len(image), 3)]
         Log.log("image size: " + str(len(image)))
         return bytearray(image)
 
