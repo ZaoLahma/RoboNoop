@@ -12,12 +12,12 @@ class ConnectTask(TaskBase):
         self.comm_if = comm_if
 
         self.state_def =  [
-            State("CONNECT_START", self.handle_connect_start, "CONNECT_MASTERCHIEF", "CONNECT_START"),
-            State("CONNECT_MASTERCHIEF", self.handle_masterchief, "CONNECT_GARRUS", "CONNECT_START"),
-            State("CONNECT_GARRUS", self.handle_connect_garrus, "CONNECT_DAREDEVIL", "CONNECT_START"),
-            State("CONNECT_DAREDEVIL", self.handle_connect_daredevil, "CONNECT_FEAR", "CONNECT_START"),
-            State("CONNECT_FEAR", self.handle_connect_fear, "CONNECT_KRATOS", "CONNECT_START"),
-            State("CONNECT_KRATOS", self.handle_connect_kratos, "ENABLED", "CONNECT_START"),
+            State("CONNECT_START", self.handle_connect_start, "CONNECT_MASTERCHIEF", "CONNECT_MASTERCHIEF"),
+            State("CONNECT_MASTERCHIEF", self.handle_masterchief, "CONNECT_GARRUS", "CONNECT_GARRUS"),
+            State("CONNECT_GARRUS", self.handle_connect_garrus, "CONNECT_DAREDEVIL", "CONNECT_DAREDEVIL"),
+            State("CONNECT_DAREDEVIL", self.handle_connect_daredevil, "CONNECT_FEAR", "CONNECT_FEAR"),
+            State("CONNECT_FEAR", self.handle_connect_fear, "CONNECT_KRATOS", "CONNECT_KRATOS"),
+            State("CONNECT_KRATOS", self.handle_connect_kratos, "ENABLED", "ENABLED"),
             State("ENABLED", self.handle_enabled, "ENABLED", "CONNECT_START")
         ]
         self.state_handler = StateHandler(self.state_def, "CONNECT_START")

@@ -35,6 +35,7 @@ class ImageCaptureTask(TaskBase):
         self.color_mode = color_mode
 
     def process_image(self, image):
+        Log.log("Color mode: " + str(self.color_mode))
         if COLOR == self.color_mode:
             return bytearray(image.getvalue())
         image_data = bytearray()
@@ -48,6 +49,7 @@ class ImageCaptureTask(TaskBase):
         msg = self.comm_if.get_message(ImageModeSelect.get_msg_id())
         if None != msg:
             self.set_image_mode(msg.resolution, msg.color_mode)
+        Log.log("msg: " + str(msg))
 
         image = BytesIO()
         self.camera.capture(image, "rgb", use_video_port=True)

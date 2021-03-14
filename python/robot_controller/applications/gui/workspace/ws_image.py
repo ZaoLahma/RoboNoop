@@ -32,7 +32,7 @@ class WsImage(WorkspaceBase):
         self.image_label = Label(self)
         self.image_label.pack(side = TOP)
         self.image = None
-        self.image_mode_button = ttk.Button(self, text = "Toggle image mode", command = lambda : self.toggle_image_mode())
+        self.image_mode_button = ttk.Button(self, text = "Color", command = lambda : self.toggle_image_mode())
         self.image_mode_button.pack(side = BOTTOM)
         self.hex_row_buffer = []
         self.hex_row_buffer_size = 0
@@ -44,8 +44,10 @@ class WsImage(WorkspaceBase):
     def toggle_image_mode(self):
         if self.color_mode == COLOR:
             self.color_mode = MONOCHROME
+            self.image_mode_button.configure(text = "Monochrome")
         else:
             self.color_mode = COLOR
+            self.image_mode_button.configure(text = "Color")
 
         msg = ImageModeSelect(color_mode=self.color_mode)
         CommCtxt.get_comm_if().send_message(msg)
@@ -59,20 +61,21 @@ class WsImage(WorkspaceBase):
             msg = CommCtxt.get_comm_if().get_message(ImageData.get_msg_id())
             if None != msg:
                 now = time()
-                Log.log("Age from creation to sending: " + str(msg.msg_send_time - msg.msg_create_time))
-                Log.log("Age from sending to now: " + str(now - msg.msg_send_time))
-                Log.log("Age from receiving to now: " + str(now - msg.msg_receive_time))
-                Log.log("Total age: " + str(now - msg.msg_create_time))
+                #Log.log("Age from creation to sending: " + str(msg.msg_send_time - msg.msg_create_time))
+                #Log.log("Age from sending to now: " + str(now - msg.msg_send_time))
+                #Log.log("Age from receiving to now: " + str(now - msg.msg_receive_time))
+                #Log.log("Total age: " + str(now - msg.msg_create_time))
                 self.show_image(msg.resolution, msg.color_mode, msg.image_data)
             self.rendering = False
             self.after(200, self.refresh)
 
     def show_image(self, resolution, color_mode, image):
         #Log.log("enter show_image")
-        pixel_length = 3
-        if MONOCHROME == color_mode:
-            pixel_length = 1
-        to_show = np.frombuffer(image, dtype=np.uint8).reshape((resolution[1], resolution[0], pixel_length))
+        to_show = None
+        if COLOR == color_mode:
+            to_show = np.frombuffer(image, dtype=np.uint8).reshape((resolution[1], resolution[0], 3))
+        elif MONOCHROME == color_mode:
+            to_show = np.frombuffer(image, dtype=np.uint8).reshape((resolution[1], resolution[0]))
         to_show = Image.fromarray(to_show)
         self.image = ImageTk.PhotoImage(to_show)
         self.image_label.configure(image=self.image)

@@ -37,7 +37,7 @@ class ImageData(MessageBase):
         res_x = int.from_bytes(data[0:2], byteorder = "big")
         res_y = int.from_bytes(data[2:4], byteorder = "big")
         self.resolution = (res_x, res_y)
-        self.color_mode = data [4]
+        self.color_mode = data[4]
         self.image_data = data[5:]
 
 class ImageModeSelect(MessageBase):
@@ -55,11 +55,12 @@ class ImageModeSelect(MessageBase):
         to_send.extend(self.resolution[0].to_bytes(length = 2, byteorder = "big"))
         to_send.extend(self.resolution[1].to_bytes(length = 2, byteorder = "big"))
         to_send.extend(self.color_mode.to_bytes(length = 1, byteorder = "big"))
+        return to_send
 
-    def decode(self):
+    def decode(self, data):
         res_x = int.from_bytes(data[0:2], byteorder = "big")
         res_y = int.from_bytes(data[2:4], byteorder = "big")
         self.resolution = (res_x, res_y)
-        self.color_mode = data [4]
+        self.color_mode = data[4]
 
 ALL_IMAGE_CONTROL_MESSAGES = [ImageData, ImageModeSelect]
