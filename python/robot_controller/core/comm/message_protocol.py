@@ -26,10 +26,15 @@ class MessageProtocol:
         return data
 
     def decode_message(self, data):
+        Log.log("Decode enter")
         now = time()
         msg_create_time = struct.unpack('>d', data[0:8])[0]
         msg_send_time = struct.unpack('>d', data[8:16])[0]
         Log.log("Age when received: " + str(now - msg_send_time))
+
+        transfer_time = now - msg_send_time
+        transfer_speed = len(data) / transfer_time
+        Log.log("Transfer speed (bytes / sec): " + str(transfer_speed))
 
         if ((now - msg_send_time) > 1.0):
             Log.log("Throwing away message that is too old")
@@ -46,4 +51,5 @@ class MessageProtocol:
             msg.msg_create_time = msg_create_time
             msg.msg_send_time = msg_send_time
             msg.decode(data[17:])
+        Log.log("Decode exit")
         return msg
