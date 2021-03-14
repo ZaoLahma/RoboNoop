@@ -29,11 +29,11 @@ class WsImage(WorkspaceBase):
         self.active = False
         self.rendering = False
         self.color_mode = COLOR
-        self.image_label = Label(self, text="placeholder")
+        self.image_label = Label(self)
         self.image_label.pack(side = TOP)
         self.image = None
-        self.image_mode_button = ttk.Button(self, text = "Monochrome", command = lambda : self.toggle_image_mode())
-        self.image_mode_button.pack(side = BOTTOM)
+        #self.image_mode_button = ttk.Button(self, text = "Monochrome", command = lambda : self.toggle_image_mode())
+        #self.image_mode_button.pack(side = BOTTOM)
         self.hex_row_buffer = []
         self.hex_row_buffer_size = 0
 
