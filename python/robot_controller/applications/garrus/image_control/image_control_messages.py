@@ -8,10 +8,11 @@ MONOCHROME = 1
 class ImageData(MessageBase):
     def __init__(self, resolution = None, color_mode = None, image_data = None):
         MessageBase.__init__(self)
-        Log.log("Image data created")
+        Log.log("Image data enter CTOR")
         self.resolution = resolution
         self.color_mode = color_mode
         self.image_data = image_data
+        Log.log("Exit CTOR")
 
     @staticmethod
     def get_msg_id():
