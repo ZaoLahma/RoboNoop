@@ -8,6 +8,8 @@ from .image_control_messages import COLOR
 from .image_control_messages import MONOCHROME
 from io import BytesIO
 
+import numpy as np
+
 try:
     import picamera
 except ImportError:
@@ -55,6 +57,13 @@ class ImageCaptureTask(TaskBase):
         Log.log("image size: " + str(len(image)))
         return bytearray(image)
 
+    def process_image_numpy(self, image):
+        image = bytearray(image.getvalue())
+        if COLOR == self.color_mode:
+            return image
+        image = ((np.frombuffer(image, dtype=np.uint8).reshape(len(image) // 3, 3).sum(axis = 1)) // 3).tolist()
+        return bytearray(image)
+
     def run(self):
         msg = self.comm_if.get_message(ImageModeSelect.get_msg_id())
         if None != msg:
@@ -63,7 +72,7 @@ class ImageCaptureTask(TaskBase):
 
         image = BytesIO()
         self.camera.capture(image, "rgb", use_video_port=False)
-        image = self.process_image_new(image)
+        image = self.process_image_numpy(image)
         Log.log("Captured image of size: " + str(len(image)))
         
         data_transfer = ImageData(self.resolution, self.color_mode, image)
