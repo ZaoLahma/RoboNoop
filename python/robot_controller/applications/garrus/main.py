@@ -6,6 +6,7 @@ from ...core.comm.message_protocol import MessageProtocol
 from ...core.comm.core_messages import ALL_CORE_MESSAGES
 from ...core.config.config import Config
 from .image_control.image_capture_task import ImageCaptureTask
+from .image_control.image_control_messages import ALL_IMAGE_CONTROL_MESSAGES
 from time import sleep
 
 class Main:
@@ -15,7 +16,7 @@ class Main:
         Log.log_application_name = "garrus"
         Log.log("Garrus application starting...")
 
-        protocol = MessageProtocol(ALL_CORE_MESSAGES)
+        protocol = MessageProtocol(ALL_CORE_MESSAGES + ALL_IMAGE_CONTROL_MESSAGES)
 
         comm_task = CommEndpoint([protocol])
         image_control_task = ImageCaptureTask(comm_task)

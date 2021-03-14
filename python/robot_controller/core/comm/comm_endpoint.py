@@ -59,8 +59,11 @@ class ConnectionHandler(Thread):
         if CapabilitiesInd.get_msg_id() == message.get_msg_id() or message.get_msg_id() in self.peer_capabilities:
             self.send_mutex.acquire()
             self.messages_to_send[message.get_msg_id()] = message
+            Log.log("Messages to send: " + str(self.messages_to_send))
             self.outputs = self.inputs
             self.send_mutex.release()
+        else:
+            Log.log("NOT SENDING MESSAGE")
 
     def register_receive_hook(self, hook):
         self.receive_hooks.append(hook)
@@ -99,7 +102,7 @@ class ConnectionHandler(Thread):
             else:
                 for hook in self.receive_hooks:
                     hook(message)
-        read_sock.settimeout(0)
+        read_sock.settimeout(None)
 
     def receive_message(self, read_sock):
         message = None
@@ -126,8 +129,12 @@ class ConnectionHandler(Thread):
         num_received_bytes = 0
         while (num_received_bytes < num_bytes and self.active):
             try:
+                buf_size = num_bytes - num_received_bytes
+                if buf_size > 4096:
+                    buf_size = 4096
                 packet = read_sock.recv(num_bytes - num_received_bytes)
                 if not packet:
+                    Log.log("NOT PACKET")
                     self.active = False
                     return None
                 data[num_received_bytes : num_received_bytes + len(packet)] = packet
@@ -138,6 +145,7 @@ class ConnectionHandler(Thread):
                 else:
                     return None
             except ConnectionResetError:
+                Log.log("CONNECTION RESET ERROR")
                 self.active = False
                 return None
         return bytearray(data)
@@ -153,7 +161,8 @@ class ConnectionHandler(Thread):
             try:
                 send_sock.sendall(data_size)
                 send_sock.sendall(data)
-            except Exception:
+            except Exception as e:
+                Log.log("EXCEPTION: " + str(e))
                 self.active = False
                 break
         self.outputs = []
@@ -196,6 +205,7 @@ class CommEndpoint(TaskBase):
 
     def send_message(self, message):
         self.messages_to_send[message.get_msg_id()] = message
+        Log.log("send message messages_to_send: " + str(self.messages_to_send))
 
     def publish_service(self, port_no):
         Log.log("publish_service with port_no {}".format(port_no))
@@ -218,6 +228,7 @@ class CommEndpoint(TaskBase):
         disconnected =  []
         for connection_handler in self.connection_handlers:
             if True == connection_handler.active:
+                Log.log("messages_to_send in run: " + str(self.messages_to_send))
                 connection_handler.send_messages(self.messages_to_send.values())
             else:
                 disconnected.append(connection_handler)
