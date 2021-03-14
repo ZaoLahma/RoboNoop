@@ -37,6 +37,7 @@ class WsOpenCVTest(WorkspaceBase):
         self.hex_row_buffer = []
         self.hex_row_buffer_size = 0
         self.opencv_state = "off"
+        self.face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
         self.hog = cv2.HOGDescriptor()
         self.hog.setSVMDetector(cv2.HOGDescriptor_getDefaultPeopleDetector())
         msg = ImageModeSelect(color_mode=self.color_mode)
@@ -54,12 +55,21 @@ class WsOpenCVTest(WorkspaceBase):
             self.opencv_state_toggle.configure(text = "OpenCV Enable")
             self.opencv_state = "off"
 
-    def detect_objects(self, image):
+    def detect_bodies(self, image):
         rects = []
         if "on" == self.opencv_state:
             (rects, weights) = self.hog.detectMultiScale(image, winStride=(4, 4), padding=(8, 8), scale=1.05)
             #(rects, weights) = self.hog.detectMultiScale(image, winStride=(8, 8))
         return rects
+
+    def detect_faces(self, image):
+        faces = []
+
+        if "on" == self.opencv_state:
+            faces = self.face_cascade.detectMultiScale(image, 1.1, 4)
+            Log.log("Faces: " + str(faces))
+
+        return faces
 
     def refresh(self):
         if True == self.rendering:
@@ -77,11 +87,18 @@ class WsOpenCVTest(WorkspaceBase):
         to_show = None
         if MONOCHROME == color_mode:
             to_show = np.frombuffer(image, dtype=np.uint8).reshape((resolution[1], resolution[0]))
-            rects = self.detect_objects(to_show)
+            rects = self.detect_bodies(to_show)
             rects = np.array([[x, y, x + w, y + h] for (x, y, w, h) in rects])
 
             for (xA, yA, xB, yB) in rects:
                 cv2.rectangle(to_show, (xA, yA), (xB, yB), (0), 2)
+
+            faces = self.detect_faces(to_show)
+            faces = np.array([[x, y, x + w, y + h] for (x, y, w, h) in faces])
+
+            for (xA, yA, xB, yB) in faces:
+                cv2.rectangle(to_show, (xA, yA), (xB, yB), (0), 2)
+
 
             to_show = Image.fromarray(to_show)
             self.image = ImageTk.PhotoImage(to_show)
