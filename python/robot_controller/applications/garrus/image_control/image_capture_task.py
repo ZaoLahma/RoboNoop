@@ -50,7 +50,6 @@ class ImageCaptureTask(TaskBase):
     def run(self):
         msg = self.comm_if.get_message(ImageModeSelect.get_msg_id())
         if None != msg:
-            exit()
             self.set_image_mode(msg.resolution, msg.color_mode)
         Log.log("msg: " + str(msg))
 
