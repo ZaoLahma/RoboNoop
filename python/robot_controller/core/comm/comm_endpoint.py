@@ -89,7 +89,7 @@ class ConnectionHandler(Thread):
         Log.log("Exiting ConnectionHandler for {}".format(self.port_no))
 
     def receive_next_message(self, read_sock):
-        read_sock.settimeout(0.2)
+        read_sock.settimeout(0.5)
         message = self.receive_message(read_sock)
         if None != message:
             #Log.log("message: " + str(message))
@@ -99,7 +99,7 @@ class ConnectionHandler(Thread):
             else:
                 for hook in self.receive_hooks:
                     hook(message)
-        read_sock.settimeout(None)
+        read_sock.settimeout(0)
 
     def receive_message(self, read_sock):
         message = None

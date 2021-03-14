@@ -51,7 +51,7 @@ class WsImage(WorkspaceBase):
                 Log.log("Total age: " + str(now - msg.msg_create_time))
                 self.show_image(msg.resolution, msg.color_mode, msg.image_data)
             self.rendering = False
-            self.after(100, self.refresh)
+            self.after(200, self.refresh)
 
     def show_image(self, resolution, color_mode, image):
         #Log.log("enter show_image")
