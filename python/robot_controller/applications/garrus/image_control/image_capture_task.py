@@ -10,6 +10,8 @@ from io import BytesIO
 
 import numpy as np
 
+from time import time
+
 try:
     import picamera
 except ImportError:
@@ -58,11 +60,13 @@ class ImageCaptureTask(TaskBase):
         return bytearray(image)
 
     def process_image_numpy(self, image):
+        now = time()
         image = bytearray(image.getvalue())
-        if COLOR == self.color_mode:
-            return image
-        image = ((np.frombuffer(image, dtype=np.uint8).reshape(len(image) // 3, 3).sum(axis = 1)) // 3).tolist()
-        return bytearray(image)
+        if MONOCHROME == self.color_mode:
+            image = bytearray(((np.frombuffer(image, dtype=np.uint8).reshape(len(image) // 3, 3).sum(axis = 1)) // 3).tolist())
+        
+        Log.log("Image processing took: " + str(time() - now) + " seconds")
+        return image
 
     def run(self):
         msg = self.comm_if.get_message(ImageModeSelect.get_msg_id())
