@@ -161,7 +161,8 @@ class ConnectionHandler(Thread):
             try:
                 send_sock.sendall(data_size)
                 send_sock.sendall(data)
-            except Exception:
+            except Exception as e:
+                Log.log("EXCEPTION: " + str(e))
                 self.active = False
                 break
         self.outputs = []
