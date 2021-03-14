@@ -68,6 +68,12 @@ class ImageCaptureTask(TaskBase):
         Log.log("Image processing took: " + str(time() - now) + " seconds")
         return image
 
+    def process_image_numpy_new(self, image):
+        image = bytearray(image.getvalue())
+        if MONOCHROME == self.color_mode:
+            image = bytearray(np.frombuffer(image, dtype=np.uint8, count=self.resolution[0] * self.resolution[1]).tolist())
+        return image
+
     def run(self):
         msg = self.comm_if.get_message(ImageModeSelect.get_msg_id())
         if None != msg:
@@ -75,8 +81,12 @@ class ImageCaptureTask(TaskBase):
         Log.log("msg: " + str(msg))
 
         image = BytesIO()
-        self.camera.capture(image, "rgb", use_video_port=False)
-        image = self.process_image_numpy(image)
+        format_str = "rgb"
+        if MONOCHROME == self.color_mode:
+            format_str = "yuv"
+
+        self.camera.capture(image, format_str, use_video_port=False)
+        image = self.process_image_numpy_new(image)
         Log.log("Captured image of size: " + str(len(image)))
         
         data_transfer = ImageData(self.resolution, self.color_mode, image)
