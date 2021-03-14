@@ -8,6 +8,7 @@ MONOCHROME = 1
 class ImageData(MessageBase):
     def __init__(self, resolution = None, color_mode = None, image_data = None):
         MessageBase.__init__(self)
+        Log.log("Image data created")
         self.resolution = resolution
         self.color_mode = color_mode
         self.image_data = image_data
@@ -19,14 +20,16 @@ class ImageData(MessageBase):
     # 5 bytes header:
     #  0..1 - res x
     #  2..4 - res y
-    #  4 - color mode
-    #  5..n - data
+    #  5 - color mode
+    #  6..n - data
     def encode(self):
+        Log.log("Encode called")
         to_send = bytearray()
         to_send.extend(self.resolution[0].to_bytes(length = 2, byteorder = "big"))
         to_send.extend(self.resolution[1].to_bytes(length = 2, byteorder = "big"))
         to_send.extend(self.color_mode.to_bytes(length = 1, byteorder = "big"))
         to_send.extend(self.image_data)
+        Log.log("Endcode exit")
         return to_send
 
     def decode(self, data):
