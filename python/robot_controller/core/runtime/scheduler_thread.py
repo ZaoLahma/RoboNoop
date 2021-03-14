@@ -1,6 +1,6 @@
 from threading import Thread
 from ..log.log import Log
-from datetime import datetime
+from time import time
 from time import sleep
 
 class SchedulerThread(Thread):
@@ -15,10 +15,10 @@ class SchedulerThread(Thread):
         Log.log("Thread running for " + self.scheduler.context_name + "...")
         self.active = True
         while True == self.active:
-            before = datetime.now()
+            before = time()
             self.scheduler.run()
-            time_delta = datetime.now() - before
-            elapsed_ms = time_delta.total_seconds() * 1000
+            time_delta = time() - before
+            elapsed_ms = time_delta * 1000
             if self.periodicity - elapsed_ms > 0:
                 sleep((self.periodicity - elapsed_ms) / 1000)
             elif 0 != self.periodicity:
