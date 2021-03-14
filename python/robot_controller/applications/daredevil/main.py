@@ -25,8 +25,8 @@ class Main:
         sonar_task = SonarTask(comm_task)
 
         tasks = []
+        tasks.append(sonar_task)        
         tasks.append(comm_task)
-        tasks.append(sonar_task)
 
         scheduler = Scheduler("Daredevil", tasks)
 
