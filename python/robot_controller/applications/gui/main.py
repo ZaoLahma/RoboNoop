@@ -13,6 +13,7 @@ from .core.window import Window
 from .workspace.ws_conn_status import WsConnStatus
 from .workspace.ws_sensor_data import WsSensorData
 from .workspace.ws_image import WsImage
+from .workspace.ws_opencv_test import WsOpenCVTest
 from time import sleep
 
 class Main:
@@ -47,6 +48,7 @@ class Main:
         window.add_workspace(WsConnStatus)
         window.add_workspace(WsSensorData)
         window.add_workspace(WsImage)
+        window.add_workspace(WsOpenCVTest)
         window.activate_workspace(WsConnStatus)
 
         window.run()
