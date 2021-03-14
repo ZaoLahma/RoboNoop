@@ -16,5 +16,8 @@ class PiCamera:
         buffer.write(self.__getRandomColorVal())
         buffer.write(self.__getRandomColorVal())
         buffer.write(self.__getRandomColorVal())
+    elif 'yuv' == image_format:
+      for _ in range(0, (self.resolution[0] * self.resolution[1])):
+        buffer.write(self.__getRandomColorVal())
     else:
       raise NotImplementedError
