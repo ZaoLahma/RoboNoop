@@ -199,6 +199,7 @@ class CommEndpoint(TaskBase):
 
     def send_message(self, message):
         self.messages_to_send[message.get_msg_id()] = message
+        Log.log("send message messages_to_send: " + str(self.messages_to_send))
 
     def publish_service(self, port_no):
         Log.log("publish_service with port_no {}".format(port_no))
@@ -221,6 +222,7 @@ class CommEndpoint(TaskBase):
         disconnected =  []
         for connection_handler in self.connection_handlers:
             if True == connection_handler.active:
+                Log.log("messages_to_send in run: " + str(self.messages_to_send))
                 connection_handler.send_messages(self.messages_to_send.values())
             else:
                 disconnected.append(connection_handler)
