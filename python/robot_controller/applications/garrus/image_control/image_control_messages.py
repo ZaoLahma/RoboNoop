@@ -24,13 +24,13 @@ class ImageData(MessageBase):
     #  5 - color mode
     #  6..n - data
     def encode(self):
-        Log.log("Encode called")
+        #Log.log("Encode called")
         to_send = bytearray()
         to_send.extend(self.resolution[0].to_bytes(length = 2, byteorder = "big"))
         to_send.extend(self.resolution[1].to_bytes(length = 2, byteorder = "big"))
         to_send.extend(self.color_mode.to_bytes(length = 1, byteorder = "big"))
         to_send.extend(self.image_data)
-        Log.log("Endcode exit")
+        #Log.log("Encode exit")
         return to_send
 
     def decode(self, data):
@@ -58,9 +58,11 @@ class ImageModeSelect(MessageBase):
         return to_send
 
     def decode(self, data):
+        Log.log("Decode enter")
         res_x = int.from_bytes(data[0:2], byteorder = "big")
         res_y = int.from_bytes(data[2:4], byteorder = "big")
         self.resolution = (res_x, res_y)
         self.color_mode = data[4]
+        Log.log("Decode exit")
 
 ALL_IMAGE_CONTROL_MESSAGES = [ImageData, ImageModeSelect]
