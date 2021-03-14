@@ -40,9 +40,11 @@ class ImageCaptureTask(TaskBase):
             return bytearray(image.getvalue())
         image_data = bytearray()
         image_bytes = image.getvalue()
+        Log.log("Will iterate over " + str(len(image_bytes)) + " bytes")
         for i in range(0, len(image_bytes), 3):
             pixel_val = int(((image_bytes[i] + image_bytes[i + 1] + image_bytes[i + 2]) / 3) + 0.5)
             image_data.append(pixel_val)
+        Log.log("Iterate done")
         return image_data
 
     def run(self):
