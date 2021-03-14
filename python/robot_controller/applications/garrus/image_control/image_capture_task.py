@@ -3,6 +3,7 @@ from ....core.log.log import Log
 from ....core.config.config import Config
 from ....core.comm.comm_utils import CommUtils
 from .image_control_messages import ImageData
+from .image_control_messages import ImageModeSelect
 from .image_control_messages import COLOR
 from .image_control_messages import MONOCHROME
 from io import BytesIO
@@ -33,10 +34,24 @@ class ImageCaptureTask(TaskBase):
         self.camera.resolution = resolution
         self.color_mode = color_mode
 
+    def process_image(self, image):
+        if COLOR == self.color_mode:
+            return bytearray(image.getvalue())
+        image_data = bytearray()
+        image_bytes = image.getvalue()
+        for i in range(0, len(image_bytes), 3):
+            pixel_val = int(((image_bytes[i] + image_bytes[i + 1] + image_bytes[i + 2]) / 3) + 0.5)
+            image_data.append(pixel_val)
+        return image_data
+
     def run(self):
+        msg = self.comm_if.get_message(ImageModeSelect.get_msg_id())
+        if None != msg:
+            self.set_image_mode(msg.resolution, msg.color_mode)
+
         image = BytesIO()
         self.camera.capture(image, "rgb", use_video_port=True)
-        image = bytearray(image.getvalue())
+        image = self.process_image(image)
         Log.log("Captured image of size: " + str(len(image)))
         
         data_transfer = ImageData(self.resolution, self.color_mode, image)

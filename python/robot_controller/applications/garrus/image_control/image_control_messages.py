@@ -41,19 +41,25 @@ class ImageData(MessageBase):
         self.image_data = data[5:]
 
 class ImageModeSelect(MessageBase):
-    def __init__(self, resolution = (640, 480), mode = COLOR):
+    def __init__(self, resolution = (640, 480), color_mode = COLOR):
         MessageBase.__init__(self)
         self.resolution = resolution
-        self.mode = mode
+        self.color_mode = color_mode
 
     @staticmethod
     def get_msg_id():
         return 31
     
     def encode(self):
-        return None
+        to_send = bytearray()
+        to_send.extend(self.resolution[0].to_bytes(length = 2, byteorder = "big"))
+        to_send.extend(self.resolution[1].to_bytes(length = 2, byteorder = "big"))
+        to_send.extend(self.color_mode.to_bytes(length = 1, byteorder = "big"))
 
     def decode(self):
-        pass
+        res_x = int.from_bytes(data[0:2], byteorder = "big")
+        res_y = int.from_bytes(data[2:4], byteorder = "big")
+        self.resolution = (res_x, res_y)
+        self.color_mode = data [4]
 
 ALL_IMAGE_CONTROL_MESSAGES = [ImageData, ImageModeSelect]

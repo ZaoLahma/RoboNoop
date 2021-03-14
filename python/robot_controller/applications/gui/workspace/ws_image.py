@@ -1,6 +1,7 @@
 from ....core.log.log import Log
 from ....core.comm.comm_utils import CommUtils
 from ....applications.garrus.image_control.image_control_messages import ImageData
+from ....applications.garrus.image_control.image_control_messages import ImageModeSelect
 from ...garrus.image_control.image_control_messages import COLOR
 from ...garrus.image_control.image_control_messages import MONOCHROME
 from ..comm.comm_ctxt import CommCtxt
@@ -9,6 +10,7 @@ from .core.workspace_base import WorkspaceBase
 from tkinter import ttk
 from tkinter import Canvas
 from tkinter import TOP
+from tkinter import BOTTOM
 from tkinter import PhotoImage
 from tkinter import Label
 
@@ -26,15 +28,27 @@ class WsImage(WorkspaceBase):
         WorkspaceBase.__init__(self, parent_frame, ws_controller, ws_resolution)
         self.active = False
         self.rendering = False
+        self.color_mode = COLOR
         self.image_label = Label(self)
         self.image_label.pack(side = TOP)
         self.image = None
+        self.image_mode_button = ttk.Button(self, text = "Toggle image mode", command = lambda : self.toggle_image_mode())
+        self.image_mode_button.pack(side = BOTTOM)
         self.hex_row_buffer = []
         self.hex_row_buffer_size = 0
 
     @staticmethod
     def get_id():
         return "Image"
+
+    def toggle_image_mode(self):
+        if self.color_mode == COLOR:
+            self.color_mode = MONOCHROME
+        else:
+            self.color_mode = COLOR
+
+        msg = ImageModeSelect(color_mode=self.color_mode)
+        CommCtxt.get_comm_if().send_message(msg)
 
     def refresh(self):
         if True == self.rendering:
@@ -55,7 +69,10 @@ class WsImage(WorkspaceBase):
 
     def show_image(self, resolution, color_mode, image):
         #Log.log("enter show_image")
-        to_show = np.frombuffer(image, dtype=np.uint8).reshape((resolution[1], resolution[0], 3))
+        pixel_length = 3
+        if MONOCHROME == color_mode:
+            pixel_length = 1
+        to_show = np.frombuffer(image, dtype=np.uint8).reshape((resolution[1], resolution[0], pixel_length))
         to_show = Image.fromarray(to_show)
         self.image = ImageTk.PhotoImage(to_show)
         self.image_label.configure(image=self.image)

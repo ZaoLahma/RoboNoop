@@ -40,7 +40,7 @@ class Main:
         scheduler_periodicity_ms = 100
         scheduler_thread.start(scheduler_periodicity_ms)
 
-        resolution = (640, 400)
+        resolution = (640, 500)
 
         window = Window(resolution)
         window.add_shutdown_hook(scheduler_thread.stop)
