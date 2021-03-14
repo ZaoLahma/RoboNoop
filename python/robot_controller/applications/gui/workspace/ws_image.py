@@ -88,3 +88,5 @@ class WsImage(WorkspaceBase):
         self.active = False
         while self.rendering:
             Log.log("Waiting...")
+        msg = ImageModeSelect(color_mode=COLOR)
+        CommCtxt.get_comm_if().send_message(msg)
