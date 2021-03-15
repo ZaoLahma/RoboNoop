@@ -18,7 +18,7 @@ class SchedulerNetwork(Thread):
         self.active = False
 
     def network_activity_hook(self):
-        Log.log("Network activity hook called")
+        #Log.log("Network activity hook called")
         self.network_activity_timestamp = time()
         with self.exec_cond:
             self.should_exec = True
@@ -34,9 +34,9 @@ class SchedulerNetwork(Thread):
                 self.scheduler.run()
             with self.exec_cond:
                 if False == self.should_exec:
-                    Log.log("Waiting for network activity")
+                    #Log.log("Waiting for network activity")
                     self.exec_cond.wait(timeout = self.inactivity_timeout)
-                    Log.log("Network activity indicated")
+                    #Log.log("Network activity indicated")
         Log.log("Thread exiting for " + self.scheduler.context_name)
     
     def start(self, scheduler_peridicity):
