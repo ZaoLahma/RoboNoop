@@ -38,8 +38,7 @@ class Main:
 
         run_in_new_thread = True
         scheduler_thread = SchedulerNetwork(scheduler, comm_task, run_in_new_thread)
-        scheduler_periodicity_ms = 100
-        scheduler_thread.start(scheduler_periodicity_ms)
+        scheduler_thread.start()
 
         resolution = (640, 500)
 

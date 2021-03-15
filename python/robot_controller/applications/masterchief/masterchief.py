@@ -7,6 +7,7 @@ from ...core.comm.comm_utils import CommUtils
 from ..kratos.main import Main as KratosMain
 from ..daredevil.main import Main as DaredevilMain
 from ..garrus.main import Main as GarrusMain
+from ..vision.main import Main as VisionMain
 from ..fear.main import Main as FearMain
 
 from ...core.log.log import Log
@@ -26,7 +27,8 @@ class MasterChief(TaskBase):
             State("CONNECT_DAREDEVIL", self.handle_connect_daredevil, "CONNECT_FEAR", "START_PROCESSES"),
             State("CONNECT_FEAR", self.handle_connect_fear, "CONNECT_KRATOS", "START_PROCESSES"),
             State("CONNECT_KRATOS", self.handle_connect_kratos, "CONNECT_GARRUS", "START_PROCESSES"),
-            State("CONNECT_GARRUS", self.handle_connect_garrus, "ENABLED", "START_PROCESSES"),
+            State("CONNECT_GARRUS", self.handle_connect_garrus, "CONNECT_VISION", "START_PROCESSES"),
+            State("CONNECT_VISION", self.handle_connect_vision, "ENABLED", "START_PROCESSES"),
             State("START_PROCESSES", self.handle_start_processes, "IDLE", "DISABLED"),
             State("ENABLED", self.handle_enabled, "NO_STATE", "NO_STATE"),
             State("DISABLED", self.handle_disabled, "NO_STATE", "NO_STATE")
@@ -80,6 +82,12 @@ class MasterChief(TaskBase):
         fail = True != CommUtils.connect(self.comm_if, "garrus")
         if True == fail:
             self.processes_to_start.append(("GarrusProcess", GarrusMain.run))
+        self.state_handler.transition(fail)
+
+    def handle_connect_vision(self):
+        fail = True != CommUtils.connect(self.comm_if, "vision")
+        if True == fail:
+            self.processes_to_start.append(("VisionProcess", VisionMain.run))
         self.state_handler.transition(fail)
 
     def handle_start_processes(self):

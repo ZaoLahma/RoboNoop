@@ -33,5 +33,4 @@ class Main:
 
         run_in_new_thread = False
         thread = SchedulerNetwork(scheduler, comm_task, run_in_new_thread)
-        scheduler_periodicity_ms = 100
-        thread.start(scheduler_periodicity_ms)
+        thread.start()

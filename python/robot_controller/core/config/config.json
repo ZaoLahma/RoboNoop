@@ -32,6 +32,11 @@
             {
                 "address" : "192.168.0.39",
                 "port-no" : 3305
+            },
+            "vision" : 
+            {
+                "address" : "192.168.0.39",
+                "port-no" : 3306
             }
         },
         "vision":
