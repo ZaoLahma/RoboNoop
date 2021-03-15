@@ -1,5 +1,5 @@
 from ...core.runtime.scheduler import Scheduler
-from ...core.runtime.scheduler_thread import SchedulerThread
+from ...core.runtime.scheduler_network import SchedulerNetwork
 from ...core.log.log import Log
 from ...core.comm.comm_endpoint import CommEndpoint
 from ...core.comm.message_protocol import MessageProtocol
@@ -32,6 +32,6 @@ class Main:
         scheduler = Scheduler("Kratos", tasks)
 
         run_in_new_thread = False
-        thread = SchedulerThread(scheduler, run_in_new_thread)
+        thread = SchedulerNetwork(scheduler, comm_task, run_in_new_thread)
         scheduler_periodicity_ms = 100
         thread.start(scheduler_periodicity_ms)

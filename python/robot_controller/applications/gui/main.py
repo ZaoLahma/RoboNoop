@@ -1,5 +1,5 @@
 from ...core.runtime.scheduler import Scheduler
-from ...core.runtime.scheduler_thread import SchedulerThread
+from ...core.runtime.scheduler_network import SchedulerNetwork
 from ...core.log.log import Log
 from ...core.comm.comm_endpoint import CommEndpoint
 from ...core.comm.message_protocol import MessageProtocol
@@ -37,7 +37,7 @@ class Main:
         scheduler = Scheduler("GUI", tasks)
 
         run_in_new_thread = True
-        scheduler_thread = SchedulerThread(scheduler, run_in_new_thread)
+        scheduler_thread = SchedulerNetwork(scheduler, comm_task, run_in_new_thread)
         scheduler_periodicity_ms = 100
         scheduler_thread.start(scheduler_periodicity_ms)
 
