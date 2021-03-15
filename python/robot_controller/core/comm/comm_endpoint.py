@@ -63,7 +63,8 @@ class ConnectionHandler(Thread):
             self.outputs = self.inputs
             self.send_mutex.release()
         else:
-            Log.log("NOT SENDING MESSAGE")
+            #Log.log("NOT SENDING MESSAGE")
+            pass
 
     def register_receive_hook(self, hook):
         self.receive_hooks.append(hook)
@@ -181,6 +182,7 @@ class CommEndpoint(TaskBase):
         self.connection_handlers = []
         self.received_messages = {}
         self.messages_to_send = {}
+        self.nw_activity_hooks = []
 
     def conn_established(self, port_no, connection):
         Log.log("Callback for connection received {}".format(port_no))
@@ -205,7 +207,7 @@ class CommEndpoint(TaskBase):
 
     def send_message(self, message):
         self.messages_to_send[message.get_msg_id()] = message
-        Log.log("send message messages_to_send: " + str(self.messages_to_send))
+        #Log.log("send message messages_to_send: " + str(self.messages_to_send))
 
     def publish_service(self, port_no):
         Log.log("publish_service with port_no {}".format(port_no))
@@ -219,16 +221,21 @@ class CommEndpoint(TaskBase):
                 break
         return ret_val
 
+    def register_nw_activity_hook(self, hook):
+        self.nw_activity_hooks.append(hook)
+
     def receive_hook(self, message):
         self.receive_mutex.acquire()
         self.received_messages[message.get_msg_id()] = message
+        for nw_activity_hook in self.nw_activity_hooks:
+            nw_activity_hook()
         self.receive_mutex.release()
 
     def run(self):
         disconnected =  []
         for connection_handler in self.connection_handlers:
             if True == connection_handler.active:
-                Log.log("messages_to_send in run: " + str(self.messages_to_send))
+                #Log.log("messages_to_send in run: " + str(self.messages_to_send))
                 connection_handler.send_messages(self.messages_to_send.values())
             else:
                 disconnected.append(connection_handler)
