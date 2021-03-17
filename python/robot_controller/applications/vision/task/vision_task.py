@@ -46,6 +46,7 @@ class VisionTask(TaskBase):
         fail = False == CommUtils.is_connected(self.comm_if, "garrus")
 
         image_msg = self.comm_if.get_message(ImageData.get_msg_id())
+
         if None != image_msg:
             if MONOCHROME == image_msg.color_mode:
                 resolution = image_msg.resolution
@@ -60,9 +61,9 @@ class VisionTask(TaskBase):
                 bodies = np.array([trnsfrm_fun(rect, resolution) for rect in bodies])
                 faces = np.array([trnsfrm_fun(rect, resolution) for rect in faces])
 
-
                 Log.log("Detected these humans: " + str(bodies) + " " + str(faces))
             else:
+                Log.log("Wrong image mode - skipping detection")
                 mode_select = ImageModeSelect(color_mode = MONOCHROME)
                 self.comm_if.send_message(mode_select)
 
