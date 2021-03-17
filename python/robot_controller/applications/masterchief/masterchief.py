@@ -36,7 +36,7 @@ class MasterChief(TaskBase):
 
         self.state_handler = StateHandler(self.state_def, "INIT")
 
-        self.idle_wait_ms = 1000
+        self.idle_wait_ms = 2000
         self.timestamp = None
         self.num_reattempts = 0
         self.processes_to_start = []
