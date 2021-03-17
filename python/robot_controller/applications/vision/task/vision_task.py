@@ -13,7 +13,7 @@ from .human_detector import HumanDetector
 
 import numpy as np
 
-import time
+from time import time
 
 class VisionTask(TaskBase):
     def __init__(self, comm_if):
@@ -53,8 +53,11 @@ class VisionTask(TaskBase):
                 image_data = image_msg.image_data
                 image_data = np.frombuffer(image_data, dtype=np.uint8).reshape((resolution[1], resolution[0]))
                 
+                Log.log("DETECTION START")
+                now = time()
                 bodies = self.human_detector.detect_bodies(image_data)
                 faces = self.human_detector.detect_faces(image_data)
+                Log.log("DETECTION TOOK " + str(time() - now) + " SECONDS")
 
                 trnsfrm_fun = Coord.image_to_cam_centre
 
