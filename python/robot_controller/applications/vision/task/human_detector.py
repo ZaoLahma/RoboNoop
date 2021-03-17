@@ -9,14 +9,6 @@ class HumanDetector():
         self.hog = cv2.HOGDescriptor()
         self.hog.setSVMDetector(cv2.HOGDescriptor_getDefaultPeopleDetector())
 
-    def detect_humans(self, image):
-        humans = []
-
-        bodies = self.detect_bodies(image)
-        faces = self.detect_faces(image)
-
-        return humans
-
     def detect_faces(self, image):
         faces = self.face_cascade.detectMultiScale(image, 1.1, 4)
         return faces

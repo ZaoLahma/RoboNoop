@@ -8,6 +8,7 @@ from ...garrus.image_control.image_control_messages import ImageData
 from ...garrus.image_control.image_control_messages import COLOR
 from ...garrus.image_control.image_control_messages import MONOCHROME
 from ...garrus.image_control.image_control_messages import ImageModeSelect
+from ..util.coord import Coord
 from .human_detector import HumanDetector
 
 import numpy as np
@@ -50,10 +51,19 @@ class VisionTask(TaskBase):
                 resolution = image_msg.resolution
                 image_data = image_msg.image_data
                 image_data = np.frombuffer(image_data, dtype=np.uint8).reshape((resolution[1], resolution[0]))
-                humans = self.human_detector.detect_humans(image_data)
-                Log.log("Detected these humans: " + str(humans))
+                
+                bodies = self.human_detector.detect_bodies(image_data)
+                faces = self.human_detector.detect_faces(image_data)
+
+                trnsfrm_fun = Coord.image_to_cam_centre
+
+                bodies = np.array([trnsfrm_fun(rect, resolution) for rect in bodies])
+                faces = np.array([trnsfrm_fun(rect, resolution) for rect in faces])
+
+
+                Log.log("Detected these humans: " + str(bodies) + " " + str(faces))
             else:
                 mode_select = ImageModeSelect(color_mode = MONOCHROME)
                 self.comm_if.send_message(mode_select)
 
-        self.state_handler.transition(fail)
+        self.state_handler.transition(fail) 
