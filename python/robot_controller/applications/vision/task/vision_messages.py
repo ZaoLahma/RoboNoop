@@ -1,0 +1,44 @@
+from ....core.comm.message_base import MessageBase
+from ....core.log.log import Log
+
+import struct
+import math
+
+class ObjectsMessage(MessageBase):
+    PACK_FACTOR = 100 # To be able to send the two decimal floats as one byte objects
+    def __init__(self, objects = None):
+        MessageBase.__init__(self)
+        self.objects = objects
+
+    @staticmethod
+    def get_msg_id():
+        return 40
+
+    def encode(self):
+        data = struct.pack('>B', len(self.objects))
+
+        for rect in self.objects:
+            data += struct.pack('>B', math.floor(rect[0] * ObjectsMessage.PACK_FACTOR))
+            data += struct.pack('>B', math.floor(rect[1] * ObjectsMessage.PACK_FACTOR))
+            data += struct.pack('>B', math.floor(rect[2] * ObjectsMessage.PACK_FACTOR))
+            data += struct.pack('>B', math.floor(rect[3] * ObjectsMessage.PACK_FACTOR))
+
+        Log.log("Encode returning " + str(data))
+
+        return data
+
+    def decode(self, data):
+        if None == self.objects:
+            self.objects = []
+        num_rects = data[0]
+
+        for i in range(num_rects):
+            Log.log("i: " + str(i))
+            x = data[1 + i]
+            y = data[2 + i]
+            w = data[3 + i]
+            h = data[4 + i]
+            rect = [x / ObjectsMessage.PACK_FACTOR, y / ObjectsMessage.PACK_FACTOR, w / ObjectsMessage.PACK_FACTOR, h / ObjectsMessage.PACK_FACTOR]
+            self.objects.append(rect)
+
+ALL_VISION_MESSAGES = [ObjectsMessage]

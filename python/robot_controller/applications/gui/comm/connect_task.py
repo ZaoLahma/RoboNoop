@@ -14,7 +14,8 @@ class ConnectTask(TaskBase):
         self.state_def =  [
             State("CONNECT_START", self.handle_connect_start, "CONNECT_MASTERCHIEF", "CONNECT_MASTERCHIEF"),
             State("CONNECT_MASTERCHIEF", self.handle_masterchief, "CONNECT_GARRUS", "CONNECT_GARRUS"),
-            State("CONNECT_GARRUS", self.handle_connect_garrus, "CONNECT_DAREDEVIL", "CONNECT_DAREDEVIL"),
+            State("CONNECT_GARRUS", self.handle_connect_garrus, "CONNECT_VISION", "CONNECT_VISION"),
+            State("CONNECT_VISION", self.handle_connect_vision, "CONNECT_DAREDEVIL", "CONNECT_DAREDEVIL"),
             State("CONNECT_DAREDEVIL", self.handle_connect_daredevil, "CONNECT_FEAR", "CONNECT_FEAR"),
             State("CONNECT_FEAR", self.handle_connect_fear, "CONNECT_KRATOS", "CONNECT_KRATOS"),
             State("CONNECT_KRATOS", self.handle_connect_kratos, "ENABLED", "ENABLED"),
@@ -40,6 +41,13 @@ class ConnectTask(TaskBase):
         fail = False
         if False == CommUtils.is_connected(self.comm_if, "garrus"):
             fail = True != CommUtils.connect(self.comm_if, "garrus")
+        sleep(1)
+        self.state_handler.transition(fail)
+
+    def handle_connect_vision(self):
+        fail = False
+        if False == CommUtils.is_connected(self.comm_if, "vision"):
+            fail = True != CommUtils.connect(self.comm_if, "vision")
         sleep(1)
         self.state_handler.transition(fail)
 

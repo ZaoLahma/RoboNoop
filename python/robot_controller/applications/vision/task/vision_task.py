@@ -10,6 +10,7 @@ from ...garrus.image_control.image_control_messages import MONOCHROME
 from ...garrus.image_control.image_control_messages import ImageModeSelect
 from ..util.coord import Coord
 from .human_detector import HumanDetector
+from .vision_messages import ObjectsMessage
 
 import numpy as np
 
@@ -65,6 +66,9 @@ class VisionTask(TaskBase):
                 faces = np.array([trnsfrm_fun(rect, resolution) for rect in faces])
 
                 Log.log("Detected these humans: " + str(bodies) + " " + str(faces))
+
+                objects_msg = ObjectsMessage(bodies + faces)
+                self.comm_if.send_message(objects_msg)
             else:
                 Log.log("Wrong image mode - skipping detection")
                 mode_select = ImageModeSelect(color_mode = MONOCHROME)

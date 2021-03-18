@@ -5,8 +5,9 @@ from ...core.comm.comm_endpoint import CommEndpoint
 from ...core.comm.message_protocol import MessageProtocol
 from ...core.comm.core_messages import ALL_CORE_MESSAGES
 from ...core.config.config import Config
-from ...applications.daredevil.sonar_control.sonar_control_messages import ALL_SONAR_MESSAGES
-from ...applications.garrus.image_control.image_control_messages import ALL_IMAGE_CONTROL_MESSAGES
+from ..daredevil.sonar_control.sonar_control_messages import ALL_SONAR_MESSAGES
+from ..garrus.image_control.image_control_messages import ALL_IMAGE_CONTROL_MESSAGES
+from ..vision.task.vision_messages import ALL_VISION_MESSAGES
 from .comm.comm_ctxt import CommCtxt
 from .comm.connect_task import ConnectTask
 from .core.window import Window
@@ -23,7 +24,7 @@ class Main:
 
         Log.log("GUI application starting...")
 
-        protocol = MessageProtocol(ALL_CORE_MESSAGES + ALL_SONAR_MESSAGES + ALL_IMAGE_CONTROL_MESSAGES)
+        protocol = MessageProtocol(ALL_CORE_MESSAGES + ALL_SONAR_MESSAGES + ALL_IMAGE_CONTROL_MESSAGES + ALL_VISION_MESSAGES)
 
         comm_task = CommEndpoint([protocol])
         connect_task = ConnectTask(comm_task)
