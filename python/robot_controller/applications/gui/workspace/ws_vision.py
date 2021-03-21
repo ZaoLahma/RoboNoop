@@ -60,8 +60,14 @@ class FrameCtxt():
                     self.garbage_collect(message.frame_no)
 
     def handle_message(self, message):
-        Log.log("Handling message " + str(message))
-        self.messages.append(message)
+        new_frame = True
+        for msg in self.messages:
+            if message.frame_no == msg.frame_no:
+                new_frame = False
+                break
+        if True == new_frame:
+            Log.log("New frame message: " + str(message.frame_no))
+            self.messages.append(message)
         self.construct_frame(message)
 
     def get_most_recent_complete_frame(self):
