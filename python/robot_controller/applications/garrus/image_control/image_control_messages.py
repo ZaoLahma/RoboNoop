@@ -43,7 +43,7 @@ class ImageData(MessageBase):
         self.resolution = (res_x, res_y)
         self.color_mode = data[8]
         self.image_data = data[9:]
-        Log.log("Frame no: " + str(self.frame_no))
+        #Log.log("Frame no: " + str(self.frame_no))
 
 class ImageModeSelect(MessageBase):
     def __init__(self, resolution = (640, 480), color_mode = COLOR):

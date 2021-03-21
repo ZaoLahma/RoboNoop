@@ -66,7 +66,7 @@ class FrameCtxt():
                 new_frame = False
                 break
         if True == new_frame:
-            Log.log("New frame message: " + str(message.frame_no))
+            #Log.log("New frame message: " + str(message.frame_no))
             self.messages.append(message)
         self.construct_frame(message)
 
@@ -106,12 +106,12 @@ class WsVision(WorkspaceBase):
             #Log.log("ObjectsMessage: " + str(msg))
             frame = self.frame_ctxt.get_most_recent_complete_frame()
             if None != frame:
-                Log.log("Have frame " + str(frame.frame_no))
+                #Log.log("Have frame " + str(frame.frame_no))
                 image_msg = frame.get_message(ImageData.get_msg_id())
                 objects_msg = frame.get_message(ObjectsMessage.get_msg_id())
 
-                for obj in objects_msg.objects:
-                    Log.log("Detected orig coords: " + str(obj) + " transformed: " + str(Coord.cam_centre_to_image(obj, image_msg.resolution)))
+                #for obj in objects_msg.objects:
+                #    Log.log("Detected orig coords: " + str(obj) + " transformed: " + str(Coord.cam_centre_to_image(obj, image_msg.resolution)))
 
                 self.show_image(image_msg, objects_msg)
             self.rendering = False
@@ -132,7 +132,7 @@ class WsVision(WorkspaceBase):
 
             image_coord_objects = np.array([[x, y, x + w, y + h] for (x, y, w, h) in image_coord_objects])
 
-            Log.log("Objects: " + str(image_coord_objects))
+            #Log.log("Objects: " + str(image_coord_objects))
 
             for (xA, yA, xB, yB) in image_coord_objects:
                 cv2.rectangle(to_show, (xA, yA), (xB, yB), (0), 2)
