@@ -1,5 +1,7 @@
 from ....core.comm.message_base import MessageBase
 from ....core.log.log import Log
+from ..util.coord import Coord
+from ..util.coord import Coord
 
 import struct
 import math
@@ -23,10 +25,10 @@ class ObjectsMessage(MessageBase):
 
         for rect in self.objects:
             Log.log("packing: " + str(rect[0] * ObjectsMessage.PACK_FACTOR))
-            data += struct.pack('>B', math.floor(rect[0] * ObjectsMessage.PACK_FACTOR))
-            data += struct.pack('>B', math.floor(rect[1] * ObjectsMessage.PACK_FACTOR))
-            data += struct.pack('>B', math.floor(rect[2] * ObjectsMessage.PACK_FACTOR))
-            data += struct.pack('>B', math.floor(rect[3] * ObjectsMessage.PACK_FACTOR))
+            data += struct.pack('>B', math.floor((rect[0] - Coord.X_OFFSET) * ObjectsMessage.PACK_FACTOR))
+            data += struct.pack('>B', math.floor((rect[1] - Coord.Y_OFFSET) * ObjectsMessage.PACK_FACTOR))
+            data += struct.pack('>B', math.floor((rect[2] - Coord.X_OFFSET) * ObjectsMessage.PACK_FACTOR))
+            data += struct.pack('>B', math.floor((rect[3] - Coord.Y_OFFSET) * ObjectsMessage.PACK_FACTOR))
 
         Log.log("Encode returning " + str(data))
 
@@ -45,7 +47,7 @@ class ObjectsMessage(MessageBase):
             y = data[6 + i]
             w = data[7 + i]
             h = data[8 + i]
-            rect = [x / ObjectsMessage.PACK_FACTOR, y / ObjectsMessage.PACK_FACTOR, w / ObjectsMessage.PACK_FACTOR, h / ObjectsMessage.PACK_FACTOR]
+            rect = [(x / ObjectsMessage.PACK_FACTOR) + Coord.X_OFFSET, (y / ObjectsMessage.PACK_FACTOR) + Coord.Y_OFFSET, (w / ObjectsMessage.PACK_FACTOR) + Coord.X_OFFSET, (h / ObjectsMessage.PACK_FACTOR) + Coord.Y_OFFSET]
             self.objects.append(rect)
         Log.log("frame_no objects: " + str(self.frame_no))
 
