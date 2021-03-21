@@ -1,20 +1,28 @@
+from ....core.log.log import Log
+
 import math
 
 #
 # Alright, some definitions
 # cam-centre coordinate system has its origin
-# in the middle of the image, where -1 <= x <= 1
-# increasing left to right and -1 <= y <= 1 incresing
+# in the middle of the image, where -0.5 <= x <= 0.5
+# increasing left to right and -0.5 <= y <= 0.5 incresing
 # down to up
-#          1
-#          |
-# -1 ------|----- -1
-#          |
-#         -1
+#           0.5
+#            |
+# -0.5 ------|----- 0.5
+#            |
+#          -0.5
 
+#
+# 320 / 640 = 0.5 - 1 = -0.5 
+# 320 / 640 = 0.5 - 0.5 = 0
+# 160 / 640 = 0.25 - 0.5 = -0.25
+# 480 / 640 = 0.75 - 0.5 = 0.25
+#
 class Coord():
-    X_OFFSET = -1
-    Y_OFFSET = -1
+    X_OFFSET = -0.5
+    Y_OFFSET = -0.5
 
     @staticmethod
     def round_to_float(value):
@@ -28,6 +36,8 @@ class Coord():
     def image_to_cam_centre(rect, image_res):
         x_res = image_res[0]
         y_res = image_res[1]
+
+        Log.log("Transforming: " + str(rect))
 
         rndfloat = Coord.round_to_float
 

@@ -84,7 +84,7 @@ class WsVision(WorkspaceBase):
         return "Vision"
 
     def refresh(self):
-        Log.log("refresh")
+        #Log.log("refresh")
         if True == self.rendering:
             Log.log("Returning due to rendering")
             return
@@ -93,19 +93,19 @@ class WsVision(WorkspaceBase):
             msg = CommCtxt.get_comm_if().get_message(ImageData.get_msg_id())
             if None != msg:
                 self.frame_ctxt.handle_message(msg)
-            Log.log("ImageData: " + str(msg))
+            #Log.log("ImageData: " + str(msg))
             msg = CommCtxt.get_comm_if().get_message(ObjectsMessage.get_msg_id())
             if None != msg:
                 self.frame_ctxt.handle_message(msg)
-            Log.log("ObjectsMessage: " + str(msg))
+            #Log.log("ObjectsMessage: " + str(msg))
             frame = self.frame_ctxt.get_most_recent_complete_frame()
             if None != frame:
                 Log.log("Have frame " + str(frame.frame_no))
-                image_msg = frame.get_mesage(ImageData.get_msg_id())
+                image_msg = frame.get_message(ImageData.get_msg_id())
                 object_msg = frame.get_message(ObjectsMessage.get_msg_id())
 
                 for obj in object_msg.objects:
-                    Log.log("Detected orig coords: " + str(obj) + " transformed: " + Coord.cam_centre_to_image(obj, image_msg.resolution))
+                    Log.log("Detected orig coords: " + str(obj) + " transformed: " + str(Coord.cam_centre_to_image(obj, image_msg.resolution)))
             self.rendering = False
             self.after(200, self.refresh)
 
