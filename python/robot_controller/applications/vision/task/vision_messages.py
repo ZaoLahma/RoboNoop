@@ -10,12 +10,14 @@ class ObjectsMessage(MessageBase):
         MessageBase.__init__(self)
         self.frame_no = frame_no
         self.objects = objects
+        Log.log("INIT OBJECTS MESSAGE")
 
     @staticmethod
     def get_msg_id():
         return 40
 
     def encode(self):
+        Log.log("ENCODE OBJECTS MESSAGE")
         data = struct.pack('>I', self.frame_no)
         data += struct.pack('>B', len(self.objects))
 
@@ -30,6 +32,7 @@ class ObjectsMessage(MessageBase):
         return data
 
     def decode(self, data):
+        Log.log("DECODE OBJECTS MESSAGE")
         if None == self.objects:
             self.objects = []
         self.frame_no = int.from_bytes(data[0:4], byteorder = 'big')

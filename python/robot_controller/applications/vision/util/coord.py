@@ -35,4 +35,9 @@ class Coord():
 
     @staticmethod
     def cam_centre_to_image(rect, image_res):
-        raise NotImplementedError
+        x_res = image_res[0]
+        y_res = image_res[1]
+
+        rndint = Coord.round_to_int
+
+        return [rndint((rect[0] - Coord.X_OFFSET) * x_res), (rndint((rect[1] - Coord.Y_OFFSET) * y_res) * -1), rndint((rect[2] - Coord.X_OFFSET) * x_res), rndint((rect[3] - Coord.Y_OFFSET) * y_res)]

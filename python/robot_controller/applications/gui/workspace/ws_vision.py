@@ -5,6 +5,7 @@ from ...garrus.image_control.image_control_messages import ImageModeSelect
 from ...garrus.image_control.image_control_messages import COLOR
 from ...garrus.image_control.image_control_messages import MONOCHROME
 from ...vision.task.vision_messages import ObjectsMessage
+from ...vision.util.coord import Coord
 from ..comm.comm_ctxt import CommCtxt
 from .core.workspace_base import WorkspaceBase
 
@@ -29,6 +30,14 @@ class Frame:
         self.frame_no = frame_no
         self.messages = messages
 
+    def get_message(self, msg_id):
+        ret_val = None
+        for message in self.messages:
+            if message.get_msg_id() == msg_id:
+                ret_val = message
+                break
+        return ret_val
+
 class FrameCtxt():
     def __init__(self):
         self.last_frame = None
@@ -51,6 +60,7 @@ class FrameCtxt():
                     self.garbage_collect(message.frame_no)
 
     def handle_message(self, message):
+        Log.log("Handling message " + str(message))
         self.messages.append(message)
         self.construct_frame(message)
 
@@ -74,6 +84,7 @@ class WsVision(WorkspaceBase):
         return "Vision"
 
     def refresh(self):
+        Log.log("refresh")
         if True == self.rendering:
             Log.log("Returning due to rendering")
             return
@@ -82,12 +93,19 @@ class WsVision(WorkspaceBase):
             msg = CommCtxt.get_comm_if().get_message(ImageData.get_msg_id())
             if None != msg:
                 self.frame_ctxt.handle_message(msg)
+            Log.log("ImageData: " + str(msg))
             msg = CommCtxt.get_comm_if().get_message(ObjectsMessage.get_msg_id())
             if None != msg:
                 self.frame_ctxt.handle_message(msg)
+            Log.log("ObjectsMessage: " + str(msg))
             frame = self.frame_ctxt.get_most_recent_complete_frame()
             if None != frame:
                 Log.log("Have frame " + str(frame.frame_no))
+                image_msg = frame.get_mesage(ImageData.get_msg_id())
+                object_msg = frame.get_message(ObjectsMessage.get_msg_id())
+
+                for obj in object_msg.objects:
+                    Log.log("Detected orig coords: " + str(obj) + " transformed: " + Coord.cam_centre_to_image(obj, image_msg.resolution))
             self.rendering = False
             self.after(200, self.refresh)
 
@@ -95,20 +113,6 @@ class WsVision(WorkspaceBase):
         to_show = None
         if MONOCHROME == color_mode:
             to_show = np.frombuffer(image, dtype=np.uint8).reshape((resolution[1], resolution[0]))
-            rects = self.detect_bodies(to_show)
-            rects = np.array([[x, y, x + w, y + h] for (x, y, w, h) in rects])
-
-            for (xA, yA, xB, yB) in rects:
-                cv2.rectangle(to_show, (xA, yA), (xB, yB), (0), 2)
-
-            faces = self.detect_faces(to_show)
-            faces = np.array([[x, y, x + w, y + h] for (x, y, w, h) in faces])
-
-            for (xA, yA, xB, yB) in faces:
-                cv2.rectangle(to_show, (xA, yA), (xB, yB), (0), 2)
-
-
-            to_show = Image.fromarray(to_show)
             self.image = ImageTk.PhotoImage(to_show)
             self.image_label.configure(image=self.image)
 

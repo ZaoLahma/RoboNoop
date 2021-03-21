@@ -24,7 +24,7 @@ class VisionTask(TaskBase):
 
         self.state_def =  [
             State("INIT", self.handle_init, "CONNECT_GARRUS", "INIT"),
-            State("CONNECT_GARRUS", self.handle_connect_garrus, "ENABLED", "CONECT_GARRUS"),
+            State("CONNECT_GARRUS", self.handle_connect_garrus, "ENABLED", "CONNECT_GARRUS"),
             State("ENABLED", self.handle_enabled, "ENABLED", "CONNECT_GARRUS")
         ]
         self.state_handler = StateHandler(self.state_def, "INIT")
