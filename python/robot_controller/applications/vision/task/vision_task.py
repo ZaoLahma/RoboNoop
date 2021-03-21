@@ -67,7 +67,7 @@ class VisionTask(TaskBase):
 
                 Log.log("Detected these humans: " + str(bodies) + " " + str(faces))
 
-                objects_msg = ObjectsMessage(image_msg.frame_no, bodies + faces)
+                objects_msg = ObjectsMessage(image_msg.frame_no, bodies)
                 self.comm_if.send_message(objects_msg)
             else:
                 Log.log("Wrong image mode - skipping detection")
