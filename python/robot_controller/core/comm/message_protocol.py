@@ -1,5 +1,6 @@
 from ..log.log import Log
 from .message_base import MessageBase
+from .core_messages import CapabilitiesInd
 from time import time
 import struct
 
@@ -36,11 +37,12 @@ class MessageProtocol:
         transfer_speed = len(data) / transfer_time
         #Log.log("Transfer speed (bytes / sec): " + str(transfer_speed))
 
-        if ((now - msg_send_time) > 1.0):
+        msg_id = struct.unpack('>B', data[16:17])[0]
+
+        if (msg_id != CapabilitiesInd.get_msg_id() and (now - msg_send_time) > 1.0):
             Log.log("Throwing away message that is too old")
             return None
 
-        msg_id = struct.unpack('>B', data[16:17])[0]
         msg = None
         for message_class in self.message_classes:
             if msg_id == message_class.get_msg_id():
