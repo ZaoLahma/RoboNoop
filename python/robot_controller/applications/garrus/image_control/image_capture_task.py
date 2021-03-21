@@ -32,6 +32,8 @@ class ImageCaptureTask(TaskBase):
 
         self.camera.resolution = self.resolution
 
+        self.frame_no = 0
+
         CommUtils.publish_service(self.comm_if, "garrus")
 
     def set_image_mode(self, resolution, color_mode):
@@ -91,7 +93,8 @@ class ImageCaptureTask(TaskBase):
         image = self.process_image_numpy_new(image)
         Log.log("Captured image of size: " + str(len(image)))
         
-        data_transfer = ImageData(self.resolution, self.color_mode, image)
+        data_transfer = ImageData(self.frame_no, self.resolution, self.color_mode, image)
+        self.frame_no += 1
         #Log.log("Before send message")
         self.comm_if.send_message(data_transfer)
         #Log.log("After send message")
