@@ -5,8 +5,9 @@ from ...core.comm.comm_endpoint import CommEndpoint
 from ...core.comm.message_protocol import MessageProtocol
 from ...core.comm.core_messages import ALL_CORE_MESSAGES
 from ...core.config.config import Config
-from ...applications.daredevil.sonar_control.sonar_control_messages import ALL_SONAR_MESSAGES
-from ...applications.garrus.image_control.image_control_messages import ALL_IMAGE_CONTROL_MESSAGES
+from ..daredevil.sonar_control.sonar_control_messages import ALL_SONAR_MESSAGES
+from ..garrus.image_control.image_control_messages import ALL_IMAGE_CONTROL_MESSAGES
+from ..vision.task.vision_messages import ALL_VISION_MESSAGES
 from .comm.comm_ctxt import CommCtxt
 from .comm.connect_task import ConnectTask
 from .core.window import Window
@@ -14,6 +15,7 @@ from .workspace.ws_conn_status import WsConnStatus
 from .workspace.ws_sensor_data import WsSensorData
 from .workspace.ws_image import WsImage
 from .workspace.ws_opencv_test import WsOpenCVTest
+from .workspace.ws_vision import WsVision
 from time import sleep
 
 class Main:
@@ -23,7 +25,7 @@ class Main:
 
         Log.log("GUI application starting...")
 
-        protocol = MessageProtocol(ALL_CORE_MESSAGES + ALL_SONAR_MESSAGES + ALL_IMAGE_CONTROL_MESSAGES)
+        protocol = MessageProtocol(ALL_CORE_MESSAGES + ALL_SONAR_MESSAGES + ALL_IMAGE_CONTROL_MESSAGES + ALL_VISION_MESSAGES)
 
         comm_task = CommEndpoint([protocol])
         connect_task = ConnectTask(comm_task)
@@ -38,8 +40,7 @@ class Main:
 
         run_in_new_thread = True
         scheduler_thread = SchedulerNetwork(scheduler, comm_task, run_in_new_thread)
-        scheduler_periodicity_ms = 100
-        scheduler_thread.start(scheduler_periodicity_ms)
+        scheduler_thread.start()
 
         resolution = (640, 500)
 
@@ -49,6 +50,7 @@ class Main:
         window.add_workspace(WsSensorData)
         window.add_workspace(WsImage)
         window.add_workspace(WsOpenCVTest)
+        window.add_workspace(WsVision)
         window.activate_workspace(WsConnStatus)
 
         window.run()

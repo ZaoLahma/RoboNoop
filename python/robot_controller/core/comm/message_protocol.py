@@ -1,5 +1,6 @@
 from ..log.log import Log
 from .message_base import MessageBase
+from .core_messages import CapabilitiesInd
 from time import time
 import struct
 
@@ -26,21 +27,22 @@ class MessageProtocol:
         return data
 
     def decode_message(self, data):
-        Log.log("Decode enter")
+        #Log.log("Decode enter")
         now = time()
         msg_create_time = struct.unpack('>d', data[0:8])[0]
         msg_send_time = struct.unpack('>d', data[8:16])[0]
-        Log.log("Age when received: " + str(now - msg_send_time))
+        #Log.log("Age when received: " + str(now - msg_send_time))
 
         transfer_time = now - msg_send_time
         transfer_speed = len(data) / transfer_time
-        Log.log("Transfer speed (bytes / sec): " + str(transfer_speed))
+        #Log.log("Transfer speed (bytes / sec): " + str(transfer_speed))
 
-        if ((now - msg_send_time) > 1.0):
+        msg_id = struct.unpack('>B', data[16:17])[0]
+
+        if (msg_id != CapabilitiesInd.get_msg_id() and (now - msg_send_time) > 1.0):
             Log.log("Throwing away message that is too old")
             return None
 
-        msg_id = struct.unpack('>B', data[16:17])[0]
         msg = None
         for message_class in self.message_classes:
             if msg_id == message_class.get_msg_id():
@@ -51,5 +53,5 @@ class MessageProtocol:
             msg.msg_create_time = msg_create_time
             msg.msg_send_time = msg_send_time
             msg.decode(data[17:])
-        Log.log("Decode exit")
+        #Log.log("Decode exit")
         return msg

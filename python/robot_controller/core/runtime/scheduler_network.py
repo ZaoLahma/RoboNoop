@@ -39,8 +39,7 @@ class SchedulerNetwork(Thread):
                     #Log.log("Network activity indicated")
         Log.log("Thread exiting for " + self.scheduler.context_name)
     
-    def start(self, scheduler_peridicity):
-        self.periodicity = scheduler_peridicity
+    def start(self):
         if True == self.start_thread:
             Log.log("Starting thread for scheduler " + self.scheduler.context_name + "...")
             Thread.start(self)
