@@ -22,6 +22,7 @@ class ObjectsMessage(MessageBase):
         data += struct.pack('>B', len(self.objects))
 
         for rect in self.objects:
+            Log.log("packing: " + str(rect[0] * ObjectsMessage.PACK_FACTOR))
             data += struct.pack('>B', math.floor(rect[0] * ObjectsMessage.PACK_FACTOR))
             data += struct.pack('>B', math.floor(rect[1] * ObjectsMessage.PACK_FACTOR))
             data += struct.pack('>B', math.floor(rect[2] * ObjectsMessage.PACK_FACTOR))
