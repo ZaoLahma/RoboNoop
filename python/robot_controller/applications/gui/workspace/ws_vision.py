@@ -108,17 +108,36 @@ class WsVision(WorkspaceBase):
             if None != frame:
                 Log.log("Have frame " + str(frame.frame_no))
                 image_msg = frame.get_message(ImageData.get_msg_id())
-                object_msg = frame.get_message(ObjectsMessage.get_msg_id())
+                objects_msg = frame.get_message(ObjectsMessage.get_msg_id())
 
-                for obj in object_msg.objects:
+                for obj in objects_msg.objects:
                     Log.log("Detected orig coords: " + str(obj) + " transformed: " + str(Coord.cam_centre_to_image(obj, image_msg.resolution)))
+
+                self.show_image(image_msg, objects_msg)
             self.rendering = False
             self.after(200, self.refresh)
 
-    def show_image(self, resolution, color_mode, image):
+    def show_image(self, image_message, objects_message):
         to_show = None
+        color_mode = image_message.color_mode
+        resolution = image_message.resolution
+        image = image_message.image_data
+        objects = objects_message.objects
         if MONOCHROME == color_mode:
             to_show = np.frombuffer(image, dtype=np.uint8).reshape((resolution[1], resolution[0]))
+
+            image_coord_objects = []
+            for rect in objects:
+                image_coord_objects.append(Coord.cam_centre_to_image(rect, resolution))
+
+            image_coord_objects = np.array([[x, y, x + w, y + h] for (x, y, w, h) in image_coord_objects])
+
+            Log.log("Objects: " + str(image_coord_objects))
+
+            for (xA, yA, xB, yB) in image_coord_objects:
+                cv2.rectangle(to_show, (xA, yA), (xB, yB), (0), 2)
+
+            to_show = Image.fromarray(to_show)
             self.image = ImageTk.PhotoImage(to_show)
             self.image_label.configure(image=self.image)
 
