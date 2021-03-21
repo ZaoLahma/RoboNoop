@@ -27,8 +27,8 @@ class ObjectsMessage(MessageBase):
             Log.log("packing: " + str(rect[0] * ObjectsMessage.PACK_FACTOR))
             data += struct.pack('>B', math.floor((rect[0] - Coord.X_OFFSET) * ObjectsMessage.PACK_FACTOR))
             data += struct.pack('>B', math.floor((rect[1] - Coord.Y_OFFSET) * ObjectsMessage.PACK_FACTOR))
-            data += struct.pack('>B', math.floor((rect[2] - Coord.X_OFFSET) * ObjectsMessage.PACK_FACTOR))
-            data += struct.pack('>B', math.floor((rect[3] - Coord.Y_OFFSET) * ObjectsMessage.PACK_FACTOR))
+            data += struct.pack('>B', math.floor(rect[2] * ObjectsMessage.PACK_FACTOR))
+            data += struct.pack('>B', math.floor(rect[3] * ObjectsMessage.PACK_FACTOR))
 
         Log.log("Encode returning " + str(data))
 
@@ -43,11 +43,11 @@ class ObjectsMessage(MessageBase):
 
         for i in range(num_rects):
             Log.log("i: " + str(i))
-            x = data[5 + i]
-            y = data[6 + i]
-            w = data[7 + i]
-            h = data[8 + i]
-            rect = [(x / ObjectsMessage.PACK_FACTOR) + Coord.X_OFFSET, (y / ObjectsMessage.PACK_FACTOR) + Coord.Y_OFFSET, (w / ObjectsMessage.PACK_FACTOR) + Coord.X_OFFSET, (h / ObjectsMessage.PACK_FACTOR) + Coord.Y_OFFSET]
+            x = data[5 + (4 * i)]
+            y = data[6 + (4 * i)]
+            w = data[7 + (4 * i)]
+            h = data[8 + (4 * i)]
+            rect = [(x / ObjectsMessage.PACK_FACTOR) + Coord.X_OFFSET, (y / ObjectsMessage.PACK_FACTOR) + Coord.Y_OFFSET, (w / ObjectsMessage.PACK_FACTOR), (h / ObjectsMessage.PACK_FACTOR)]
             self.objects.append(rect)
         Log.log("frame_no objects: " + str(self.frame_no))
 

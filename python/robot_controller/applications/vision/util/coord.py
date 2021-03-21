@@ -41,7 +41,7 @@ class Coord():
 
         rndfloat = Coord.round_to_float
 
-        return [rndfloat(rect[0] / x_res) + Coord.X_OFFSET, (rndfloat(rect[1] / y_res) + Coord.Y_OFFSET) * -1, rndfloat(rect[2] / x_res) + Coord.X_OFFSET, rndfloat(rect[3] / y_res) + Coord.Y_OFFSET]
+        return [rndfloat(rect[0] / x_res) + Coord.X_OFFSET, (rndfloat(rect[1] / y_res) + Coord.Y_OFFSET) * -1, rndfloat(rect[2] / x_res), rndfloat(rect[3] / y_res)]
 
     @staticmethod
     def cam_centre_to_image(rect, image_res):
@@ -50,4 +50,4 @@ class Coord():
 
         rndint = Coord.round_to_int
 
-        return [rndint((rect[0] - Coord.X_OFFSET) * x_res), (rndint((-1 * rect[1]) - Coord.Y_OFFSET) * y_res), rndint((rect[2] - Coord.X_OFFSET) * x_res), rndint((rect[3] - Coord.Y_OFFSET) * y_res)]
+        return [rndint((rect[0] - Coord.X_OFFSET) * x_res), (rndint((-1 * rect[1]) - Coord.Y_OFFSET * y_res)), rndint(rect[2] * x_res), rndint(rect[3] * y_res)]
