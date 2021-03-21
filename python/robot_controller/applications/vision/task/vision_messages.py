@@ -47,7 +47,7 @@ class ObjectsMessage(MessageBase):
             y = data[6 + (4 * i)]
             w = data[7 + (4 * i)]
             h = data[8 + (4 * i)]
-            rect = [(x / ObjectsMessage.PACK_FACTOR) + Coord.X_OFFSET, (y / ObjectsMessage.PACK_FACTOR) + Coord.Y_OFFSET, (w / ObjectsMessage.PACK_FACTOR), (h / ObjectsMessage.PACK_FACTOR)]
+            rect = [Coord.round_to_float((x / ObjectsMessage.PACK_FACTOR) + Coord.X_OFFSET), Coord.round_to_float((y / ObjectsMessage.PACK_FACTOR) + Coord.Y_OFFSET), Coord.round_to_float((w / ObjectsMessage.PACK_FACTOR)), Coord.round_to_float((h / ObjectsMessage.PACK_FACTOR))]
             self.objects.append(rect)
         Log.log("frame_no objects: " + str(self.frame_no))
 
