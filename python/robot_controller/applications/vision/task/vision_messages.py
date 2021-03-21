@@ -6,8 +6,9 @@ import math
 
 class ObjectsMessage(MessageBase):
     PACK_FACTOR = 100 # To be able to send the two decimal floats as one byte objects
-    def __init__(self, objects = None):
+    def __init__(self, frame_no = 0, objects = None):
         MessageBase.__init__(self)
+        self.frame_no = frame_no
         self.objects = objects
 
     @staticmethod
@@ -15,7 +16,8 @@ class ObjectsMessage(MessageBase):
         return 40
 
     def encode(self):
-        data = struct.pack('>B', len(self.objects))
+        data = struct.pack('>I', self.frame_no)
+        data += struct.pack('>B', len(self.objects))
 
         for rect in self.objects:
             data += struct.pack('>B', math.floor(rect[0] * ObjectsMessage.PACK_FACTOR))
@@ -30,15 +32,17 @@ class ObjectsMessage(MessageBase):
     def decode(self, data):
         if None == self.objects:
             self.objects = []
-        num_rects = data[0]
+        self.frame_no = int.from_bytes(data[0:4], byteorder = 'big')
+        num_rects = data[4]
 
         for i in range(num_rects):
             Log.log("i: " + str(i))
-            x = data[1 + i]
-            y = data[2 + i]
-            w = data[3 + i]
-            h = data[4 + i]
+            x = data[5 + i]
+            y = data[6 + i]
+            w = data[7 + i]
+            h = data[8 + i]
             rect = [x / ObjectsMessage.PACK_FACTOR, y / ObjectsMessage.PACK_FACTOR, w / ObjectsMessage.PACK_FACTOR, h / ObjectsMessage.PACK_FACTOR]
             self.objects.append(rect)
+        Log.log("frame_no objects: " + str(self.frame_no))
 
 ALL_VISION_MESSAGES = [ObjectsMessage]
