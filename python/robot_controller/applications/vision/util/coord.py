@@ -50,4 +50,4 @@ class Coord():
 
         rndint = Coord.round_to_int
 
-        return [rndint((rect[0] - Coord.X_OFFSET) * x_res), (rndint(((-1 * rect[1]) - Coord.Y_OFFSET) * y_res), rndint((rect[2] - Coord.X_OFFSET) * x_res), rndint((rect[3] - Coord.Y_OFFSET) * y_res)]
+        return [rndint((rect[0] - Coord.X_OFFSET) * x_res), (rndint((-1 * rect[1]) - Coord.Y_OFFSET) * y_res), rndint((rect[2] - Coord.X_OFFSET) * x_res), rndint((rect[3] - Coord.Y_OFFSET) * y_res)]
