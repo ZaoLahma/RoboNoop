@@ -50,4 +50,18 @@ class Coord():
 
         rndint = Coord.round_to_int
 
-        return [rndint((rect[0] - Coord.X_OFFSET) * x_res), (rndint((-1 * rect[1]) - Coord.Y_OFFSET * y_res)), rndint(rect[2] * x_res), rndint(rect[3] * y_res)]
+        x = ((rect[0] - Coord.X_OFFSET) * x_res)
+        y = (((rect[1] * -1) - Coord.Y_OFFSET) * y_res)
+        w = (rect[2] * x_res)
+        h = (rect[3] * y_res)
+
+        return [rndint(x), rndint(y), rndint(w), rndint(h)]
+
+# -0.45 * -1 = 0.45 -0.5 = 0.05 * 480
+
+#2021-03-21 18:54:38.299937 vision coord.py:40 - Transforming: [200  22  87 174]
+#2021-03-21 18:54:38.321033 vision coord.py:40 - Transforming: [287   0 115 216]
+#2021-03-21 18:54:38.346426 vision vision_task.py:68 - Detected these humans: [[-0.18  0.45  0.14  0.37]
+# [-0.05  0.5   0.18  0.45]] []
+#2021-03-21 19:54:40.280929 ws_vision.py:114 - Detected orig coords: [-0.18, 0.44999999999999996, 0.14, 0.37] transformed: [205, 240, 90, 178]
+#2021-03-21 19:54:40.281373 ws_vision.py:114 - Detected orig coords: [-0.04999999999999999, 0.5, 0.18, 0.45] transformed: [288, 240, 115, 216]
