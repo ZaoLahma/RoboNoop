@@ -9,6 +9,7 @@ from ..daredevil.main import Main as DaredevilMain
 from ..garrus.main import Main as GarrusMain
 from ..vision.main import Main as VisionMain
 from ..fear.main import Main as FearMain
+from ..hwal.main import Main as HwalMain
 
 from ...core.log.log import Log
 from datetime import datetime
@@ -22,8 +23,9 @@ class MasterChief(TaskBase):
         self.comm_if = comm_if
 
         self.state_def =  [
-            State("INIT", self.handle_init, "CONNECT_GARRUS", "INIT"),
-            State("IDLE", self.handle_idle, "CONNECT_GARRUS", "IDLE"),
+            State("INIT", self.handle_init, "CONNECT_HWAL", "INIT"),
+            State("IDLE", self.handle_idle, "CONNECT_HWAL", "IDLE"),
+            State("CONNECT_HWAL", self.handle_connect_hwal, "CONNECT_GARRUS", "START_PROCESSES"),
             State("CONNECT_GARRUS", self.handle_connect_garrus, "CONNECT_VISION", "START_PROCESSES"),
             State("CONNECT_VISION", self.handle_connect_vision, "CONNECT_DAREDEVIL", "START_PROCESSES"),
             State("CONNECT_DAREDEVIL", self.handle_connect_daredevil, "CONNECT_FEAR", "START_PROCESSES"),
@@ -59,6 +61,12 @@ class MasterChief(TaskBase):
         if elapsed_ms >= self.idle_wait_ms:
             self.timestamp = None
             self.state_handler.transition()
+
+    def handle_connect_hwal(self):
+        fail = True != CommUtils.connect(self.comm_if, "hwal")
+        if True == fail:
+            self.processes_to_start.append(("HwalProcess", HwalMain.run))
+        self.state_handler.transition(fail)
 
     def handle_connect_kratos(self):
         fail = True != CommUtils.connect(self.comm_if, "kratos")

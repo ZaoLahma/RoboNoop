@@ -87,6 +87,7 @@ class ConnectTask(TaskBase):
         connected = connected and CommUtils.is_connected(self.comm_if, "daredevil")
         connected = connected and CommUtils.is_connected(self.comm_if, "fear")
         connected = connected and CommUtils.is_connected(self.comm_if, "kratos")
+        connected = connected and CommUtils.is_connected(self.comm_if, "hwal")
 
         fail = False == connected
         if True == fail:
