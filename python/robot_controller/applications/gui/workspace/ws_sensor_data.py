@@ -11,6 +11,8 @@ from time import time
 class WsSensorData(WorkspaceBase):
     def __init__(self, parent_frame, ws_controller, ws_resolution):
         WorkspaceBase.__init__(self, parent_frame, ws_controller, ws_resolution)
+        self.monitored_sensors = ["hw-info", "temp"]
+        self.sensor_labels = []
         self.Active = False
 
     @staticmethod
@@ -19,28 +21,32 @@ class WsSensorData(WorkspaceBase):
 
     def refresh(self):
         if self.active:
-            label_text = ""
             sonar_msg = CommCtxt.get_comm_if().get_message(SonarDataInd.get_msg_id())
             if None != sonar_msg:
-                Log.log("sonar_msg age: " + str(time() - sonar_msg.msg_send_time))
+                #Log.log("sonar_msg age: " + str(time() - sonar_msg.msg_send_time))
                 distance = sonar_msg.distance
-                label_text += "Distance: {0}\n".format(distance)
+                self.dist_label.configure(text = "Distance: {0}\n".format(distance))
 
             sysinfo_msg = CommCtxt.get_comm_if().get_message(SysinfoMessage.get_msg_id())
             if None != sysinfo_msg:
-                Log.log("sysinfo_msg: " + str(sysinfo_msg.hw_info))
-                label_text += "hw_info: {0}\n".format(sysinfo_msg.hw_info["hw-info"])
-                label_text += "temp: {0}\n".format(sysinfo_msg.hw_info["temp"])
+                curr_index = 0
+                for sensor in self.monitored_sensors:
+                    self.sensor_labels[curr_index].configure(text = sensor + ": " + sysinfo_msg.hw_info[sensor])
+                    curr_index += 1
 
-            self.ws_test.configure(text = label_text)
             self.after(100, self.refresh)
 
     def activate(self):
         Log.log("Activate called")
-        self.ws_header = ttk.Label(self, text = "Sensor data", anchor = "nw", width = 30)
+        self.ws_header = ttk.Label(self, text = "Sensor data", anchor = "nw", width = 40)
         self.ws_header.grid(row = 0 , column = 0)
-        self.ws_test = ttk.Label(self, text = "", anchor = "nw", width = 30)
-        self.ws_test.grid(row = 1, column = 0)
+        self.dist_label = ttk.Label(self, text = "Distance: UNAVAILABLE", anchor = "nw", width = 40)
+        self.dist_label.grid(row = 1, column = 0)
+        for sensor in self.monitored_sensors:
+            sensor_label = ttk.Label(self, text = "{0}: UNAVAILABLE".format(sensor), anchor = "w", width = 40)
+            sensor_label.grid(row = len(self.sensor_labels) + 2, column = 0)
+            self.sensor_labels.append(sensor_label)
+
         self.active = True
         self.after(100, self.refresh)
 
