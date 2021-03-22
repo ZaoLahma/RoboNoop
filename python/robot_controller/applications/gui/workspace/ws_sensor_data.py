@@ -25,7 +25,7 @@ class WsSensorData(WorkspaceBase):
             if None != sonar_msg:
                 #Log.log("sonar_msg age: " + str(time() - sonar_msg.msg_send_time))
                 distance = sonar_msg.distance
-                self.dist_label.configure(text = "Distance: {0}\n".format(distance))
+                self.dist_label.configure(text = "Distance: {0}".format(distance))
 
             sysinfo_msg = CommCtxt.get_comm_if().get_message(SysinfoMessage.get_msg_id())
             if None != sysinfo_msg:
@@ -40,12 +40,13 @@ class WsSensorData(WorkspaceBase):
         Log.log("Activate called")
         self.ws_header = ttk.Label(self, text = "Sensor data", anchor = "nw", width = 40)
         self.ws_header.grid(row = 0 , column = 0)
-        self.dist_label = ttk.Label(self, text = "Distance: UNAVAILABLE", anchor = "nw", width = 40)
-        self.dist_label.grid(row = 1, column = 0)
         for sensor in self.monitored_sensors:
             sensor_label = ttk.Label(self, text = "{0}: UNAVAILABLE".format(sensor), anchor = "w", width = 40)
-            sensor_label.grid(row = len(self.sensor_labels) + 2, column = 0)
+            sensor_label.grid(row = len(self.sensor_labels) + 1, column = 0)
             self.sensor_labels.append(sensor_label)
+
+        self.dist_label = ttk.Label(self, text = "Distance: UNAVAILABLE", anchor = "nw", width = 40)
+        self.dist_label.grid(row = len(self.sensor_labels) + 1, column = 0)
 
         self.active = True
         self.after(100, self.refresh)
