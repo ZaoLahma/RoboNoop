@@ -5,37 +5,37 @@
         {
             "daredevil" : 
             {
-                "address" : "192.168.0.39",
+                "address" : "robot.local",
                 "port-no" : 3300
             },
             "fear" :
             {
-                "address" : "192.168.0.39",
+                "address" : "robot.local",
                 "port-no" : 3301
             },
             "garrus" : 
             {
-                "address" : "192.168.0.39",
+                "address" : "robot.local",
                 "port-no" : 3302
             },
             "hwal" : 
             {
-                "address" : "192.168.0.39",
+                "address" : "robot.local",
                 "port-no" : 3303
             },
             "kratos" : 
             {
-                "address" : "192.168.0.39",
+                "address" : "robot.local",
                 "port-no" : 3304
             },
             "masterchief" : 
             {
-                "address" : "192.168.0.39",
+                "address" : "robot.local",
                 "port-no" : 3305
             },
             "vision" : 
             {
-                "address" : "192.168.0.39",
+                "address" : "robot.local",
                 "port-no" : 3306
             }
         },
