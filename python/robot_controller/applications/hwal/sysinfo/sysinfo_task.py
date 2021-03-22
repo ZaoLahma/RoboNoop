@@ -1,6 +1,8 @@
 from ....core.runtime.task_base import TaskBase
-from ....core.comm.core_messages import DataTransfer
 from ....core.log.log import Log
+from .sysinfo_messages import SysinfoMessage
+
+from math import ceil
 
 class SysinfoTask(TaskBase):
     def __init__(self, comm_if):
@@ -10,18 +12,30 @@ class SysinfoTask(TaskBase):
 
 
     def run(self):
-        data_transfer = DataTransfer()
-        data_transfer.add_data("hw-type", self.hw_info)
+        msg = SysinfoMessage()
+        msg.add_sysinfo("hw-info", self.hw_info)
+        msg.add_sysinfo("temp", self.get_temperature())
+        self.comm_if.send_message(msg)
         
+    def get_temperature(self):
+        temp = ""
+        try:
+            with open('/sys/class/thermal/thermal_zone0/temp', 'r') as f:
+                temp = f.read()
+                temp = str(ceil(int(temp) / 1000.0))
+                f.close()
+        except:
+            temp = "UNAVAILABLE"
+        return temp
 
     def get_hw_info(self):
         hw_info = ""
         try:
-            f = open('/sys/firmware/devicetree/base/model', 'r')
-            for line in f:
-                hw_info = line
-                break
-            f.close()
+            with open('/sys/firmware/devicetree/base/model', 'r') as f:
+                for line in f:
+                    hw_info = line
+                    break
+                f.close()
         except:
             hw_info = "stubbed"
         return hw_info

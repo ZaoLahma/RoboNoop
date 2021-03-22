@@ -11,7 +11,7 @@ class WsConnStatus(WorkspaceBase):
     def __init__(self, parent_frame, ws_controller, ws_resolution):
         WorkspaceBase.__init__(self, parent_frame, ws_controller, ws_resolution)
         self.Active = False
-        self.applications = ["masterchief", "garrus", "vision", "daredevil", "fear", "kratos"]
+        self.applications = ["masterchief", "garrus", "vision", "daredevil", "fear", "kratos", "hwal"]
         self.appl_labels = []
 
     def update_appl_labels(self):
