@@ -26,6 +26,7 @@ class SysinfoTask(TaskBase):
                 f.close()
         except:
             temp = "UNAVAILABLE"
+        Log.log("Temp: " + str(temp))
         return temp
 
     def get_hw_info(self):

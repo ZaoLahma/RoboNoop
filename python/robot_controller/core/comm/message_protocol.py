@@ -13,9 +13,9 @@ class MessageProtocol:
         now = time()
         if None == message.msg_create_time:
             message.msg_create_time = now
-        else:
-            Log.log("Using the message create time for message " + str(message.get_msg_id()))
-        Log.log("Age when sending: " + str(now - message.msg_create_time))
+        #else:
+            #Log.log("Using the message create time for message " + str(message.get_msg_id()))
+        #Log.log("Age when sending: " + str(now - message.msg_create_time))
         data = struct.pack('>d', message.msg_create_time)
         data += struct.pack('>d', now)
         data += struct.pack('>B', message.get_msg_id())
