@@ -8,6 +8,7 @@ from ...core.config.config import Config
 from ..daredevil.sonar_control.sonar_control_messages import ALL_SONAR_MESSAGES
 from ..garrus.image_control.image_control_messages import ALL_IMAGE_CONTROL_MESSAGES
 from ..vision.task.vision_messages import ALL_VISION_MESSAGES
+from ..hwal.sysinfo.sysinfo_messages import ALL_SYSINFO_MESSAGES
 from .comm.comm_ctxt import CommCtxt
 from .comm.connect_task import ConnectTask
 from .core.window import Window
@@ -25,7 +26,7 @@ class Main:
 
         Log.log("GUI application starting...")
 
-        protocol = MessageProtocol(ALL_CORE_MESSAGES + ALL_SONAR_MESSAGES + ALL_IMAGE_CONTROL_MESSAGES + ALL_VISION_MESSAGES)
+        protocol = MessageProtocol(ALL_CORE_MESSAGES + ALL_SONAR_MESSAGES + ALL_IMAGE_CONTROL_MESSAGES + ALL_VISION_MESSAGES + ALL_SYSINFO_MESSAGES)
 
         comm_task = CommEndpoint([protocol])
         connect_task = ConnectTask(comm_task)

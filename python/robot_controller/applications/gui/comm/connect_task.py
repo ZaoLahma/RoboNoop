@@ -18,7 +18,8 @@ class ConnectTask(TaskBase):
             State("CONNECT_VISION", self.handle_connect_vision, "CONNECT_DAREDEVIL", "CONNECT_DAREDEVIL"),
             State("CONNECT_DAREDEVIL", self.handle_connect_daredevil, "CONNECT_FEAR", "CONNECT_FEAR"),
             State("CONNECT_FEAR", self.handle_connect_fear, "CONNECT_KRATOS", "CONNECT_KRATOS"),
-            State("CONNECT_KRATOS", self.handle_connect_kratos, "ENABLED", "ENABLED"),
+            State("CONNECT_KRATOS", self.handle_connect_kratos, "CONNECT_HWAL", "CONNECT_HWAL"),
+            State("CONNECT_HWAL", self.handle_connect_hwal, "ENABLED", "ENABLED"),
             State("ENABLED", self.handle_enabled, "ENABLED", "CONNECT_START")
         ]
         self.state_handler = StateHandler(self.state_def, "CONNECT_START")
@@ -69,6 +70,13 @@ class ConnectTask(TaskBase):
         fail = False
         if False == CommUtils.is_connected(self.comm_if, "kratos"):
             fail = True != CommUtils.connect(self.comm_if, "kratos")
+        sleep(1)
+        self.state_handler.transition(fail)
+
+    def handle_connect_hwal(self):
+        fail = False
+        if False == CommUtils.is_connected(self.comm_if, "hwal"):
+            fail = True != CommUtils.connect(self.comm_if, "hwal")
         sleep(1)
         self.state_handler.transition(fail)
 
