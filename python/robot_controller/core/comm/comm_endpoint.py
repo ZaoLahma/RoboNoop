@@ -256,7 +256,7 @@ class CommEndpoint(TaskBase):
         connection = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         try:
             connection.settimeout(1)
-            connection.connect(host)
+            connection = socket.create_connection(host)
         except:
             raise
         else:
