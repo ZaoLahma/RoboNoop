@@ -57,7 +57,6 @@ class SonarTask(TaskBase):
 
     def run(self):
         self.interrupt_lock.acquire()
-        Log.log("Curr state: " + str(self.pin_states[self.pin_state]))
         if SonarTask.INIT_PULSE == self.pin_states[self.pin_state]:
             GPIO.output(self.trig_pin, GPIO.HIGH)
             sleep(0.00001)

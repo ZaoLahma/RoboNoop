@@ -15,13 +15,13 @@ class GPIOInterruptStubThread(Thread):
 
     def run(self):
         while True == self.active:
-            Log.log("Interrupt thread running")
+            #Log.log("Interrupt thread running")
             for pin in self.callbacks:
                 self.callbacks[pin](pin)
             sleep(0.05)
 
     def start(self):
-        Log.log("Start called")
+        #Log.log("Start called")
         self.active = True
         Thread.start(self)
 
@@ -59,7 +59,7 @@ class GPIOStub():
             GPIOStub.CURR_VAL = 0
         else:
             GPIOStub.CURR_VAL = 1
-        Log.log("input returning: " + str(val))
+        #Log.log("input returning: " + str(val))
         return val
 
     @staticmethod
