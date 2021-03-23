@@ -30,7 +30,7 @@ class SonarTask(TaskBase):
         self.pin_states = [SonarTask.INIT_PULSE, SonarTask.WAIT_FOR_PULSE_START, SonarTask.WAIT_FOR_PULSE_END, SonarTask.PULSE_END]
         self.pin_state = 0
 
-    def pin_callback(self):
+    def pin_callback(self, pin):
         if SonarTask.WAIT_FOR_PULSE_START == self.pin_states[self.pin_state]:
             if 1 == GPIO.input(self.echo_pin):
                 self.pulse_start = time()

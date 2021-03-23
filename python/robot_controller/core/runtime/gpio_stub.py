@@ -7,18 +7,17 @@ class GPIOInterruptStubThread(Thread):
     def __init__(self):
         Thread.__init__(self)
         Log.log("GPIOInterruptStubThread started")
-        self.callbacks = []
+        self.callbacks = {}
         self.active = False
 
-    def add_callback(self, callback):
-        self.callbacks.append(callback)
+    def add_callback(self, pin, callback):
+        self.callbacks[pin] = callback
 
     def run(self):
         while True == self.active:
             Log.log("Interrupt thread running")
-            for callback in self.callbacks:
-                Log.log("Calling " + str(callback))
-                callback()
+            for pin in self.callbacks:
+                self.callbacks[pin](pin)
             sleep(0.05)
 
     def start(self):
@@ -72,4 +71,4 @@ class GPIOStub():
         if None == GPIOStub.INTERRUPT_THREAD:
             GPIOStub.INTERRUPT_THREAD = GPIOInterruptStubThread()
             GPIOStub.INTERRUPT_THREAD.start()
-        GPIOStub.INTERRUPT_THREAD.add_callback(callback)
+        GPIOStub.INTERRUPT_THREAD.add_callback(pin, callback)
