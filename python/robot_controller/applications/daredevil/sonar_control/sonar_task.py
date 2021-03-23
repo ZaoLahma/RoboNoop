@@ -1,51 +1,72 @@
 from ....core.runtime.task_base import TaskBase
 from ....core.log.log import Log
-import time
+from .sonar_control_messages import SonarDataInd
+
 try:
     import RPi.GPIO as GPIO
 except ImportError:
     from ....core.runtime.gpio_stub import GPIOStub as GPIO
 
-from .sonar_control_messages import SonarDataInd
+from time import time
+from time import sleep
+from threading import Lock
 
 class SonarTask(TaskBase):
+    INIT_PULSE = 0
+    WAIT_FOR_PULSE_START = 1
+    WAIT_FOR_PULSE_END = 2
+    PULSE_END = 3
     def __init__(self, comm_if):
         self.comm_if = comm_if
         self.trig_pin = 11
         self.echo_pin = 13
 
-    def run(self):
-        pulse_start = time.time()
-        pulse_end = time.time()
         GPIO.setmode(GPIO.BOARD)
         GPIO.setup(self.trig_pin, GPIO.OUT)
         GPIO.setup(self.echo_pin, GPIO.IN)
-        GPIO.output(self.trig_pin, GPIO.HIGH)
-        time.sleep(0.00001)
-        GPIO.output(self.trig_pin, GPIO.LOW)
+        GPIO.add_event_detect(self.echo_pin, GPIO.BOTH, callback=self.pin_callback)
 
-        loop_start = time.time()
-        while 0 == GPIO.input(self.echo_pin):
-            pulse_start = time.time()
-            if (pulse_start - loop_start > 1):
-                Log.log("Timeout waiting for sonar sensor")
-                break
+        self.pulse_start = time()
+        self.pulse_end = time()
 
-        loop_start = time.time()
-        pulse_end = time.time()
-        while 1 == GPIO.input(self.echo_pin):
-            pulse_end = time.time()
-            if (pulse_end - loop_start > 1):
-                Log.log("Timeout waiting for sonar sensor to indicate echo end")
-                break
+        self.pin_states = [SonarTask.INIT_PULSE, SonarTask.WAIT_FOR_PULSE_START, SonarTask.WAIT_FOR_PULSE_END, SonarTask.PULSE_END]
+        self.pin_state = 0
 
-        pulse_duration = pulse_end - pulse_start
+        self.interrupt_lock = Lock()
 
-        distance = int(round(pulse_duration * 171500, 0))
+    def pin_callback(self, pin):
+        self.interrupt_lock.acquire()
+        if SonarTask.WAIT_FOR_PULSE_START == self.pin_states[self.pin_state]:
+            self.pulse_start = time()
+            if 1 == GPIO.input(self.echo_pin):
+                self.pin_state += 1
+            else:
+                #Pin toggled back to 0 before we had the chance to read it.
+                #We're CLOSE to something. Set pulse_end to pulse_start and 
+                # set state to PULSE_END asap
+                self.pulse_end = self.pulse_start
+                self.pin_state += 2
 
-        sonar_msg = SonarDataInd(distance)
+        elif SonarTask.WAIT_FOR_PULSE_END == self.pin_states[self.pin_state]:
+            if 0 == GPIO.input(self.echo_pin):
+                self.pulse_end = time()
+                self.pin_state += 1
+        else:
+            pass
+        self.interrupt_lock.release()
 
-        #Log.log("Calculated distance: " + str(distance) + "mm")
-
-        self.comm_if.send_message(sonar_msg)
+    def run(self):
+        self.interrupt_lock.acquire()
+        if SonarTask.INIT_PULSE == self.pin_states[self.pin_state]:
+            GPIO.output(self.trig_pin, GPIO.HIGH)
+            sleep(0.00001)
+            GPIO.output(self.trig_pin, GPIO.LOW)
+            self.pin_state += 1
+        elif SonarTask.PULSE_END == self.pin_states[self.pin_state]:
+            pulse_duration = self.pulse_end - self.pulse_start
+            distance = int(round(pulse_duration * 171500, 0))
+            sonar_msg = SonarDataInd(distance)
+            self.comm_if.send_message(sonar_msg)
+            self.pin_state = 0
+        self.interrupt_lock.release()
 
