@@ -1,13 +1,15 @@
 from ....core.runtime.task_base import TaskBase
 from ....core.log.log import Log
-from time import time
-from time import sleep
+from .sonar_control_messages import SonarDataInd
+
 try:
     import RPi.GPIO as GPIO
 except ImportError:
     from ....core.runtime.gpio_stub import GPIOStub as GPIO
 
-from .sonar_control_messages import SonarDataInd
+from time import time
+from time import sleep
+from threading import Lock
 
 class SonarTask(TaskBase):
     INIT_PULSE = 0
@@ -30,7 +32,10 @@ class SonarTask(TaskBase):
         self.pin_states = [SonarTask.INIT_PULSE, SonarTask.WAIT_FOR_PULSE_START, SonarTask.WAIT_FOR_PULSE_END, SonarTask.PULSE_END]
         self.pin_state = 0
 
+        self.interrupt_lock = Lock()
+
     def pin_callback(self, pin):
+        self.interrupt_lock.acquire()
         if SonarTask.WAIT_FOR_PULSE_START == self.pin_states[self.pin_state]:
             if 1 == GPIO.input(self.echo_pin):
                 self.pulse_start = time()
@@ -41,8 +46,10 @@ class SonarTask(TaskBase):
                 self.pin_state += 1
         else:
             pass
+        self.interrupt_lock.release()
 
     def run(self):
+        self.interrupt_lock.acquire()
         Log.log("Curr state: " + str(self.pin_states[self.pin_state]))
         if SonarTask.INIT_PULSE == self.pin_states[self.pin_state]:
             GPIO.output(self.trig_pin, GPIO.HIGH)
@@ -55,4 +62,5 @@ class SonarTask(TaskBase):
             sonar_msg = SonarDataInd(distance)
             self.comm_if.send_message(sonar_msg)
             self.pin_state = 0
+        self.interrupt_lock.release()
 
