@@ -37,14 +37,14 @@ class SonarTask(TaskBase):
     def pin_callback(self, pin):
         self.interrupt_lock.acquire()
         if SonarTask.WAIT_FOR_PULSE_START == self.pin_states[self.pin_state]:
+            self.pulse_start = time()
             if 1 == GPIO.input(self.echo_pin):
-                self.pulse_start = time()
                 self.pin_state += 1
             else:
                 #Pin toggled back to 0 before we had the chance to read it.
-                #We're CLOSE to something. Set pulse_end and set state to
-                #PULSE_END asap
-                self.pulse_end = time()
+                #We're CLOSE to something. Set pulse_end to pulse_start and 
+                # set state to PULSE_END asap
+                self.pulse_end = self.pulse_start
                 self.pin_state += 2
 
         elif SonarTask.WAIT_FOR_PULSE_END == self.pin_states[self.pin_state]:
