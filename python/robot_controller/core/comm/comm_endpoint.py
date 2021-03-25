@@ -33,7 +33,10 @@ class ConnectionListener(Thread):
                 self.conn_established(sock.getsockname()[1], connection)
 
             for broken in exceptional:
+                broken.close()
                 self.conn_listeners.remove(broken)
+        for conn_listener in self.conn_listeners:
+            conn_listener.close()
 
     def stop(self):
         self.active = False
@@ -44,7 +47,7 @@ class ConnectionHandler(Thread):
         self.port_no = port_no
         self.inputs = [connection]
         self.protocols = protocols
-        self.outputs = []
+        self.outputs = self.inputs
         self.messages_to_send = {}
         self.receive_hooks = []
         self.peer_capabilities = []
@@ -60,7 +63,6 @@ class ConnectionHandler(Thread):
             self.send_mutex.acquire()
             self.messages_to_send[message.get_msg_id()] = message
             #Log.log("Messages to send: " + str(self.messages_to_send))
-            self.outputs = self.inputs
             self.send_mutex.release()
         else:
             #Log.log("NOT SENDING MESSAGE")
@@ -89,7 +91,8 @@ class ConnectionHandler(Thread):
 
             for write_sock in writable:
                 self.send_messages_to_sock(write_sock)
-
+        for connection in self.inputs:
+            connection.close
         Log.log("Exiting ConnectionHandler for {}".format(self.port_no))
 
     def receive_next_message(self, read_sock):
@@ -167,7 +170,6 @@ class ConnectionHandler(Thread):
                 Log.log("EXCEPTION: " + str(e))
                 self.active = False
                 break
-        self.outputs = []
 
     def stop(self):
         self.active = False
