@@ -100,9 +100,10 @@ class ConnectionHandler(Thread):
             if CapabilitiesInd.get_msg_id() == message.get_msg_id():
                 self.peer_capabilities = message.capabilities
                 Log.log("Received capabilities: {} ({})".format(self.peer_capabilities, self.port_no))
-            else:
-                for hook in self.receive_hooks:
-                    hook(message)
+                message = None
+            
+            for hook in self.receive_hooks:
+                hook(message)
         read_sock.settimeout(None)
 
     def receive_message(self, read_sock):
@@ -226,11 +227,11 @@ class CommEndpoint(TaskBase):
 
     def receive_hook(self, message):
         self.receive_mutex.acquire()
-        self.received_messages[message.get_msg_id()] = message
+        if None != message:
+            self.received_messages[message.get_msg_id()] = message
+        self.receive_mutex.release()
         for nw_activity_hook in self.nw_activity_hooks:
             nw_activity_hook()
-        self.receive_mutex.release()
-
     def run(self):
         disconnected =  []
         for connection_handler in self.connection_handlers:

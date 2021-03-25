@@ -20,9 +20,10 @@ class SchedulerNetwork(Thread):
     def network_activity_hook(self):
         #Log.log("Network activity hook called")
         self.network_activity_timestamp = time()
-        with self.exec_cond:
-            self.should_exec = True
-            self.exec_cond.notify
+        if True == self.active:
+            with self.exec_cond:
+                self.should_exec = True
+                self.exec_cond.notifyAll()
 
     def run(self):
         Log.log("Thread running for " + self.scheduler.context_name + "...")
@@ -50,5 +51,5 @@ class SchedulerNetwork(Thread):
         Log.log("Stop called for " + self.scheduler.context_name + "...")
         self.active = False
         with self.exec_cond:
-            self.exec_cond.notify()
+            self.exec_cond.notifyAll()
         self.scheduler.stop()
