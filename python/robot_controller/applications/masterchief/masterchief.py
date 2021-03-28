@@ -8,7 +8,7 @@ from ..kratos.main import Main as KratosMain
 from ..daredevil.main import Main as DaredevilMain
 from ..garrus.main import Main as GarrusMain
 from ..vision.main import Main as VisionMain
-from ..fear.main import Main as FearMain
+from ..mind.main import Main as MindMain
 from ..hwal.main import Main as HwalMain
 
 from ...core.log.log import Log
@@ -28,8 +28,8 @@ class MasterChief(TaskBase):
             State("CONNECT_HWAL", self.handle_connect_hwal, "CONNECT_GARRUS", "START_PROCESSES"),
             State("CONNECT_GARRUS", self.handle_connect_garrus, "CONNECT_VISION", "START_PROCESSES"),
             State("CONNECT_VISION", self.handle_connect_vision, "CONNECT_DAREDEVIL", "START_PROCESSES"),
-            State("CONNECT_DAREDEVIL", self.handle_connect_daredevil, "CONNECT_FEAR", "START_PROCESSES"),
-            State("CONNECT_FEAR", self.handle_connect_fear, "CONNECT_KRATOS", "START_PROCESSES"),
+            State("CONNECT_DAREDEVIL", self.handle_connect_daredevil, "CONNECT_MIND", "START_PROCESSES"),
+            State("CONNECT_MIND", self.handle_connect_mind, "CONNECT_KRATOS", "START_PROCESSES"),
             State("CONNECT_KRATOS", self.handle_connect_kratos, "ENABLED", "START_PROCESSES"),
             State("START_PROCESSES", self.handle_start_processes, "IDLE", "DISABLED"),
             State("ENABLED", self.handle_enabled, "NO_STATE", "NO_STATE"),
@@ -80,10 +80,10 @@ class MasterChief(TaskBase):
             self.processes_to_start.append(("DaredevilProcess", DaredevilMain.run))
         self.state_handler.transition(fail)
 
-    def handle_connect_fear(self):
-        fail = True != CommUtils.connect(self.comm_if, "fear")
+    def handle_connect_mind(self):
+        fail = True != CommUtils.connect(self.comm_if, "mind")
         if True == fail:
-            self.processes_to_start.append(("FearProcess", FearMain.run))
+            self.processes_to_start.append(("MindProcess", MindMain.run))
         self.state_handler.transition(fail)
 
     def handle_connect_garrus(self):

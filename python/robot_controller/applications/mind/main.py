@@ -20,7 +20,7 @@ class Main:
 
         comm_task = CommEndpoint([protocol])
         app_config = Config.get_config_val("application")
-        port_no = app_config["comm"]["fear"]["port-no"]
+        port_no = app_config["comm"]["mind"]["port-no"]
         comm_task.publish_service(port_no)
 
         fear_task = FearTask(comm_task)

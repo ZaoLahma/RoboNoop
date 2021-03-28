@@ -1,4 +1,4 @@
-from robot_controller.applications.fear.main import Main
+from robot_controller.applications.mind.main import Main
 import sys
 import getopt
 
