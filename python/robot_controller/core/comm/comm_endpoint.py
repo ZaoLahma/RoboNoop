@@ -79,7 +79,7 @@ class ConnectionHandler(Thread):
         self.send_message(CapabilitiesInd(own_capabilities))
         self.active = True
         while True == self.active:
-            readable, writable, exceptional = select.select(self.inputs, self.outputs, self.inputs, 0.05)
+            readable, writable, exceptional = select.select(self.inputs, self.outputs, self.inputs, 0.01)
 
             for broken_sock in exceptional:
                 self.inputs.remove(broken_sock)
