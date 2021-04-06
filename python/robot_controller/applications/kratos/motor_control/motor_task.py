@@ -35,7 +35,7 @@ class MotorTask(TaskBase):
             index = 0
             for ss in self.ctrl_sub_system:
                 if sub_system < ss:
-                    self.ctrl_sub_system.insert(index, msg.sub_system)
+                    self.ctrl_sub_system.insert(index, sub_system)
                 index += 1
 
     def handle_enabled(self):
