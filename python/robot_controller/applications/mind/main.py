@@ -6,15 +6,16 @@ from ...core.comm.message_protocol import MessageProtocol
 from ...core.comm.core_messages import ALL_CORE_MESSAGES
 from ...core.config.config import Config
 from ..daredevil.sonar_control.sonar_control_messages import ALL_SONAR_MESSAGES
-from .fear_control.fear_task import FearTask
+from .fear.fear_task import FearTask
+from .hide.hide_task import HideTask
 from time import sleep
 
 class Main:
     @staticmethod
     def run():
-        Log.log_file_name = "fear.log"
-        Log.log_application_name = "fear"
-        Log.log("Fear application starting...")
+        Log.log_file_name = "mind.log"
+        Log.log_application_name = "mind"
+        Log.log("Mind application starting...")
 
         protocol = MessageProtocol(ALL_CORE_MESSAGES + ALL_SONAR_MESSAGES)
 
@@ -24,13 +25,16 @@ class Main:
         comm_task.publish_service(port_no)
 
         fear_task = FearTask(comm_task)
+        hide_task = HideTask(comm_task)
 
         tasks = []
         tasks.append(comm_task)
         tasks.append(fear_task)
+        tasks.append(hide_task)
 
-        scheduler = Scheduler("Fear", tasks)
+        scheduler = Scheduler("Mind", tasks)
 
         run_in_new_thread = False
-        thread = SchedulerNetwork(scheduler, comm_task, run_in_new_thread)
+        inactivity_timeout = 0.1
+        thread = SchedulerNetwork(scheduler, comm_task, run_in_new_thread, inactivity_timeout)
         thread.start()
