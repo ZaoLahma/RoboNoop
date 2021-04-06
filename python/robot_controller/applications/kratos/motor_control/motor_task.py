@@ -21,7 +21,7 @@ class MotorTask(TaskBase):
 
         self.motor_controller = MotorController()
 
-        self.ctrl_sub_system = 0xffffffff
+        self.ctrl_sub_system = [0xffffffff]
 
     def run(self):
         func = self.state_handler.get_state_func()
@@ -34,8 +34,8 @@ class MotorTask(TaskBase):
         msg = self.comm_if.get_message(MoveInd.get_msg_id())
         if None != msg:
             Log.log("Motor task received MoveInd")
-            if msg.sub_system <= self.ctrl_sub_system:
-                self.ctrl_sub_system = msg.sub_system
+            if msg.sub_system <= self.ctrl_sub_system[0]:
+                self.ctrl_sub_system.insert(0, msg.sub_system)
                 if MoveInd.STOP == msg.direction:
                     self.motor_controller.stop()
                 elif MoveInd.FORWARD == msg.direction:
@@ -46,12 +46,18 @@ class MotorTask(TaskBase):
                     self.motor_controller.turn_right()
                 elif MoveInd.BACKWARD == msg.direction:
                     self.motor_controller.backward()
+            else:
+                index = 0
+                for sub_system in self.ctrl_sub_system:
+                    if msg.sub_system < sub_sytem:
+                        self.ctrl_sub_system.insert(index, msg.sub_system)
+                    index += 1
         msg = self.comm_if.get_message(ReleaseCtrlInd.get_msg_id())
         if None != msg:
-            Log.log("Motor task received ReleaseCtrlInd")
-            if msg.sub_system == self.ctrl_sub_system:
-                self.ctrl_sub_system = 0xffffffff
+            Log.log("Motor task received ReleaseCtrlInd " + str(msg.subsystem))
+            if msg.sub_system == self.ctrl_sub_system[0]:
                 self.motor_controller.stop()
+            self.ctrl_sub_system.remove(msg.sub_system)
 
     def handle_inhibited(self):
         self.motor_controller.stop()
