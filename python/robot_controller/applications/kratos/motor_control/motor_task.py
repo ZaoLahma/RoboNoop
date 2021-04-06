@@ -30,13 +30,21 @@ class MotorTask(TaskBase):
     def handle_init(self):
         self.state_handler.transition()
 
+    def insert_if_not_present(self, sub_system):
+        if not sub_system in self.ctrl_sub_system:
+            index = 0
+            for ss in self.ctrl_sub_system:
+                if sub_system < ss:
+                    self.ctrl_sub_system.insert(index, msg.sub_system)
+                index += 1
+
     def handle_enabled(self):
         Log.log("ctrl_sub_system {0}".format(self.ctrl_sub_system))
         msg = self.comm_if.get_message(MoveInd.get_msg_id())
         if None != msg:
             Log.log("Motor task received MoveInd")
-            if msg.sub_system <= self.ctrl_sub_system[0]:
-                self.ctrl_sub_system.insert(0, msg.sub_system)
+            self.insert_if_not_present(msg.sub_system)
+            if msg.sub_system == self.ctrl_sub_system[0]:
                 if MoveInd.STOP == msg.direction:
                     self.motor_controller.stop()
                 elif MoveInd.FORWARD == msg.direction:
@@ -47,12 +55,7 @@ class MotorTask(TaskBase):
                     self.motor_controller.turn_right()
                 elif MoveInd.BACKWARD == msg.direction:
                     self.motor_controller.backward()
-            else:
-                index = 0
-                for sub_system in self.ctrl_sub_system:
-                    if msg.sub_system < sub_sytem:
-                        self.ctrl_sub_system.insert(index, msg.sub_system)
-                    index += 1
+
         msg = self.comm_if.get_message(ReleaseCtrlInd.get_msg_id())
         if None != msg:
             Log.log("Motor task received ReleaseCtrlInd " + str(msg.sub_system))
