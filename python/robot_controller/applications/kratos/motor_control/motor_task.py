@@ -54,7 +54,7 @@ class MotorTask(TaskBase):
                     index += 1
         msg = self.comm_if.get_message(ReleaseCtrlInd.get_msg_id())
         if None != msg:
-            Log.log("Motor task received ReleaseCtrlInd " + str(msg.subsystem))
+            Log.log("Motor task received ReleaseCtrlInd " + str(msg.sub_system))
             if msg.sub_system == self.ctrl_sub_system[0]:
                 self.motor_controller.stop()
             self.ctrl_sub_system.remove(msg.sub_system)
