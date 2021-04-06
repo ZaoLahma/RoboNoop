@@ -31,6 +31,7 @@ class MotorTask(TaskBase):
         self.state_handler.transition()
 
     def handle_enabled(self):
+        Log.log("ctrl_sub_system {0}".format(self.ctrl_sub_system))
         msg = self.comm_if.get_message(MoveInd.get_msg_id())
         if None != msg:
             Log.log("Motor task received MoveInd")
@@ -56,6 +57,7 @@ class MotorTask(TaskBase):
         if None != msg:
             Log.log("Motor task received ReleaseCtrlInd " + str(msg.sub_system))
             if msg.sub_system == self.ctrl_sub_system[0]:
+                self.comm_if.invalidate_messages()
                 self.motor_controller.stop()
             if msg.sub_system in self.ctrl_sub_system:
                 self.ctrl_sub_system.remove(msg.sub_system)
