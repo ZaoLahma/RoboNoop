@@ -57,7 +57,8 @@ class MotorTask(TaskBase):
             Log.log("Motor task received ReleaseCtrlInd " + str(msg.sub_system))
             if msg.sub_system == self.ctrl_sub_system[0]:
                 self.motor_controller.stop()
-            self.ctrl_sub_system.remove(msg.sub_system)
+            if msg.subsystem in self.ctrl_sub_system:
+                self.ctrl_sub_system.remove(msg.sub_system)
 
     def handle_inhibited(self):
         self.motor_controller.stop()

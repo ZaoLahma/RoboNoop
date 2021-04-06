@@ -62,6 +62,9 @@ class HideTask(TaskBase):
                 self.comm_if.send_message(move_ind)
                 self.turn_time = 0.5
                 self.turn_exit_state = "REST"
+            else:
+                move_ind = MoveInd(MoveInd.FORWARD, 100, 2)
+                self.comm_if.send_message(move_ind)
 
     def handle_rest(self):
         release_ctrl_ind = ReleaseCtrlInd(2)
