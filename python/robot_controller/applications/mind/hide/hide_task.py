@@ -18,6 +18,7 @@ class HideTask(TaskBase):
             State("FIND_DIRECTION", self.handle_find_direction, "TURN", "INIT"),
             State("TURN", self.handle_turn, None, None),
             State("MOVE", self.handle_move, "TURN", "INIT"),
+            State("RELEASE_RESOURCES", self.handle_release_resources, "REST", "INIT"),
             State("REST", self.handle_rest, "REST", "INIT")
         ]
         self.state_handler = StateHandler(self.state_def, "INIT")
@@ -62,14 +63,17 @@ class HideTask(TaskBase):
                 move_ind = MoveInd(MoveInd.RIGHT, 100, 2)
                 self.comm_if.send_message(move_ind)
                 self.turn_time = 0.5
-                self.turn_exit_state = "REST"
+                self.turn_exit_state = "RELEASE_RESOURCES"
                 self.state_handler.transition()
             else:
                 move_ind = MoveInd(MoveInd.FORWARD, 100, 2)
                 self.comm_if.send_message(move_ind)
-
-    def handle_rest(self):
-        Log.log("IN REST")
+    
+    def handle_release_resources(self):
         release_ctrl_ind = ReleaseCtrlInd(2)
         self.comm_if.send_message(release_ctrl_ind)
         self.state_handler.transition()
+
+    def handle_rest(self):
+        Log.log("IN REST")
+        
