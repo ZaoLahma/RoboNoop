@@ -57,7 +57,8 @@ class HideTask(TaskBase):
     def handle_move(self):
         msg = self.comm_if.get_message(SonarDataInd.get_msg_id())
         if None != msg:
-            if msg.distance < 400:
+            Log.log("MOVE DISTANCE: " + str(msg.distance))
+            if msg.distance < 500:
                 move_ind = MoveInd(MoveInd.RIGHT, 100, 2)
                 self.comm_if.send_message(move_ind)
                 self.turn_time = 0.5
@@ -67,6 +68,7 @@ class HideTask(TaskBase):
                 self.comm_if.send_message(move_ind)
 
     def handle_rest(self):
+        Log.log("IN REST")
         release_ctrl_ind = ReleaseCtrlInd(2)
         self.comm_if.send_message(release_ctrl_ind)
         self.state_handler.transition()
