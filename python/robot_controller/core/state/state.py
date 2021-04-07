@@ -23,8 +23,6 @@ class StateHandler():
                 break
         if None == self.curr_state:
             Log.log("ERROR - Failed to look up next state: " + state_name)
-        else:
-            Log.log("State transition to " + self.curr_state.state_name)
 
     def transition(self, fail=False):
         next_state = self.curr_state.ok_transition

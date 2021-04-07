@@ -1,5 +1,6 @@
 from ....core.log.log import Log
 from ....core.comm.comm_utils import CommUtils
+from ....core.config.config import Config
 from ..comm.comm_ctxt import CommCtxt
 from .core.workspace_base import WorkspaceBase
 
@@ -11,7 +12,10 @@ class WsConnStatus(WorkspaceBase):
     def __init__(self, parent_frame, ws_controller, ws_resolution):
         WorkspaceBase.__init__(self, parent_frame, ws_controller, ws_resolution)
         self.Active = False
-        self.applications = ["masterchief", "garrus", "vision", "daredevil", "fear", "kratos", "hwal"]
+        self.applications = []
+        app_config = Config.get_config_val("application")["comm"]
+        for app_name in app_config:
+            self.applications.append(app_name)
         self.appl_labels = []
 
     def update_appl_labels(self):

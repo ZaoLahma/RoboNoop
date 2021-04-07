@@ -12,17 +12,11 @@ class ConnectTask(TaskBase):
         self.comm_if = comm_if
 
         self.state_def =  [
-            State("CONNECT_START", self.handle_connect_start, "CONNECT_MASTERCHIEF", "CONNECT_MASTERCHIEF"),
-            State("CONNECT_MASTERCHIEF", self.handle_masterchief, "CONNECT_GARRUS", "CONNECT_GARRUS"),
-            State("CONNECT_GARRUS", self.handle_connect_garrus, "CONNECT_VISION", "CONNECT_VISION"),
-            State("CONNECT_VISION", self.handle_connect_vision, "CONNECT_DAREDEVIL", "CONNECT_DAREDEVIL"),
-            State("CONNECT_DAREDEVIL", self.handle_connect_daredevil, "CONNECT_FEAR", "CONNECT_FEAR"),
-            State("CONNECT_FEAR", self.handle_connect_fear, "CONNECT_KRATOS", "CONNECT_KRATOS"),
-            State("CONNECT_KRATOS", self.handle_connect_kratos, "CONNECT_HWAL", "CONNECT_HWAL"),
-            State("CONNECT_HWAL", self.handle_connect_hwal, "ENABLED", "ENABLED"),
-            State("ENABLED", self.handle_enabled, "ENABLED", "CONNECT_START")
+            State("CONNECT", self.handle_connect, "ENABLED", "CONNECT"),
+            State("ENABLED", self.handle_enabled, "ENABLED", "CONNECT")
         ]
-        self.state_handler = StateHandler(self.state_def, "CONNECT_START")
+
+        self.state_handler = StateHandler(self.state_def, "CONNECT")
 
     def run(self):
         func = self.state_handler.get_state_func()
@@ -31,63 +25,24 @@ class ConnectTask(TaskBase):
     def handle_connect_start(self):
         self.state_handler.transition()
 
-    def handle_masterchief(self):
+    def handle_connect(self):
         fail = False
-        if False == CommUtils.is_connected(self.comm_if, "masterchief"):
-            fail = True != CommUtils.connect(self.comm_if, "masterchief")
-        sleep(1)
-        self.state_handler.transition(fail)
-
-    def handle_connect_garrus(self):
-        fail = False
-        if False == CommUtils.is_connected(self.comm_if, "garrus"):
-            fail = True != CommUtils.connect(self.comm_if, "garrus")
-        sleep(1)
-        self.state_handler.transition(fail)
-
-    def handle_connect_vision(self):
-        fail = False
-        if False == CommUtils.is_connected(self.comm_if, "vision"):
-            fail = True != CommUtils.connect(self.comm_if, "vision")
-        sleep(1)
-        self.state_handler.transition(fail)
-
-    def handle_connect_daredevil(self):
-        fail = False
-        if False == CommUtils.is_connected(self.comm_if, "daredevil"):
-            fail = True != CommUtils.connect(self.comm_if, "daredevil")
-        sleep(1)
-        self.state_handler.transition(fail)
-
-    def handle_connect_fear(self):
-        fail = False
-        if False == CommUtils.is_connected(self.comm_if, "fear"):
-            fail = True != CommUtils.connect(self.comm_if, "fear")
-        sleep(1)
-        self.state_handler.transition(fail)
-    
-    def handle_connect_kratos(self):
-        fail = False
-        if False == CommUtils.is_connected(self.comm_if, "kratos"):
-            fail = True != CommUtils.connect(self.comm_if, "kratos")
-        sleep(1)
-        self.state_handler.transition(fail)
-
-    def handle_connect_hwal(self):
-        fail = False
-        if False == CommUtils.is_connected(self.comm_if, "hwal"):
-            fail = True != CommUtils.connect(self.comm_if, "hwal")
-        sleep(1)
+        app_config = Config.get_config_val("application")["comm"]
+        for app_name in app_config:
+            if False == CommUtils.is_connected(self.comm_if, app_name):
+                fail = True != CommUtils.connect(self.comm_if, app_name)
+                if True == fail:
+                    sleep(1)
         self.state_handler.transition(fail)
 
     def handle_enabled(self):
         #Check if still connected
-        connected = CommUtils.is_connected(self.comm_if, "masterchief")
-        connected = connected and CommUtils.is_connected(self.comm_if, "garrus")
-        connected = connected and CommUtils.is_connected(self.comm_if, "daredevil")
-        connected = connected and CommUtils.is_connected(self.comm_if, "fear")
-        connected = connected and CommUtils.is_connected(self.comm_if, "kratos")
-        connected = connected and CommUtils.is_connected(self.comm_if, "hwal")
+        connected = True
+        app_config = Config.get_config_val("application")["comm"]
+        for app_name in app_config:
+            connected = connected and CommUtils.is_connected(self.comm_if, app_name)
+            if False == connected:
+                break
 
         fail = False == connected
         if True == fail:

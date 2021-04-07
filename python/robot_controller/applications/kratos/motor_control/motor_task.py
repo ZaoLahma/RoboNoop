@@ -13,7 +13,7 @@ class MotorTask(TaskBase):
         self.comm_if = comm_if
 
         self.state_def =  [
-            State("INIT", self.handle_init, "INHIBITED", "INIT"),
+            State("INIT", self.handle_init, "ENABLED", "INIT"),
             State("ENABLED", self.handle_enabled, "ENABLED", "INHIBITED"),
             State("INHIBITED", self.handle_inhibited, "ENABLED", "INHIBITED")
         ]
@@ -21,7 +21,7 @@ class MotorTask(TaskBase):
 
         self.motor_controller = MotorController()
 
-        self.ctrl_sub_system = 0xffffffff
+        self.ctrl_sub_system = [0xffffffff]
 
     def run(self):
         func = self.state_handler.get_state_func()
@@ -30,12 +30,23 @@ class MotorTask(TaskBase):
     def handle_init(self):
         self.state_handler.transition()
 
+    def insert_if_not_present(self, sub_system):
+        Log.log("insert if not present: " + str(sub_system))
+        if not sub_system in self.ctrl_sub_system:
+            index = 0
+            for ss in self.ctrl_sub_system:
+                if sub_system < ss:
+                    self.ctrl_sub_system.insert(index, sub_system)
+                    break
+                index += 1
+
     def handle_enabled(self):
+        Log.log("ctrl_sub_system {0}".format(self.ctrl_sub_system))
         msg = self.comm_if.get_message(MoveInd.get_msg_id())
         if None != msg:
             Log.log("Motor task received MoveInd")
-            if msg.sub_system <= self.ctrl_sub_system:
-                self.ctrl_sub_system = msg.sub_system
+            self.insert_if_not_present(msg.sub_system)
+            if msg.sub_system == self.ctrl_sub_system[0]:
                 if MoveInd.STOP == msg.direction:
                     self.motor_controller.stop()
                 elif MoveInd.FORWARD == msg.direction:
@@ -46,12 +57,15 @@ class MotorTask(TaskBase):
                     self.motor_controller.turn_right()
                 elif MoveInd.BACKWARD == msg.direction:
                     self.motor_controller.backward()
+
         msg = self.comm_if.get_message(ReleaseCtrlInd.get_msg_id())
         if None != msg:
-            Log.log("Motor task received ReleaseCtrlInd")
-            if msg.sub_system == self.ctrl_sub_system:
-                self.ctrl_sub_system = 0xffffffff
+            Log.log("Motor task received ReleaseCtrlInd " + str(msg.sub_system))
+            if msg.sub_system == self.ctrl_sub_system[0]:
+                self.comm_if.invalidate_messages()
                 self.motor_controller.stop()
+            if msg.sub_system in self.ctrl_sub_system:
+                self.ctrl_sub_system.remove(msg.sub_system)
 
     def handle_inhibited(self):
         self.motor_controller.stop()
