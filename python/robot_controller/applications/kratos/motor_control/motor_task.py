@@ -31,11 +31,13 @@ class MotorTask(TaskBase):
         self.state_handler.transition()
 
     def insert_if_not_present(self, sub_system):
+        Log.log("insert if not present: " + str(sub_system))
         if not sub_system in self.ctrl_sub_system:
             index = 0
             for ss in self.ctrl_sub_system:
                 if sub_system < ss:
                     self.ctrl_sub_system.insert(index, sub_system)
+                    break
                 index += 1
 
     def handle_enabled(self):
