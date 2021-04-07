@@ -30,7 +30,7 @@ class Main:
         tasks = []
         tasks.append(comm_task)
         tasks.append(fear_task)
-        tasks.append(hide_task)
+        #tasks.append(hide_task)
 
         scheduler = Scheduler("Mind", tasks)
 
