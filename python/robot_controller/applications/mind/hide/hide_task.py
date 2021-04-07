@@ -59,7 +59,7 @@ class HideTask(TaskBase):
         msg = self.comm_if.get_message(SonarDataInd.get_msg_id())
         if None != msg:
             Log.log("MOVE DISTANCE: " + str(msg.distance))
-            if msg.distance < 600:
+            if msg.distance < 700:
                 move_ind = MoveInd(MoveInd.RIGHT, 100, 2)
                 self.comm_if.send_message(move_ind)
                 self.turn_time = 4
