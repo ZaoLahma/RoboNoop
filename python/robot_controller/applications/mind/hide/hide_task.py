@@ -62,7 +62,7 @@ class HideTask(TaskBase):
             if msg.distance < 500:
                 move_ind = MoveInd(MoveInd.RIGHT, 100, 2)
                 self.comm_if.send_message(move_ind)
-                self.turn_time = 0.5
+                self.turn_time = 1
                 self.turn_exit_state = "RELEASE_RESOURCES"
                 self.state_handler.transition()
             else:
