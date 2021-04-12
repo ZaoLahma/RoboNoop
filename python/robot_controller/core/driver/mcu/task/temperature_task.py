@@ -1,4 +1,5 @@
 from ....runtime.task_base import TaskBase
+from ....log.log import Log
 
 class TemperatureTask(TaskBase):
     def __init__(self):
@@ -7,6 +8,7 @@ class TemperatureTask(TaskBase):
 
     def run(self):
         self.temperature = self.get_temperature()
+        Log.log("temperature: " + str(self.temperature))
 
     def get_temperature(self):
         temp = ""

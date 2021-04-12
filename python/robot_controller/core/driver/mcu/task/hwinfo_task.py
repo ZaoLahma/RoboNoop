@@ -1,4 +1,5 @@
 from ....runtime.task_base import TaskBase
+from ....log.log import Log
 
 class HwInfoTask(TaskBase):
     def __init__(self):
@@ -7,6 +8,7 @@ class HwInfoTask(TaskBase):
 
     def run(self):
         self.hw_info = self.get_hw_info()
+        Log.log("hw_info: " + str(self.hw_info))
 
     def get_hw_info(self):
         hw_info = ""
