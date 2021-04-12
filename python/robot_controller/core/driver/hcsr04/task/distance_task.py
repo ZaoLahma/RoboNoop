@@ -16,6 +16,8 @@ class DistanceTask(TaskBase):
     WAIT_FOR_PULSE_END = 2
     PULSE_END = 3
     def __init__(self):
+        TaskBase.__init__(self)
+        
         self.trig_pin = 11
         self.echo_pin = 13
 
