@@ -6,9 +6,16 @@ class HwInfoTask(TaskBase):
         TaskBase.__init__(self)
         self.hw_info = self.get_hw_info()
 
+        self.hw_info_hooks = []
+
+    def register_hw_info_hook(self, hook):
+        self.hw_info_hooks.append(hook)
+
     def run(self):
         self.hw_info = self.get_hw_info()
         Log.log("hw_info: " + str(self.hw_info))
+        for hook in self.hw_info_hooks:
+            hook(self.hw_info)
 
     def get_hw_info(self):
         hw_info = ""

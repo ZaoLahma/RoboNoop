@@ -37,7 +37,6 @@ class MotorControllerTask(TaskBase):
         self.distance = None
         self.distance_timestamp = None
         self.distance_max_age = 0.5
-
         self.distance_min = 300
     
     def set_command(self, command):

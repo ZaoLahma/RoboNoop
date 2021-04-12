@@ -6,9 +6,16 @@ class TemperatureTask(TaskBase):
         TaskBase.__init__(self)
         self.temperature = self.get_temperature()
 
+        self.temperature_hooks = []
+
+    def register_temperature_hook(self, hook):
+        self.temperature_hooks.append(hook)
+
     def run(self):
         self.temperature = self.get_temperature()
         Log.log("temperature: " + str(self.temperature))
+        for hook in self.temperature_hooks:
+            hook(temperature)
 
     def get_temperature(self):
         temp = ""

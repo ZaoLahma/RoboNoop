@@ -4,12 +4,8 @@ from ...core.runtime.task_base import TaskBase
 from ...core.runtime.process import ProcessManager
 from ...core.config.config import Config
 from ...core.comm.comm_utils import CommUtils
-from ..kratos.main import Main as KratosMain
-from ..daredevil.main import Main as DaredevilMain
 from ..garrus.main import Main as GarrusMain
 from ..vision.main import Main as VisionMain
-from ..mind.main import Main as MindMain
-from ..hwal.main import Main as HwalMain
 
 from ...core.log.log import Log
 from datetime import datetime
@@ -39,12 +35,8 @@ class MasterChief(TaskBase):
         self.processes_to_start = []
 
         self.app_to_main_map = {}
-        self.app_to_main_map["hwal"] = HwalMain
         self.app_to_main_map["garrus"] = GarrusMain
         self.app_to_main_map["vision"] = VisionMain
-        self.app_to_main_map["daredevil"] = DaredevilMain
-        self.app_to_main_map["mind"] = MindMain
-        self.app_to_main_map["kratos"] = KratosMain
 
     def run(self):
         state_func = self.state_handler.get_state_func()
