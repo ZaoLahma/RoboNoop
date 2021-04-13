@@ -4,9 +4,6 @@ from ....state.state import StateHandler
 from ....log.log import Log
 from .motor_controller import MotorController
 
-from time import time
-from threading import Lock
-
 class MotorControllerTask(TaskBase):
     FORWARD = 0
     BACKWARD = 1
@@ -33,11 +30,6 @@ class MotorControllerTask(TaskBase):
             State("INHIBITED", self.handle_inhibited, "ENABLED", "INHIBITED")
         ]
         self.state_handler = StateHandler(self.state_def, "INHIBITED")
-
-        self.distance = None
-        self.distance_timestamp = None
-        self.distance_max_age = 0.5
-        self.distance_min = 300
     
     def set_command(self, command):
         self.curr_command = self.command_to_controller[command]
@@ -47,25 +39,8 @@ class MotorControllerTask(TaskBase):
         func()
 
     def handle_enabled(self):
-        success = None != self.distance
-        success = success and None != self.distance_timestamp
-        success = success and (time() - self.distance_timestamp < self.distance_max_age)
-        if True == success:
-            if self.distance > self.distance_min or self.curr_command == self.motor_controller.backward:
-                self.curr_command()
-            else:
-                self.motor_controller.stop()
-        fail = False == success
-        self.state_handler.transition(fail)
+        self.curr_command()
+        self.state_handler.transition()
 
     def handle_inhibited(self):
         self.motor_controller.stop()
-        success = None != self.distance
-        success = success and None != self.distance_timestamp
-        success = success and (time() - self.distance_timestamp < self.distance_max_age)
-        fail = False == success
-        self.state_handler.transition(fail)
-
-    def distance_hook(self, distance):
-        self.distance_timestamp = time()
-        self.distance = distance
