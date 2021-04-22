@@ -37,7 +37,7 @@ class SchedulerNetwork(Thread):
                 if False == self.should_exec:
                     #Log.log("Waiting for network activity")
                     self.exec_cond.wait(timeout = self.inactivity_timeout)
-                    #Log.log("Network activity indicated")
+                    #Log.log("Network activity indicated, timeout: " + str(self.inactivity_timeout))
         Log.log("Thread exiting for " + self.scheduler.context_name)
     
     def start(self):

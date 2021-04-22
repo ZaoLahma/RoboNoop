@@ -39,7 +39,8 @@ class Main:
         scheduler = Scheduler("GUI", tasks)
 
         run_in_new_thread = True
-        scheduler_thread = SchedulerNetwork(scheduler, comm_task, run_in_new_thread)
+        inactivity_timeout = 0.5
+        scheduler_thread = SchedulerNetwork(scheduler, comm_task, run_in_new_thread, inactivity_timeout)
         scheduler_thread.start()
 
         resolution = (640, 500)

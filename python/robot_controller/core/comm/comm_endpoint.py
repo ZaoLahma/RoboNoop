@@ -71,13 +71,13 @@ class ConnectionHandler(Thread):
 
     def run(self):
         Log.log("ConnectionHandler started for {}".format(self.port_no))
+        self.active = True
         own_capabilities = []
         for protocol in self.protocols:
             for message_class in protocol.message_classes:
                 own_capabilities.append(message_class.get_msg_id())
         Log.log("Sending capabilities: {}".format(own_capabilities))
         self.send_message(CapabilitiesInd(own_capabilities))
-        self.active = True
         while True == self.active:
             readable, writable, exceptional = select.select(self.inputs, self.outputs, self.inputs, 0.01)
 
