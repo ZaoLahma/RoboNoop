@@ -31,15 +31,16 @@ class Main:
         hw_interface_task = HwInterfaceTask(comm_task, driver_ctxt)
 
         driver_ctxt.add_driver("temp", temp_task)
-        driver_ctxt.add_driver("dist", distance_task)
+        driver_ctxt.add_driver("distance", distance_task)
         driver_ctxt.add_driver("motor", motor_controller_task)
         driver_ctxt.add_driver("hwinfo", hw_interface_task)
 
-        scheduler = Scheduler("HW_IF", [comm_task, distance_task, motor_controller_task, temp_task, hwinfo_task])
+        scheduler = Scheduler("HW_IF", [comm_task, distance_task, motor_controller_task, temp_task, hwinfo_task, hw_interface_task])
 
         run_in_new_thread = False
-        inactivity_timeout = 0.2
+        inactivity_timeout = 1
         thread = SchedulerNetwork(scheduler, comm_task, run_in_new_thread, inactivity_timeout)
+        Log.log("STARTING SCHEDULER")
         thread.start()
 
 if "__main__" == __name__:

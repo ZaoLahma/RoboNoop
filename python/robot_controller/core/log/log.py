@@ -17,7 +17,7 @@ class Log:
         log_str = str(now) + " " 
         if None != Log.log_application_name:
             log_str += Log.log_application_name + " " 
-        log_str += file_name + ":" + str(line_no) + " - " + msg
+        log_str += file_name + ":" + str(line_no) + " - " + str(msg)
         print(log_str)
         if Log.log_write_to_file:
             with open(Log.log_file_name, "a") as log_file:

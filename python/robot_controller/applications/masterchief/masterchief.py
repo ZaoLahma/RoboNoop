@@ -6,6 +6,7 @@ from ...core.config.config import Config
 from ...core.comm.comm_utils import CommUtils
 from ..garrus.main import Main as GarrusMain
 from ..vision.main import Main as VisionMain
+from ..hw_interface.main import Main as HwIfMain
 
 from ...core.log.log import Log
 from datetime import datetime
@@ -37,6 +38,7 @@ class MasterChief(TaskBase):
         self.app_to_main_map = {}
         self.app_to_main_map["garrus"] = GarrusMain
         self.app_to_main_map["vision"] = VisionMain
+        self.app_to_main_map["hw-interface"] = HwIfMain
 
     def run(self):
         state_func = self.state_handler.get_state_func()

@@ -11,6 +11,13 @@ class HwInterfaceTask(TaskBase):
         self.comm_if = comm_if
         self.driver_ctxt = driver_ctxt
 
+        self.monitored_sensors = ["distance", "hw-info", "temp"]
+
+        self.tx_data = {}
+        
+        for sensor in self.monitored_sensors:
+            self.tx_data[sensor] = "UNAVAILABLE"
+
         states = [
             State("INIT", self.handle_init, "ENABLED", "INIT"),
             State("ENABLED", self.handle_enabled, "ENABLED", "INIT")
@@ -35,17 +42,25 @@ class HwInterfaceTask(TaskBase):
         self.state_handler.transition()
 
     def handle_enabled(self):
-        msg = comm_if.get_message(DataTransferMessage.get_msg_id())
+        Log.log("Enabled")
+        msg = self.comm_if.get_message(DataTransferMessage.get_msg_id())
 
         if None != msg:
-            Log.log("Command received: " + str(msg))
+            Log.log("Message received: " + str(msg.data))
+            commands = msg.data["commands"]
+        
+        tx_msg = DataTransferMessage()
+        tx_msg.add_data("sensor-data", self.tx_data)
+        self.comm_if.send_message(tx_msg)
         
         self.state_handler.transition()
 
     def distance_hook(self, distance):
-        self.distance = distance
+        self.tx_data["distance"] = distance
+        Log.log("distance: " + str(distance))
 
     def temperature_hook(self, temperature):
-        self.temperature = temperature
+        Log.log("temp: " + str(temperature))
+        self.tx_data["temp"] = temperature
 
     

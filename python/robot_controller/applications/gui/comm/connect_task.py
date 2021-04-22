@@ -31,8 +31,6 @@ class ConnectTask(TaskBase):
         for app_name in app_config:
             if False == CommUtils.is_connected(self.comm_if, app_name):
                 fail = True != CommUtils.connect(self.comm_if, app_name)
-                if True == fail:
-                    sleep(1)
         self.state_handler.transition(fail)
 
     def handle_enabled(self):
